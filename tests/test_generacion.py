@@ -136,10 +136,18 @@ class GeneracionTests(unittest.TestCase):
                         continue
                     rel = sheet.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
                     root = E.fromstring(z.read('xl/' + rels[rel]))
+                    exposures = {}
+                    for span in root.xpath('//s:mergeCell/@ref', namespaces=NS):
+                        if span.startswith('BX'):
+                            first, last = (int(ref[2:]) for ref in span.split(':'))
+                            text = ''.join(root.xpath(f'//s:c[@r="BX{first}"]//s:t/text()', namespaces=NS))
+                            exposures.update({r: text for r in range(first, last + 1)})
                     records = []
                     for row in root.findall('s:sheetData/s:row', NS)[2:]:
                         records.append({''.join(c for c in cell.get('r') if c.isalpha()):
                             ''.join(cell.xpath('.//s:t/text() | s:v/text()', namespaces=NS)) for cell in row})
+                        if not records[-1].get('BX') and int(row.get('r')) in exposures:
+                            records[-1]['BX'] = exposures[int(row.get('r'))]
                     if name == 'Conducted 2G-3G':
                         for mode, expected in [('GPRS', {'1', '2', '3'}), ('EGPRS', {'1', '2'})]:
                             self.assertEqual({r.get('X') for r in records if r.get('J') == mode}, expected)

@@ -79,6 +79,20 @@ def remap_columns(pattern, own_sheet, aliases):
         return f'{T1}{sheet}|{column}|{mode}:{delta}{T2}'
     return re.sub(_ONE, one, pattern)
 
+
+def remap_cells(pattern, own_sheet, oldrow, anchors):
+    """Las referencias a celdas combinadas leen su ancla, con el mismo valor."""
+    if not anchors:
+        return pattern
+    def one(m):
+        sheet, column, mode, delta = m.groups()
+        row = oldrow + int(delta) if mode == 'r' else int(delta)
+        anchor = anchors.get((sheet or own_sheet, column.lstrip('$'), row))
+        if anchor is None:
+            return m.group(0)
+        return f'{T1}{sheet}|{column}|a:{anchor}{T2}'
+    return re.sub(_ONE, one, pattern)
+
 def expand(pat, row, resolve, own_sheet, newrow=None, inline=None, blank=None):
     """Patron -> formula A1.
     resolve(hoja, fila_antigua, rol) -> fila nueva o None.  rol: 'single' | 'start' | 'end'.

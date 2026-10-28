@@ -19,7 +19,7 @@ from opciones_ensayo import seleccion_multiple
 from nombres_hojas import renombrar_tecnologias, renombrar_resumen
 from sar_en_formulas import aplicar_formulas_extras
 from presentacion_sar_en import combinar_mode
-from sarlib import remap_columns
+from sarlib import remap_columns, remap_cells
 
 DIR_PLANTILLA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plantilla')
 ARCHIVOS = {
@@ -120,7 +120,7 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     if 'SAR EN' in hojas:
         modificadas['xl/styles.xml'] = combinar_mode(hojas['SAR EN'], planes['SAR EN'], ctx,
                                                       base.read('xl/styles.xml'))
-    ctx.inline = _hacer_inline(hojas, resolve, ctx.column_aliases)
+    ctx.inline = _hacer_inline(hojas, resolve, ctx.column_aliases, ctx.cell_anchors)
     ctx.blank = lambda sh: (HEADER_ROWS + len(planes[sh]) + 3) if sh in planes else None
     resumen = {'hojas': orden, 'filas': {}, 'sin_resolver': ctx.unresolved}
 
@@ -248,7 +248,7 @@ def _sheet_id(wb, nombre):
     return m.group(1) if m else '99'
 
 
-def _hacer_inline(hojas, resolve, column_aliases=None):
+def _hacer_inline(hojas, resolve, column_aliases=None, cell_anchors=None):
     """Contenido de una celda maestra (para sustituir referencias a filas que no están en la selección)."""
     memo = {}
 
@@ -268,7 +268,8 @@ def _hacer_inline(hojas, resolve, column_aliases=None):
                 val = h.cpool[consts[k]][1]; k += 1
             if ci == objetivo:
                 if kind == 3:
-                    pattern = remap_columns(h.patterns[payload], h.name, column_aliases or {})
+                    pattern = remap_cells(h.patterns[payload], h.name, r_old, cell_anchors or {})
+                    pattern = remap_columns(pattern, h.name, column_aliases or {})
                     txt = expand(pattern, r_old, resolve, h.name, None, inline, None)
                     # solo se sustituye si la fórmula es autocontenida (sin referencias a celdas de la propia hoja)
                     if txt is not None and any(m.group(1) is None

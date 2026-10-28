@@ -1,3 +1,5 @@
+test_bx_combina_todo_el_bloque_incluyendo_filas_adicionales (test_cert_y_exposicion.CertExposicionTests.test_bx_combina_todo_el_bloque_incluyendo_filas_adicionales) ... ok
+test_cert_original_no_se_reescribe_para_ninguna_region (test_cert_y_exposicion.CertExposicionTests.test_cert_original_no_se_reescribe_para_ninguna_region) ... ok
 test_en_inserta_debajo_sin_variability_y_con_formato_superior (test_conservacion_sar.ConservacionTests.test_en_inserta_debajo_sin_variability_y_con_formato_superior) ... ok
 test_fcc_solo_filtra_y_conserva_posiciones_formulas_y_estilos (test_conservacion_sar.ConservacionTests.test_fcc_solo_filtra_y_conserva_posiciones_formulas_y_estilos) ... ok
 test_hojas_de_todas_las_tecnologias_incluso_sin_conducidos (test_conservacion_sar.ConservacionTests.test_hojas_de_todas_las_tecnologias_incluso_sin_conducidos) ... ok
@@ -24,6 +26,6 @@ test_mode_una_celda_por_tecnologia_banda_y_modos_auxiliares_conservados (test_va
 test_sin_huecos_ni_exposiciones_no_seleccionadas_y_recalculo_automatico (test_valores_y_mode.ValoresModeTests.test_sin_huecos_ni_exposiciones_no_seleccionadas_y_recalculo_automatico) ... ok
 
 ----------------------------------------------------------------------
-Ran 24 tests in 107.958s
+Ran 26 tests in 130.630s
 
 OK

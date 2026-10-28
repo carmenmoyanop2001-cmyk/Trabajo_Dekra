@@ -9,6 +9,47 @@ def _text_formula(value):
     return '(' + '&CHAR(10)&'.join(parts) + ')' if len(parts) > 1 else parts[0]
 
 
+def _centrar_estilo(xfs, style_map, old_style):
+    if old_style not in style_map:
+        xf = deepcopy(xfs[old_style])
+        alignment = xf.find('{*}alignment')
+        if alignment is None:
+            alignment = etree.Element('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}alignment')
+            xf.insert(0, alignment)
+        alignment.set('horizontal', 'center')
+        alignment.set('vertical', 'center')
+        alignment.set('wrapText', '1')
+        xf.set('applyAlignment', '1')
+        style_map[old_style] = len(xfs)
+        xfs.append(xf)
+    return style_map[old_style]
+
+
+def _combinar_exposiciones(en, plan, ctx, xfs, style_map):
+    bx = col2n('BX')
+    groups = []
+    previous = None
+    for row, item in enumerate(plan, start=3):
+        kv = en.kv(item.i)
+        key = (kv.get('BT'), kv.get('BU'), kv.get('BX'))
+        if key != previous:
+            groups.append([])
+        groups[-1].append((row, item))
+        previous = key
+    for group in groups:
+        first, first_item = group[0]
+        last = group[-1][0]
+        anchor = en.rows[first_item.i][0]
+        for _, item in group:
+            item.ovr[bx] = None
+            ctx.cell_anchors[('SAR EN', 'BX', en.rows[item.i][0])] = anchor
+        first_item.ovr[bx] = en.kv(first_item.i)['BX']
+        if first != last:
+            ctx.display_merges['SAR EN'].append(f'BX{first}:BX{last}')
+        old_style = next(c[1] for c in en.templates[en.rows[first_item.i][1]] if c[0] == bx)
+        ctx.style_overrides[('SAR EN', first, bx)] = _centrar_estilo(xfs, style_map, old_style)
+
+
 def combinar_mode(en, plan, ctx, styles_xml):
     # CG ya existe y está oculta en la plantilla: conserva el modo por fila.
     # Los cálculos pasan a leer CG; BY solo resume visualmente cada bloque.
@@ -53,19 +94,8 @@ def combinar_mode(en, plan, ctx, styles_xml):
             merges.append(f'BY{first}:BY{last}')
         first_item = group[0][1]
         old_style = next(c[1] for c in en.templates[en.rows[first_item.i][1]] if c[0] == by)
-        if old_style not in style_map:
-            xf = deepcopy(xfs[old_style])
-            alignment = xf.find('{*}alignment')
-            if alignment is None:
-                alignment = etree.Element('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}alignment')
-                xf.insert(0, alignment)
-            alignment.set('horizontal', 'center')
-            alignment.set('vertical', 'center')
-            alignment.set('wrapText', '1')
-            xf.set('applyAlignment', '1')
-            style_map[old_style] = len(xfs)
-            xfs.append(xf)
-        ctx.style_overrides[('SAR EN', first, by)] = style_map[old_style]
+        ctx.style_overrides[('SAR EN', first, by)] = _centrar_estilo(xfs, style_map, old_style)
     ctx.display_merges['SAR EN'] = merges
+    _combinar_exposiciones(en, plan, ctx, xfs, style_map)
     xfs.set('count', str(len(xfs)))
     return etree.tostring(styles, encoding='UTF-8', xml_declaration=True, standalone=True)

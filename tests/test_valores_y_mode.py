@@ -45,12 +45,20 @@ class ValoresModeTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.temp.cleanup()
 
+    def exposure(self, row):
+        for span in self.en.xpath('//s:mergeCell/@ref', namespaces=NS):
+            if span.startswith('BX'):
+                first, last = (int(ref[2:]) for ref in span.split(':'))
+                if first <= int(row) <= last:
+                    return value(self.en_cells[f'BX{first}'])
+        return value(self.en_cells[f'BX{row}'])
+
     def test_mode_una_celda_por_tecnologia_banda_y_modos_auxiliares_conservados(self):
         groups = defaultdict(list)
         for row in self.en.findall('s:sheetData/s:row', NS)[2:]:
             r = row.get('r')
             groups[(value(self.en_cells['BT' + r]), value(self.en_cells['BU' + r]))].append(int(r))
-        merges = self.en.xpath('//s:mergeCell/@ref', namespaces=NS)
+        merges = [ref for ref in self.en.xpath('//s:mergeCell/@ref', namespaces=NS) if ref.startswith('BY')]
         self.assertEqual(len(merges), len(groups))
         for (tech, band), rows in groups.items():
             self.assertEqual(rows, list(range(rows[0], rows[-1] + 1)))
@@ -93,7 +101,7 @@ class ValoresModeTests(unittest.TestCase):
             self.assertNotEqual(value(cc), '')
             self.assertNotEqual(value(cd), '')
             self.assertIn((value(self.en_cells['BT' + r]), value(self.en_cells['BU' + r]),
-                           value(self.en_cells['BX' + r]), value(cc), value(cd)), source)
+                           self.exposure(r), value(cc), value(cd)), source)
             if pos == 'TBD':
                 tbd += 1
                 self.assertIsNotNone(self.en_cells['CA' + r].find('s:f', NS))
@@ -137,7 +145,7 @@ class ValoresModeTests(unittest.TestCase):
         numbers = [int(r.get('r')) for r in rows]
         self.assertEqual(numbers, list(range(1, len(rows) + 1)))
         for r in numbers[2:]:
-            self.assertIn(value(self.en_cells[f'BX{r}']), ['Close to Ear', 'Body', 'Extremity'])
+            self.assertIn(self.exposure(r), ['Close to Ear', 'Body', 'Extremity'])
         calc = self.workbook.find('s:calcPr', NS)
         self.assertEqual(calc.get('calcMode'), 'auto')
         self.assertEqual(calc.get('fullCalcOnLoad'), '1')

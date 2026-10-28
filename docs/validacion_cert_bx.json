@@ -1,0 +1,18 @@
+{
+  "base_commit": "f3b44c437dad71e1c66469763804a98e874911d6",
+  "parts_changed": [
+    "xl/styles.xml",
+    "xl/worksheets/sheet3.xml",
+    "xl/worksheets/sheet11.xml"
+  ],
+  "other_parts_identical": true,
+  "fcc_xml_identical": true,
+  "2g3g_other_columns_identical": true,
+  "en_other_cells_identical": true,
+  "en_excluded_columns": [
+    "BX",
+    "D",
+    "AC"
+  ],
+  "note": "D y AC conservan su lógica y leen el ancla BX para evitar que una celda combinada se interprete como vacía."
+}

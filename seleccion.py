@@ -93,7 +93,8 @@ def plan_conducted(h, datos, refs=None):
             family_refs = refs.get(family, set()) if isinstance(refs, dict) else refs
             for item in plan_conducted(h, dict(datos, region=family), family_refs):
                 if item.i in merged:
-                    merged[item.i].ovr[col2n('B')] = 'EN/FCC/ISED'
+                    if h.name != 'Conducted 2G-3G':
+                        merged[item.i].ovr[col2n('B')] = 'EN/FCC/ISED'
                 else:
                     merged[item.i] = item
         return [merged[i] for i in sorted(merged)]
@@ -121,7 +122,7 @@ def plan_conducted(h, datos, refs=None):
         final += use
     final.sort()
     col_b = col2n('B')
-    return [Item(i, {col_b: target}) for i in final]
+    return [Item(i) if h.name == 'Conducted 2G-3G' else Item(i, {col_b: target}) for i in final]
 
 
 # ----------------------------------------------------------------------------------------

@@ -68,3 +68,5 @@ En SAR EN, Mode (BY) es una única celda combinada por tecnología y banda, incl
 Se guardan los valores originales de Channel (CC), Freq (CD) y las posiciones TBD junto con sus fórmulas. También se conservan los resultados de las fórmulas de la columna O de CATM1. El libro solicita recálculo automático al abrirlo. No se eliminan filas de ensayo por tener una fórmula pendiente de calcular: solo se omiten las filas que no cumplen la selección y las restantes se escriben consecutivamente, sin filas espaciadoras.
 
 El ejemplo `ejemplos/SAR_EN_5G_CATM1_3_baterias.xlsm` permite comprobar 5G n1, CATM1 FDD1 y GSM, con tres baterías y tres accesorios. Los datos de sus respuestas son ficticios. Véase `docs/valores_y_mode.md` para las comprobaciones.
+
+Corrección puntual: Cert. (B) en 2G-3G conserva los valores originales por fila para cualquier región. En SAR EN, BX se combina por tecnología, banda y exposure condition, incluyendo las filas adicionales; FCC-ISED permanece igual.

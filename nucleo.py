@@ -62,6 +62,7 @@ class Contexto:
         self.column_aliases = {}
         self.display_merges = {}
         self.style_overrides = {}
+        self.cell_anchors = {}
 
     def set_rows(self, name, mapping):
         self.rowmap[name] = mapping
@@ -196,7 +197,8 @@ def emit_row(h, ctx, resolve, item, newrow):
             val = h.cpool[consts[k]][1]
             k += 1
         elif kind == 3 and ci not in ovr:
-            pat = sarlib.remap_columns(h.patterns[payload], h.name, ctx.column_aliases)
+            pat = sarlib.remap_cells(h.patterns[payload], h.name, r_old, ctx.cell_anchors)
+            pat = sarlib.remap_columns(pat, h.name, ctx.column_aliases)
             if not item.clone:
                 cached = valor_formula_original(h, item.i, col, pat)
             if 'INDIRECT(' in pat:
