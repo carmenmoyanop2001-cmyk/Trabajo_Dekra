@@ -1,0 +1,20 @@
+{
+  "proyecto": "Ejemplo SAR",
+  "region": "EN",
+  "exposure": "Body",
+  "conducida": false,
+  "baterias": [
+    "Batería A"
+  ],
+  "accesorios": [
+    "Funda"
+  ],
+  "spotchecking": [
+    "Variante A"
+  ],
+  "tecnologias": {
+    "LTE": [
+      "FDD1"
+    ]
+  }
+}

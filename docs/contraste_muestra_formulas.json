@@ -1,0 +1,65 @@
+[
+  {
+    "hoja": "Conducted WiFi",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 280,
+    "formulas_distintas": 0,
+    "distintas_con_REF": 0
+  },
+  {
+    "hoja": "SAR FCC-ISED",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 474,
+    "formulas_distintas": 18,
+    "distintas_con_REF": 18
+  },
+  {
+    "hoja": "SAR EN",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 394,
+    "formulas_distintas": 24,
+    "distintas_con_REF": 24
+  },
+  {
+    "hoja": "Conducted LTE CATM1",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 172,
+    "formulas_distintas": 0,
+    "distintas_con_REF": 0
+  },
+  {
+    "hoja": "Conducted BT-Custom",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 243,
+    "formulas_distintas": 0,
+    "distintas_con_REF": 0
+  },
+  {
+    "hoja": "Conducted 2G-3G",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 91,
+    "formulas_distintas": 0,
+    "distintas_con_REF": 0
+  },
+  {
+    "hoja": "Conducted 5G",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 179,
+    "formulas_distintas": 0,
+    "distintas_con_REF": 0
+  },
+  {
+    "hoja": "Conducted LTE NB-IoT",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 150,
+    "formulas_distintas": 0,
+    "distintas_con_REF": 0
+  },
+  {
+    "hoja": "Conducted LTE",
+    "filas_muestra": "3-10",
+    "formulas_coincidentes": 124,
+    "formulas_distintas": 0,
+    "distintas_con_REF": 0
+  }
+]

@@ -1,0 +1,10 @@
+test_2g_formato_real_interfaz (test_generacion.GeneracionTests.test_2g_formato_real_interfaz) ... ok
+test_cli_genera_respuestas_y_no_sobrescribe (test_generacion.GeneracionTests.test_cli_genera_respuestas_y_no_sobrescribe) ... ok
+test_fallo_de_plantilla_conserva_excel_previo (test_generacion.GeneracionTests.test_fallo_de_plantilla_conserva_excel_previo) ... ok
+test_generacion_regiones_y_extras (test_generacion.GeneracionTests.test_generacion_regiones_y_extras) ... ok
+test_rechaza_selecciones_invalidas_sin_tocar_salida (test_generacion.GeneracionTests.test_rechaza_selecciones_invalidas_sin_tocar_salida) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 38.426s
+
+OK

@@ -1,0 +1,65 @@
+{
+  "proyecto": "Ejemplo ISED",
+  "region": "ISED",
+  "exposure": "Close to ear",
+  "conducida": true,
+  "baterias": [
+    "Batería 1",
+    "Batería 2",
+    "Batería 3",
+    "Batería 4",
+    "Batería 5",
+    "Batería 6"
+  ],
+  "accesorios": [
+    "Accesorio 1",
+    "Accesorio 2",
+    "Accesorio 3",
+    "Accesorio 4",
+    "Accesorio 5",
+    "Accesorio 6",
+    "Accesorio 7",
+    "Accesorio 8"
+  ],
+  "spotchecking": [
+    "Variante 1",
+    "Variante 2",
+    "Variante 3"
+  ],
+  "tecnologias": {
+    "2G": {
+      "GSM": true,
+      "GPRS": "TX4"
+    },
+    "3G": [
+      "WCDMA"
+    ],
+    "LTE": [
+      "FDD1"
+    ],
+    "LTE CAT M1": [
+      "FDD1"
+    ],
+    "LTE NB-IoT": [
+      "FDD1"
+    ],
+    "5G": [
+      "n78"
+    ],
+    "WLAN": {
+      "2,4 GHz": [
+        "b",
+        "n20"
+      ],
+      "5 GHz": {
+        "bandas": [
+          "U-NII-1"
+        ],
+        "modos": [
+          "a",
+          "ac80"
+        ]
+      }
+    }
+  }
+}

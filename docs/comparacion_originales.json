@@ -1,0 +1,119 @@
+[
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_WiFi.xlsm",
+    "hoja": "Conducted WiFi",
+    "filas": 3194,
+    "formulas": 100392,
+    "formulas_ref_rotas": 0,
+    "ejemplos": []
+  },
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_SAR_FCC.xlsm",
+    "hoja": "SAR FCC-ISED",
+    "filas": 24992,
+    "formulas": 1547338,
+    "formulas_ref_rotas": 69317,
+    "ejemplos": [
+      [
+        "CC3",
+        "#REF!"
+      ],
+      [
+        "CD3",
+        "#REF!"
+      ]
+    ]
+  },
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_SAR_EN.xlsm",
+    "hoja": "SAR EN",
+    "filas": 9127,
+    "formulas": 485887,
+    "formulas_ref_rotas": 43592,
+    "ejemplos": [
+      [
+        "CC3",
+        "#REF!"
+      ],
+      [
+        "CD3",
+        "#REF!"
+      ]
+    ]
+  },
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_LTE_CATM1.xlsm",
+    "hoja": "Conducted LTE CATM1",
+    "filas": 1018017,
+    "formulas": 521576,
+    "formulas_ref_rotas": 78,
+    "ejemplos": [
+      [
+        "BY21833",
+        "#REF!"
+      ],
+      [
+        "CD21833",
+        "IF(COUNT(#REF!,AH21843:BD21848)=0,\"\",MAX(#REF!,#REF!))"
+      ]
+    ]
+  },
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_BT.xlsm",
+    "hoja": "Conducted BT-Custom",
+    "filas": 172,
+    "formulas": 4860,
+    "formulas_ref_rotas": 0,
+    "ejemplos": []
+  },
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_2G_3G.xlsm",
+    "hoja": "Conducted 2G-3G",
+    "filas": 2627,
+    "formulas": 20897,
+    "formulas_ref_rotas": 0,
+    "ejemplos": []
+  },
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_5G.xlsm",
+    "hoja": "Conducted 5G",
+    "filas": 8182,
+    "formulas": 67205,
+    "formulas_ref_rotas": 40,
+    "ejemplos": [
+      [
+        "B8163",
+        "#REF!"
+      ],
+      [
+        "BT8163",
+        "IF(AH8163<>0,IF(#REF!+0.5-AH8163>0,\"ok\",\"medir BW\"),\"\")"
+      ]
+    ]
+  },
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_LTE_NB_IoT.xlsm",
+    "hoja": "Conducted LTE NB-IoT",
+    "filas": 26098,
+    "formulas": 25902,
+    "formulas_ref_rotas": 396,
+    "ejemplos": [
+      [
+        "CJ3",
+        "IF(ISERROR(VLOOKUP(1,CC3:CG5,4,FALSE)),#REF!,VLOOKUP(1,CC3:CG5,4,FALSE))"
+      ],
+      [
+        "CK3",
+        "IF(ISERROR(VLOOKUP(1,CC3:CG5,5,FALSE)),#REF!,VLOOKUP(1,CC3:CG5,5,FALSE))"
+      ]
+    ]
+  },
+  {
+    "archivo": "FAN22_09 - SAR Datasheet_Original_LTE.xlsm",
+    "hoja": "Conducted LTE",
+    "filas": 26098,
+    "formulas": 176909,
+    "formulas_ref_rotas": 0,
+    "ejemplos": []
+  }
+]

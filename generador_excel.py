@@ -1,0 +1,248 @@
+# -*- coding: utf-8 -*-
+"""Generador del Excel de toma de datos SAR (.xlsm) a partir de las respuestas del cuestionario.
+
+No necesita el datasheet original: lleva dentro (carpeta `plantilla/`) las fórmulas, estilos, macros y
+la estructura de filas extraídas del datasheet FAN22_09.
+"""
+import os, re, json, zipfile, sys
+from pathlib import Path
+import tempfile
+from xml.sax.saxutils import escape
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from nucleo import Hoja, Contexto, iter_hoja, HEADER_ROWS
+from sarlib import col2n, expand, _REF, _STR
+from seleccion import (plan_conducted, plan_sar, referencias, hojas_conducted_necesarias)
+from overview import editar_overview
+from validacion_datos import validar_datos
+
+DIR_PLANTILLA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plantilla')
+ARCHIVOS = {
+    'Conducted 2G-3G': 'cond_2g3g.xz', 'Conducted LTE': 'cond_lte.xz', 'Conducted LTE CATM1': 'cond_catm1.xz',
+    'Conducted LTE NB-IoT': 'cond_nbiot.xz', 'Conducted 5G': 'cond_5g.xz', 'Conducted WiFi': 'cond_wifi.xz',
+    'Conducted BT-Custom': 'cond_bt.xz', 'SAR EN': 'sar_en.xz', 'SAR FCC-ISED': 'sar_fcc.xz'}
+NS_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+
+
+def _numero_hoja(manifest, nombre):
+    for d in ('full', 'grandes'):
+        for n, nm in manifest[d].items():
+            if nm == nombre:
+                return int(n)
+    raise KeyError(nombre)
+
+
+def generar(datos, salida, dir_plantilla=None, log=print):
+    """Valida y genera sin reemplazar la salida hasta comprobar el paquete."""
+    from herramientas.validar_paquete import validar
+    validar_datos(datos)
+    target = Path(salida)
+    if target.suffix.lower() != '.xlsm':
+        raise ValueError('La salida debe tener extensión .xlsm.')
+    with tempfile.TemporaryDirectory(dir=target.parent) as tmp:
+        candidate = Path(tmp) / 'datos.xlsm'
+        resumen = _generar(datos, str(candidate), dir_plantilla, log)
+        errors = validar(str(candidate), verbose=False)
+        if errors:
+            raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))
+        os.replace(candidate, target)
+    log(f'Excel validado: {target}')
+    return resumen
+
+
+def _generar(datos, salida, dir_plantilla=None, log=print):
+    """datos: dict (ver README). Escribe el .xlsm en `salida` y devuelve un resumen (dict)."""
+    dirp = dir_plantilla or DIR_PLANTILLA
+    base = zipfile.ZipFile(os.path.join(dirp, 'plantilla_base.zip'))
+    man = json.loads(base.read('manifest.json'))
+    t = datos['tecnologias']
+    conducida = bool(datos['conducida'])
+    sar_name = 'SAR EN' if datos['region'] == 'EN' else 'SAR FCC-ISED'
+    tipo = 'EN' if datos['region'] == 'EN' else 'FCC'
+
+    # ---- 1) qué hojas habrá ----
+    conds = hojas_conducted_necesarias(t) if conducida else []
+    orden = ['Overview'] + (['Tune-Up'] if conducida else []) + conds + [sar_name, 'Test Campaign']
+    orden.sort(key=lambda n: _numero_hoja(man, n))
+    log('Hojas: ' + ', '.join(orden))
+
+    # ---- 2) planes de filas ----
+    hojas = {sar_name: Hoja(os.path.join(dirp, ARCHIVOS[sar_name]))}
+    plan_sar_items = plan_sar(hojas[sar_name], tipo, datos)
+    refs = referencias(hojas[sar_name], plan_sar_items)
+    planes = {sar_name: plan_sar_items}
+    for c in conds:
+        hojas[c] = Hoja(os.path.join(dirp, ARCHIVOS[c]))
+        planes[c] = plan_conducted(hojas[c], datos, refs.get(c))
+
+    ctx = Contexto()
+    ctx.whole = {'Overview', 'Test Campaign'} | ({'Tune-Up'} if conducida else set())
+    for name, plan in planes.items():
+        h = hojas[name]
+        ctx.set_rows(name, {h.rows[it.i][0]: HEADER_ROWS + 1 + k for k, it in enumerate(plan) if not it.clone})
+
+    # ---- 3) Overview ----
+    ov_num = _numero_hoja(man, 'Overview')
+    ov_xml = base.read(f'xl/worksheets/sheet{ov_num}.xml')
+    d_part = next((p for p in man['owned'][str(ov_num)] if p.endswith('drawing1.xml')), None)
+    v_part = next((p for p in man['owned'][str(ov_num)] if p.endswith('vmlDrawing1.vml')), None)
+    ov_xml, drawing, vml, ctx.ov_map = editar_overview(
+        ov_xml, base.read(d_part).decode('utf8') if d_part else None,
+        base.read(v_part).decode('utf8', 'ignore') if v_part else None, datos)
+    modificadas = {}
+    if d_part: modificadas[d_part] = drawing.encode('utf8') if isinstance(drawing, str) else drawing
+    if v_part: modificadas[v_part] = vml.encode('utf8') if isinstance(vml, str) else vml
+
+    resolve = ctx.resolver()
+    ctx.inline = _hacer_inline(hojas, resolve)
+    ctx.blank = lambda sh: (HEADER_ROWS + len(planes[sh]) + 3) if sh in planes else None
+    resumen = {'hojas': orden, 'filas': {}, 'sin_resolver': ctx.unresolved}
+
+    # ---- 4) escribir el paquete ----
+    nums = {n: _numero_hoja(man, n) for n in orden}
+    partes_hoja = {n: [] for n in orden}
+    for n in orden:
+        partes_hoja[n] = man['owned'][str(nums[n])]
+    escritas = set()
+    filtros = {}
+    with zipfile.ZipFile(salida, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as zo:
+        previstas = {p for p in man['global_parts'] if p not in ('xl/workbook.xml', 'xl/_rels/workbook.xml.rels')}
+        previstas |= {'xl/workbook.xml', 'xl/_rels/workbook.xml.rels', 'docProps/app.xml'}
+        for n in orden:
+            previstas.add(f'xl/worksheets/sheet{nums[n]}.xml')
+            previstas |= set(partes_hoja[n])
+        ov = man['overrides']
+        items = ''.join(f'<Default Extension="{e}" ContentType="{c}"/>' for e, c in man['defaults'].items())
+        items += ''.join(f'<Override PartName="{p}" ContentType="{c}"/>' for p, c in ov.items()
+                         if p.lstrip('/') in previstas)
+        zo.writestr('[Content_Types].xml',
+                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'
+                    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' + items + '</Types>')
+        for p in man['global_parts']:
+            if p in ('xl/workbook.xml', 'xl/_rels/workbook.xml.rels'):
+                continue
+            zo.writestr(p, base.read(p)); escritas.add(p)
+        for n in orden:
+            num = nums[n]
+            sp = f'xl/worksheets/sheet{num}.xml'
+            if n in hojas:
+                with zo.open(sp, 'w', force_zip64=True) as fo:
+                    last_tail = ''
+                    for trozo in iter_hoja(hojas[n], planes[n], ctx, resolve):
+                        fo.write(trozo.encode('utf8'))
+                        last_tail = trozo
+                m = re.search(r'<autoFilter ref="([A-Z]+)(\d+):([A-Z]+)(\d+)"', last_tail)
+                if m:
+                    filtros[n] = f'${m.group(1)}${m.group(2)}:${m.group(3)}${m.group(4)}'
+                resumen['filas'][n] = len(planes[n])
+            else:
+                data = ov_xml if n == 'Overview' else base.read(sp)
+                zo.writestr(sp, data)
+                if n == 'Test Campaign':
+                    filtros[n] = '$A$1:$BP$1'
+            escritas.add(sp)
+            for p in partes_hoja[n]:
+                if p in escritas:
+                    continue
+                zo.writestr(p, modificadas.get(p) or base.read(p)); escritas.add(p)
+
+        # workbook.xml
+        wb = base.read('xl/workbook.xml').decode('utf8')
+        hojas_xml = ''.join(
+            f'<sheet name="{escape(n)}" sheetId="{_sheet_id(wb, n)}" r:id="rId{nums[n]}"/>' for n in orden)
+        wb = re.sub(r'<sheets>.*?</sheets>', f'<sheets>{hojas_xml}</sheets>', wb, flags=re.S)
+        dn = ''.join(f'<definedName name="_xlnm._FilterDatabase" localSheetId="{i}" hidden="1">'
+                     f"'{escape(n)}'!{filtros[n]}</definedName>" for i, n in enumerate(orden) if n in filtros)
+        wb = re.sub(r'<definedNames>.*?</definedNames>', f'<definedNames>{dn}</definedNames>' if dn else '', wb, flags=re.S)
+        wb = re.sub(r'<mc:AlternateContent.*?</mc:AlternateContent>', '', wb, flags=re.S)
+        wb = re.sub(r'<xr:revisionPtr[^>]*/>', '', wb)
+        wb = wb.replace('<calcPr calcId="191029"/>', '<calcPr calcId="191029" fullCalcOnLoad="1"/>')
+        zo.writestr('xl/workbook.xml', wb)
+
+        rels = base.read('xl/_rels/workbook.xml.rels').decode('utf8')
+        keep = []
+        for rel in re.findall(r'<Relationship [^>]*/>', rels):
+            tg = re.search(r'Target="([^"]*)"', rel).group(1)
+            ty = rel.split('Type="')[1].split('"')[0].split('/')[-1]
+            if ty == 'calcChain':
+                continue
+            mm = re.match(r'worksheets/sheet(\d+)\.xml', tg)
+            if mm and int(mm.group(1)) not in nums.values():
+                continue
+            keep.append(rel)
+        zo.writestr('xl/_rels/workbook.xml.rels',
+                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'
+                    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                    + ''.join(keep) + '</Relationships>')
+
+        # docProps/app.xml
+        titulos = ''.join(f'<vt:lpstr>{escape(n)}</vt:lpstr>' for n in orden)
+        zo.writestr('docProps/app.xml',
+                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'
+                    '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" '
+                    'xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">'
+                    '<Application>Microsoft Excel</Application><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop>'
+                    f'<HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Hojas de cálculo</vt:lpstr></vt:variant>'
+                    f'<vt:variant><vt:i4>{len(orden)}</vt:i4></vt:variant></vt:vector></HeadingPairs>'
+                    f'<TitlesOfParts><vt:vector size="{len(orden)}" baseType="lpstr">{titulos}</vt:vector></TitlesOfParts>'
+                    '<Company>AT4WIRELESS</Company><LinksUpToDate>false</LinksUpToDate><SharedDoc>false</SharedDoc>'
+                    '<HyperlinksChanged>false</HyperlinksChanged><AppVersion>16.0300</AppVersion></Properties>')
+        escritas.add('docProps/app.xml')
+
+    resumen['sin_resolver'] = dict(ctx.unresolved)
+    resumen['valores_por_defecto'] = dict(ctx.defaults)
+    resumen['ejemplos'] = {f'{a}:{b}': v for (a, b), v in ctx.examples.items()}
+    resumen['sin_resolver_cols'] = {f'{a}:{b}': n for (a, b), n in sorted(ctx.unres_cols.items(), key=lambda x: -x[1])}
+    resumen['referencias_rotas_plantilla'] = dict(ctx.broken)
+    resumen['avisos'] = []
+    if ctx.broken:
+        resumen['avisos'].append('La plantilla contiene fórmulas con #REF!: ' +
+                                ', '.join(f'{n} ({count})' for n, count in ctx.broken.items()) +
+                                '. Revisa estas fórmulas en Excel antes de usar los resultados.')
+    if not conducida:
+        resumen['avisos'].append('Sin ensayos conducidos: las potencias quedan vacías para introducirlas manualmente.')
+    if not resumen['filas'].get(sar_name):
+        resumen['avisos'].append('No hay filas SAR compatibles con la selección; revisa tecnología, región y exposición.')
+    base.close()
+    log(f'Generado: {salida}')
+    return resumen
+
+
+def _sheet_id(wb, nombre):
+    m = re.search(r'<sheet name="%s" sheetId="(\d+)"' % re.escape(escape(nombre)), wb)
+    return m.group(1) if m else '99'
+
+
+def _hacer_inline(hojas, resolve):
+    """Contenido de una celda maestra (para sustituir referencias a filas que no están en la selección)."""
+    memo = {}
+
+    def inline(sheet, col, old):
+        key = (sheet, col, old)
+        if key in memo:
+            return memo[key]
+        memo[key] = None
+        h = hojas.get(sheet)
+        if h is None or old not in h.by_old:
+            return None
+        r_old, tid, consts, aid, kv = h.rows[h.by_old[old]]
+        k, objetivo = 0, col2n(col)
+        for ci, s, kind, payload in h.templates[tid]:
+            val = None
+            if kind in (1, 2, 9, 10):
+                val = h.cpool[consts[k]][1]; k += 1
+            if ci == objetivo:
+                if kind == 3:
+                    txt = expand(h.patterns[payload], r_old, resolve, h.name, None, inline, None)
+                    # solo se sustituye si la fórmula es autocontenida (sin referencias a celdas de la propia hoja)
+                    if txt is not None and any(m.group(1) is None
+                                               for p in _STR.split(txt)[::2] for m in _REF.finditer(p)):
+                        txt = None
+                    memo[key] = txt
+                elif kind == 1:
+                    memo[key] = val
+                elif kind == 2:
+                    memo[key] = '"%s"' % val.replace('"', '""')
+                return memo[key]
+        return None
+    return inline
