@@ -15,8 +15,10 @@ test_slots_interfaz_acumulativos_e_independientes (test_generacion.GeneracionTes
 test_validacion_multiseleccion_y_slots_anteriores (test_generacion.GeneracionTests.test_validacion_multiseleccion_y_slots_anteriores) ... ok
 test_formula_y_indirect_en_limite_de_bloque_sin_tocar_macros (test_nombres_hojas.NombresTests.test_formula_y_indirect_en_limite_de_bloque_sin_tocar_macros) ... ok
 test_lte_seleccionado_sin_prefijo_y_con_enlaces_sar_actualizados (test_nombres_hojas.NombresTests.test_lte_seleccionado_sin_prefijo_y_con_enlaces_sar_actualizados) ... ok
+test_gsm_original_y_dos_baterias_en_cada_flecha (test_sar_en_cuatro_puntos.CuatroPuntosTests.test_gsm_original_y_dos_baterias_en_cada_flecha) ... ok
+test_no_sobrescribe_un_excel_con_una_seleccion_sar_sin_filas_originales (test_sar_en_cuatro_puntos.CuatroPuntosTests.test_no_sobrescribe_un_excel_con_una_seleccion_sar_sin_filas_originales) ... ok
 
 ----------------------------------------------------------------------
-Ran 17 tests in 73.305s
+Ran 19 tests in 81.774s
 
 OK

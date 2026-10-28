@@ -17,6 +17,7 @@ from overview import editar_overview
 from validacion_datos import validar_datos
 from opciones_ensayo import seleccion_multiple
 from nombres_hojas import renombrar_tecnologias, renombrar_resumen
+from sar_en_formulas import aplicar_formulas_extras
 
 DIR_PLANTILLA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plantilla')
 ARCHIVOS = {
@@ -81,6 +82,10 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     for sar_name in sar_names:
         hojas[sar_name] = Hoja(os.path.join(dirp, ARCHIVOS[sar_name]))
         planes[sar_name] = plan_sar(hojas[sar_name], 'EN' if sar_name == 'SAR EN' else 'FCC', datos)
+        if not planes[sar_name]:
+            raise ValueError(f'La plantilla original de {sar_name} no contiene filas para la selección de '
+                             f'tecnología, banda y exposición: {datos["tecnologias"]}; {datos["exposure"]}. '
+                             'No se ha guardado un Excel con una hoja SAR vacía.')
         family = 'EN' if sar_name == 'SAR EN' else 'FCC'
         for sheet, rows in referencias(hojas[sar_name], planes[sar_name]).items():
             refs.setdefault(sheet, {}).setdefault(family, set()).update(rows)
@@ -107,6 +112,9 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     if v_part: modificadas[v_part] = vml.encode('utf8') if isinstance(vml, str) else vml
 
     resolve = ctx.resolver()
+    if 'SAR EN' in hojas and any(item.extra for item in planes['SAR EN']):
+        fcc = hojas.get('SAR FCC-ISED') or Hoja(os.path.join(dirp, ARCHIVOS['SAR FCC-ISED']))
+        aplicar_formulas_extras(hojas['SAR EN'], planes['SAR EN'], fcc, ctx.rowmap['SAR EN'])
     ctx.inline = _hacer_inline(hojas, resolve)
     ctx.blank = lambda sh: (HEADER_ROWS + len(planes[sh]) + 3) if sh in planes else None
     resumen = {'hojas': orden, 'filas': {}, 'sin_resolver': ctx.unresolved}

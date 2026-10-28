@@ -89,14 +89,14 @@ class ConservacionTests(unittest.TestCase):
             cells = cell_map(row)
             pos = value(cells['CA'])
             self.assertNotIn('Variability', pos)
-            added = pos.startswith(('TBD - Battery check ', 'Accesorio ')) or pos == 'Front of Face'
+            added = pos.startswith(('TBD-Battery check ', 'Accesorio ')) or (pos == 'Front Face' and value(cells['CB']) == '25')
             if added:
                 previous = cell_map(rows[i - 1])
                 self.assertEqual({c: e.get('s') for c, e in cells.items()},
                                  {c: e.get('s') for c, e in previous.items()})
                 for col in ('CC', 'CD', 'DB'):
                     self.assertIsNotNone(cells[col].find('s:f', NS))
-                if pos.startswith('TBD - Battery check '): batteries += 1
+                if pos.startswith('TBD-Battery check '): batteries += 1
                 if pos.startswith('Accesorio '): accessories += 1
             else:
                 unchanged.append(row)

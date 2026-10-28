@@ -1,0 +1,25 @@
+{
+  "proyecto": "Ejemplo GSM - cuatro puntos",
+  "region": "EN",
+  "exposure": [
+    "Close to ear",
+    "Close to Head",
+    "Body",
+    "Extremity"
+  ],
+  "conducida": false,
+  "baterias": [
+    "Batería A",
+    "Batería B"
+  ],
+  "accesorios": [
+    "Funda",
+    "Clip"
+  ],
+  "spotchecking": [],
+  "tecnologias": {
+    "2G": {
+      "GSM": true
+    }
+  }
+}

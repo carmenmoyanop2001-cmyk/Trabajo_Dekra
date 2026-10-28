@@ -212,19 +212,20 @@ def plan_sar(h, tipo, datos):
         anchor = base[-1]
         body = h.kv(anchor).get('BX', '').lower() == 'body'
 
-        def nuevo(n, texto, cb=None):
+        def nuevo(n, texto, tipo_extra, cb=None):
             """Inserta copias de la fila superior, modificando solo su posición/distancia."""
             out = []
             for k in range(n):
                 ovr = {c['CA']: texto(k)}
                 if cb is not None:
                     ovr[c['CB']] = cb
-                out.append(Item(anchor, ovr, True))
+                out.append(Item(anchor, ovr, True, {'tipo': tipo_extra,
+                           'grupo': tuple(h.rows[i][0] for i in base)}))
             return out
-        items += nuevo(len(bats), lambda k: f'TBD - Battery check {k + 1}')
-        if body and accs:
-            items += nuevo(1, lambda k: 'Front of Face', cb=25)
-            items += nuevo(len(accs), lambda k: f'Accesorio {k + 1}: {accs[k]}', cb=0)
+        items += nuevo(len(bats), lambda k: f'TBD-Battery check {k + 1}', 'bat')
+        if body:
+            items += nuevo(1, lambda k: 'Front Face', 'fof', cb=25)
+            items += nuevo(len(accs), lambda k: f'Accesorio {k + 1}: {accs[k]}', 'acc', cb=0)
     # una fila de plantilla solo puede aparecer una vez como original
     vistos, res = set(), []
     for it in items:

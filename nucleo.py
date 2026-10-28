@@ -37,10 +37,10 @@ class Hoja:
 
 class Item:
     """Una fila de salida: fila original (i) con posibles sustituciones de celdas (ovr)."""
-    __slots__ = ('i', 'ovr', 'clone')
+    __slots__ = ('i', 'ovr', 'clone', 'extra')
 
-    def __init__(self, i, ovr=None, clone=False):
-        self.i, self.ovr, self.clone = i, ovr, clone
+    def __init__(self, i, ovr=None, clone=False, extra=None):
+        self.i, self.ovr, self.clone, self.extra = i, ovr, clone, extra
 
 
 class Contexto:
@@ -166,7 +166,7 @@ def emit_row(h, ctx, resolve, item, newrow):
         if kind in (1, 2, 9, 10):
             val = h.cpool[consts[k]][1]
             k += 1
-        elif kind == 3:
+        elif kind == 3 and ci not in ovr:
             pat = h.patterns[payload]
             if 'INDIRECT(' in pat:
                 pat = desindirect(pat, r_old, h)
