@@ -1,3 +1,6 @@
+test_cert_de_las_siete_plantillas_contra_80612_filas_originales (test_cert_todas_tecnologias.CertTodasTests.test_cert_de_las_siete_plantillas_contra_80612_filas_originales) ... ok
+test_cert_indefinido_del_original_se_conserva_y_se_avisa (test_cert_todas_tecnologias.CertTodasTests.test_cert_indefinido_del_original_se_conserva_y_se_avisa) ... ok
+test_excel_todas_las_tecnologias_y_regiones_conserva_cert_por_fila (test_cert_todas_tecnologias.CertTodasTests.test_excel_todas_las_tecnologias_y_regiones_conserva_cert_por_fila) ... ok
 test_bx_combina_todo_el_bloque_incluyendo_filas_adicionales (test_cert_y_exposicion.CertExposicionTests.test_bx_combina_todo_el_bloque_incluyendo_filas_adicionales) ... ok
 test_cert_original_no_se_reescribe_para_ninguna_region (test_cert_y_exposicion.CertExposicionTests.test_cert_original_no_se_reescribe_para_ninguna_region) ... ok
 test_en_inserta_debajo_sin_variability_y_con_formato_superior (test_conservacion_sar.ConservacionTests.test_en_inserta_debajo_sin_variability_y_con_formato_superior) ... ok
@@ -26,6 +29,6 @@ test_mode_una_celda_por_tecnologia_banda_y_modos_auxiliares_conservados (test_va
 test_sin_huecos_ni_exposiciones_no_seleccionadas_y_recalculo_automatico (test_valores_y_mode.ValoresModeTests.test_sin_huecos_ni_exposiciones_no_seleccionadas_y_recalculo_automatico) ... ok
 
 ----------------------------------------------------------------------
-Ran 26 tests in 130.630s
+Ran 29 tests in 238.313s
 
 OK

@@ -69,4 +69,6 @@ Se guardan los valores originales de Channel (CC), Freq (CD) y las posiciones TB
 
 El ejemplo `ejemplos/SAR_EN_5G_CATM1_3_baterias.xlsm` permite comprobar 5G n1, CATM1 FDD1 y GSM, con tres baterías y tres accesorios. Los datos de sus respuestas son ficticios. Véase `docs/valores_y_mode.md` para las comprobaciones.
 
-Corrección puntual: Cert. (B) en 2G-3G conserva los valores originales por fila para cualquier región. En SAR EN, BX se combina por tecnología, banda y exposure condition, incluyendo las filas adicionales; FCC-ISED permanece igual.
+Corrección puntual: Cert. (B) en todas las tecnologías conserva los valores originales por fila para cualquier región, sin asignar EN/FCC/ISED a una fila por el hecho de compartirla entre regiones. En SAR EN, BX se combina por tecnología, banda y exposure condition, incluyendo las filas adicionales; FCC-ISED permanece igual.
+
+La auditoría de Cert. está en `docs/auditoria_cert_originales.json`: se contrastaron 80.612 filas identificables en los siete originales recibidos. El archivo 5G recibido es parcial y tiene referencias rotas en sus últimas filas. Los marcadores ? y #REF! de origen se conservan y se avisan; no se deducen certificaciones nuevas. El ejemplo `ejemplos/Cert_regiones_multiples.xlsm` muestra todas las tecnologías disponibles con EN, FCC e ISED seleccionadas.

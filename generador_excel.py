@@ -225,6 +225,15 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     resumen['sin_resolver_cols'] = {f'{a}:{b}': n for (a, b), n in sorted(ctx.unres_cols.items(), key=lambda x: -x[1])}
     resumen['referencias_rotas_plantilla'] = dict(ctx.broken)
     resumen['avisos'] = []
+    unknown_certs = {}
+    for name in conds:
+        count = sum(hojas[name].kv(it.i).get('B') in ('?', '#REF!') for it in planes[name])
+        if count:
+            unknown_certs[name] = count
+    if unknown_certs:
+        resumen['avisos'].append('Cert. original sin región definida (? o #REF!): ' +
+                                ', '.join(f'{name} ({count})' for name, count in unknown_certs.items()) +
+                                '. Se conserva el dato de origen; no se ha asignado una región nueva.')
     if ctx.unresolved:
         resumen['avisos'].append('Hay fórmulas de la plantilla sin enlace disponible; se han dejado vacías: ' +
                                 ', '.join(f'{n} ({count})' for n, count in ctx.unresolved.items()) +

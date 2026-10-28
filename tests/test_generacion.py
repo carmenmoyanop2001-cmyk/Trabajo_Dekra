@@ -31,7 +31,7 @@ class GeneracionTests(unittest.TestCase):
         data = dict(BASE, region=['EN', 'FCC', 'ISED'], tecnologias={'LTE': ['FDD5', 'FDD7']})
         items = plan_conducted(Sheet(), data, {'EN': {3}, 'FCC': set()})
         self.assertEqual([item.i for item in items], [0, 1, 2, 3, 4])
-        self.assertEqual([item.ovr[col2n('B')] for item in items],
+        self.assertEqual([Sheet().kv(item.i)['B'] if not item.ovr else item.ovr.get(col2n('B')) for item in items],
                          ['EN', 'EN', 'FCC/ISED', 'FCC/ISED', 'EN/FCC/ISED'])
         one = plan_conducted(Sheet(), dict(data, region='FCC'))
         both = plan_conducted(Sheet(), dict(data, region=['FCC', 'ISED']))

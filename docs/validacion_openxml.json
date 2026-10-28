@@ -10,6 +10,11 @@
       "File": "ejemplos/SAR_EN_5G_CATM1_3_baterias.xlsm",
       "Count": 0,
       "Errors": []
+    },
+    {
+      "File": "ejemplos/Cert_regiones_multiples.xlsm",
+      "Count": 0,
+      "Errors": []
     }
   ],
   "nota": "Validación estructural; no ejecuta Microsoft Excel ni macros."

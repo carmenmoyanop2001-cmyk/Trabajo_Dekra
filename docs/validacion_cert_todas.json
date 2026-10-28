@@ -1,0 +1,12 @@
+{
+  "base_commit": "b8e07c9fcf776440967ddffa189c0ae50f48ada4",
+  "changed_parts": [
+    "xl/worksheets/sheet4.xml",
+    "xl/worksheets/sheet6.xml",
+    "xl/worksheets/sheet7.xml"
+  ],
+  "only_cert_column_changed": true,
+  "sar_en_identical": true,
+  "sar_fcc_identical": true,
+  "all_other_parts_identical": true
+}

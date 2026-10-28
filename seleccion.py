@@ -92,10 +92,7 @@ def plan_conducted(h, datos, refs=None):
         for family in families:
             family_refs = refs.get(family, set()) if isinstance(refs, dict) else refs
             for item in plan_conducted(h, dict(datos, region=family), family_refs):
-                if item.i in merged:
-                    if h.name != 'Conducted 2G-3G':
-                        merged[item.i].ovr[col2n('B')] = 'EN/FCC/ISED'
-                else:
+                if item.i not in merged:
                     merged[item.i] = item
         return [merged[i] for i in sorted(merged)]
     if isinstance(refs, dict):
@@ -121,8 +118,9 @@ def plan_conducted(h, datos, refs=None):
                   [i for i in idxs if h.kv(i).get('B') == '?'] or idxs
         final += use
     final.sort()
-    col_b = col2n('B')
-    return [Item(i) if h.name == 'Conducted 2G-3G' else Item(i, {col_b: target}) for i in final]
+    # Cert. es un dato del datasheet, no una etiqueta de la selección actual.
+    # Conservarlo también cuando una fila se comparte entre varias regiones.
+    return [Item(i) for i in final]
 
 
 # ----------------------------------------------------------------------------------------

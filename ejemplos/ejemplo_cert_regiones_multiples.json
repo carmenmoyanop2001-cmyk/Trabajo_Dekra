@@ -1,0 +1,38 @@
+{
+  "proyecto": "Cert. todas las tecnologías",
+  "region": [
+    "EN",
+    "FCC",
+    "ISED"
+  ],
+  "exposure": "Body",
+  "conducida": true,
+  "baterias": [],
+  "accesorios": [],
+  "spotchecking": [],
+  "tecnologias": {
+    "2G": {
+      "GSM": true
+    },
+    "3G": [
+      "WCDMA"
+    ],
+    "LTE": [
+      "FDD5"
+    ],
+    "LTE CAT M1": [
+      "FDD5"
+    ],
+    "LTE NB-IoT": [
+      "FDD5"
+    ],
+    "5G": [
+      "n1"
+    ],
+    "WLAN": {
+      "2,4 GHz": [
+        "b"
+      ]
+    }
+  }
+}
