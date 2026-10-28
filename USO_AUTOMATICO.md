@@ -38,3 +38,13 @@ La validación XML comprueba estructura, relaciones y orden de filas/celdas; no 
 No se han añadido preguntas de antenas, BT ni Custom; se mantiene el alcance del cuestionario recibido.
 
 Se han contrastado también las fórmulas de las filas 3 a 10 de las nueve hojas específicas: 2107 fórmulas coincidentes y 42 diferencias, todas con #REF! en los archivos SAR recibidos. Es una muestra, no una comparación exhaustiva. Detalle en `docs/contraste_muestra_formulas.json`.
+
+## Selección múltiple y slots acumulativos
+
+Se pueden marcar varias regiones y varias exposure conditions. El Excel reúne las condiciones seleccionadas en cada hoja SAR. EN añade SAR EN; FCC e ISED comparten SAR FCC-ISED y no duplican sus filas. Las hojas Conducted conservan los bloques necesarios para ambas familias de región. Los accesorios y Front of Face se añaden únicamente a los grupos Body.
+
+En GPRS y EGPRS, marcar TX3 activa TX1, TX2 y TX3. Marcar TX4 activa los cuatro. Al desmarcar TX2, por ejemplo, solo queda TX1. GPRS y EGPRS se configuran de forma independiente. La selección se refleja en el resumen de texto y en las filas Conducted. La plantilla SAR solo tiene GPRS 4TX, por lo que elegir TX1-TX3 no crea modos SAR inexistentes.
+
+Para JSON, `region` y `exposure` admiten listas; se mantiene la compatibilidad con los archivos antiguos que contienen una sola cadena. GPRS y EGPRS admiten una lista de slots o la cadena antigua del máximo: `"TX3"` incluye también TX1 y TX2. Consulta `ejemplos/ejemplo_multiple.json`.
+
+Algunas fórmulas FCC de LTE FDD5 apuntan a CATM1 en la plantilla original. Si CATM1 no se selecciona, los enlaces no disponibles quedan vacíos y se muestra un aviso; no se ha sustituido la referencia de origen.

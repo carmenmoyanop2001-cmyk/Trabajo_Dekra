@@ -4,6 +4,7 @@ import re
 from collections import defaultdict
 from sarlib import col2n, T1, T2, _TOKR
 from nucleo import Item, HEADER_ROWS
+from opciones_ensayo import seleccion_multiple, slots_incluidos
 
 # ----------------------------------------------------------------------------------------
 #  Correspondencia entre la selección del usuario y las filas de la plantilla
@@ -43,8 +44,8 @@ def pred_conducted(nombre, kv, t):
         if j == 'GSM':
             return bool(g2 and g2.get('GSM'))
         if j in ('GPRS', 'EGPRS'):
-            slot = g2 and g2.get(j)
-            return bool(slot) and kv.get('X') == slot[2:]
+            slots = slots_incluidos(g2.get(j)) if g2 else []
+            return kv.get('X') in {slot[2:] for slot in slots}
         return j in g3
     if nombre == 'Conducted LTE':
         return kv['K'] in t.get('LTE', [])
@@ -82,8 +83,24 @@ def hojas_conducted_necesarias(t):
 def plan_conducted(h, datos, refs=None):
     """Lista de Item para una pestaña Conducted.
     refs: filas antiguas de esta hoja que las filas SAR seleccionadas referencian (guían qué bloque de región se usa)."""
+    families = list(dict.fromkeys('EN' if r == 'EN' else 'FCC'
+                                 for r in seleccion_multiple(datos['region'])))
+    if len(families) > 1:
+        # Cada región debe conservar sus propios bloques aunque la otra tenga
+        # referencias SAR a bloques distintos. Las filas comunes no se duplican.
+        merged = {}
+        for family in families:
+            family_refs = refs.get(family, set()) if isinstance(refs, dict) else refs
+            for item in plan_conducted(h, dict(datos, region=family), family_refs):
+                if item.i in merged:
+                    merged[item.i].ovr[col2n('B')] = 'EN/FCC/ISED'
+                else:
+                    merged[item.i] = item
+        return [merged[i] for i in sorted(merged)]
+    if isinstance(refs, dict):
+        refs = refs.get(families[0], set())
     t = datos['tecnologias']
-    target = etiqueta_region(datos['region'])
+    target = etiqueta_region(families[0])
     compat = {target, 'EN/FCC/ISED', None}
     refs = refs or set()
     grupos = defaultdict(list)
@@ -112,13 +129,13 @@ def plan_conducted(h, datos, refs=None):
 # ----------------------------------------------------------------------------------------
 def pred_sar(kv, datos):
     t = datos['tecnologias']
-    if kv.get('BX', '').lower() != datos['exposure'].lower():
+    if kv.get('BX', '').lower() not in {e.lower() for e in seleccion_multiple(datos['exposure'])}:
         return False
     bt, bu = kv.get('BT'), kv.get('BU')
     if bt == 'GSM':
         return bool(t.get('2G') and t['2G'].get('GSM'))
     if bt == 'GPRS 4TX':
-        return bool(t.get('2G') and t['2G'].get('GPRS') == 'TX4')
+        return bool(t.get('2G') and 'TX4' in slots_incluidos(t['2G'].get('GPRS')))
     if bt == 'WCDMA':
         return 'WCDMA' in t.get('3G', [])
     if bt == 'LTE':
@@ -165,7 +182,6 @@ def plan_sar(h, tipo, datos):
     """Lista de Item para SAR EN / SAR FCC-ISED, con las filas de variabilidad (spotchecking),
     baterías y accesorios creadas a partir del número y los nombres introducidos."""
     spot, bats, accs = datos['spotchecking'], datos['baterias'], datos['accesorios']
-    body = datos['exposure'].lower() == 'body'
     c = {k: col2n(k) for k in ('CA', 'CB', 'CC', 'CD', 'DB', 'DN')}
     na_cols = (['CC', 'CD', 'DB'] if tipo == 'EN' else ['CC', 'CD', 'DN'])
     # filas seleccionadas, en orden. Un grupo termina al cambiar (tecnología, banda, exposición, BW),
@@ -197,6 +213,7 @@ def plan_sar(h, tipo, datos):
         if not base:
             continue
         anchor = base[-1]
+        body = h.kv(anchor).get('BX', '').lower() == 'body'
 
         def nuevo(proto_list, n, texto, extra_ovr=None, cb=None):
             """n filas: usa filas de plantilla si existen; si no, clona la última / la fila ancla."""

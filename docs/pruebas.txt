@@ -1,10 +1,16 @@
 test_2g_formato_real_interfaz (test_generacion.GeneracionTests.test_2g_formato_real_interfaz) ... ok
+test_bloques_conducidos_de_cada_region_y_filas_comunes (test_generacion.GeneracionTests.test_bloques_conducidos_de_cada_region_y_filas_comunes) ... ok
 test_cli_genera_respuestas_y_no_sobrescribe (test_generacion.GeneracionTests.test_cli_genera_respuestas_y_no_sobrescribe) ... ok
+test_enlaces_heredados_sin_hoja_disponible_se_notifican (test_generacion.GeneracionTests.test_enlaces_heredados_sin_hoja_disponible_se_notifican) ... ok
+test_excel_multirregion_exposiciones_y_slots (test_generacion.GeneracionTests.test_excel_multirregion_exposiciones_y_slots) ... ok
 test_fallo_de_plantilla_conserva_excel_previo (test_generacion.GeneracionTests.test_fallo_de_plantilla_conserva_excel_previo) ... ok
 test_generacion_regiones_y_extras (test_generacion.GeneracionTests.test_generacion_regiones_y_extras) ... ok
 test_rechaza_selecciones_invalidas_sin_tocar_salida (test_generacion.GeneracionTests.test_rechaza_selecciones_invalidas_sin_tocar_salida) ... ok
+test_respuestas_e_informe_interfaz_con_varias_opciones (test_generacion.GeneracionTests.test_respuestas_e_informe_interfaz_con_varias_opciones) ... ok
+test_slots_interfaz_acumulativos_e_independientes (test_generacion.GeneracionTests.test_slots_interfaz_acumulativos_e_independientes) ... ok
+test_validacion_multiseleccion_y_slots_anteriores (test_generacion.GeneracionTests.test_validacion_multiseleccion_y_slots_anteriores) ... ok
 
 ----------------------------------------------------------------------
-Ran 5 tests in 38.426s
+Ran 11 tests in 34.148s
 
 OK

@@ -19,6 +19,7 @@ import tkinter as tk
 from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
+from opciones_ensayo import slots_incluidos
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 ERROR_GENERADOR = ''
@@ -224,6 +225,7 @@ class Panel2G(ttk.Frame):
         super().__init__(master, padding=(26, 4, 4, 6))
         self.nombre = nombre
         self.sel, self.slot, self._marcos_slot = {}, {}, {}
+        self.slot_checks = {}
         _titulo(self, "Selecciona las tecnologías 2G:")
         for op in OPCIONES_2G:
             self.sel[op] = tk.BooleanVar(value=False)
@@ -233,12 +235,22 @@ class Panel2G(ttk.Frame):
                             command=lambda o=op: self._al_cambiar(o)).pack(anchor="w")
             if op != "GSM":
                 self.slot[op] = tk.StringVar()
+                self.slot_checks[op] = {s: tk.BooleanVar(value=False) for s in SLOTS_2G}
                 marco = ttk.Frame(bloque, padding=(26, 0, 0, 4))
                 ttk.Label(marco, text="Número de slots:").pack(side="left", padx=(0, 8))
                 for s in SLOTS_2G:
-                    ttk.Radiobutton(marco, text=f"{op} {s}", value=s,
-                                    variable=self.slot[op]).pack(side="left", padx=(0, 14))
+                    ttk.Checkbutton(marco, text=f"{op} {s}", variable=self.slot_checks[op][s],
+                                    command=lambda o=op, slot=s: self._cambiar_slot(o, slot)
+                                    ).pack(side="left", padx=(0, 14))
                 self._marcos_slot[op] = marco
+        ttk.Label(self, text="Al marcar TXn se incluyen los inferiores; al desmarcarlo se quitan TXn y los superiores.",
+                  wraplength=650, foreground="#555555").pack(anchor="w")
+
+    def _cambiar_slot(self, op, slot):
+        maximum = int(slot[2:]) - (0 if self.slot_checks[op][slot].get() else 1)
+        self.slot[op].set(f'TX{maximum}' if maximum else '')
+        for name, var in self.slot_checks[op].items():
+            var.set(int(name[2:]) <= maximum)
 
     def _al_cambiar(self, op):
         marco = self._marcos_slot.get(op)
@@ -256,15 +268,16 @@ class Panel2G(ttk.Frame):
                 for op in ("GPRS", "EGPRS") if self.sel[op].get() and not self.slot[op].get()]
 
     def seleccion(self):
-        return {'GPRS': self.slot['GPRS'].get() if self.sel['GPRS'].get() else None,
-                'EGPRS': self.slot['EGPRS'].get() if self.sel['EGPRS'].get() else None,
+        return {'GPRS': slots_incluidos(self.slot['GPRS'].get()) if self.sel['GPRS'].get() else None,
+                'EGPRS': slots_incluidos(self.slot['EGPRS'].get()) if self.sel['EGPRS'].get() else None,
                 'GSM': bool(self.sel['GSM'].get())}
 
     def lineas(self):
         out = []
         for op in OPCIONES_2G:
             if self.sel[op].get():
-                out.append("- GSM" if op == "GSM" else f"- {op} {self.slot[op].get()}")
+                out.extend(["- GSM"] if op == "GSM" else
+                           [f'- {op} {slot}' for slot in slots_incluidos(self.slot[op].get())])
         return out
 
 
@@ -617,8 +630,8 @@ class App(tk.Tk):
         self.minsize(720, 560)
 
         self.var_proyecto = tk.StringVar()
-        self.var_region = tk.StringVar()
-        self.var_expo = tk.StringVar()
+        self.var_region = {r: tk.BooleanVar(value=False) for r in REGIONES}
+        self.var_expo = {e: tk.BooleanVar(value=False) for e in EXPOSICIONES}
         self.var_conducida = tk.StringVar()
         self.carpeta_guardado = Path(__file__).resolve().parent
         self.elementos = {}                       # clave -> ElementoSeccion
@@ -642,8 +655,8 @@ class App(tk.Tk):
         self.entry_proyecto = ttk.Entry(self.marco_proyecto, textvariable=self.var_proyecto)
         self.entry_proyecto.pack(fill="x")
 
-        self._pregunta(cont, "Elige la región", self.var_region, REGIONES, REGION_AYUDA)
-        self._pregunta(cont, "Elige la exposure condition", self.var_expo, EXPOSICIONES)
+        self._pregunta_multiple(cont, "Regiones (puedes elegir varias)", self.var_region, REGION_AYUDA)
+        self._pregunta_multiple(cont, "Exposure conditions (puedes elegir varias)", self.var_expo)
         self._pregunta(cont, "¿Aplica ensayos conducidos?", self.var_conducida, [SI, NO])
 
         # Baterías, accesorios y spotchecking: siempre visibles
@@ -673,6 +686,18 @@ class App(tk.Tk):
     # ------------------------------------------------------------------
     # Rueda del ratón: desplaza la pantalla (y evita cambiar el número sin querer)
     # ------------------------------------------------------------------
+    def _pregunta_multiple(self, parent, titulo, variables, ayuda=None):
+        marco = ttk.LabelFrame(parent, text=titulo, padding=(10, 6))
+        marco.pack(fill="x", pady=4)
+        for op, var in variables.items():
+            etiqueta = f'{op} ({ayuda[op]})' if ayuda and op in ayuda else op
+            ttk.Checkbutton(marco, text=etiqueta, variable=var).pack(anchor="w")
+        return marco
+
+    @staticmethod
+    def _marcadas(variables):
+        return [name for name, var in variables.items() if var.get()]
+
     def _configurar_rueda(self):
         for seq in ("<MouseWheel>", "<Button-4>", "<Button-5>"):
             self.bind_all(seq, self._rueda)
@@ -708,11 +733,12 @@ class App(tk.Tk):
         errores = []
         if not self._nombre_proyecto():
             errores.append("Escribe el nombre del proyecto.")
-        for var, texto in ((self.var_region, "Elige la región."),
-                           (self.var_expo, "Elige la exposure condition."),
-                           (self.var_conducida, "Indica si aplican ensayos conducidos.")):
-            if not var.get():
-                errores.append(texto)
+        if not self._marcadas(self.var_region):
+            errores.append('Elige al menos una región.')
+        if not self._marcadas(self.var_expo):
+            errores.append('Elige al menos una exposure condition.')
+        if not self.var_conducida.get():
+            errores.append('Indica si aplican ensayos conducidos.')
         return errores
 
     def _validar_todo(self):
@@ -747,8 +773,8 @@ class App(tk.Tk):
              f"Fecha de creación: {datetime.now():%Y-%m-%d %H:%M:%S}",
              "",
              f"Nombre del proyecto: {self._nombre_proyecto()}",
-             f"Región: {self.var_region.get()}",
-             f"Exposure condition: {self.var_expo.get()}",
+             f"Regiones: {', '.join(self._marcadas(self.var_region))}",
+             f"Exposure conditions: {', '.join(self._marcadas(self.var_expo))}",
              f"Aplica ensayos conducidos: {self.var_conducida.get()}",
              ""]
         for cat in CATEGORIAS:
@@ -804,8 +830,8 @@ class App(tk.Tk):
             return sec.detalle.nombres() if sec.var.get() == SI else []
         return {
             'proyecto': self._nombre_proyecto(),
-            'region': self.var_region.get(),
-            'exposure': self.var_expo.get(),
+            'region': self._marcadas(self.var_region),
+            'exposure': self._marcadas(self.var_expo),
             'conducida': self.var_conducida.get() == SI,
             'baterias': nombres('baterias'),
             'accesorios': nombres('accesorios'),

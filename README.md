@@ -11,6 +11,8 @@ Programa en Python que hace el cuestionario de la toma de datos y genera:
 pip install lxml          # única dependencia fuera de Python (tkinter viene con Python)
 python cuestionario_ensayo.py
 ```
+Puedes marcar varias regiones y varias exposure conditions. En GPRS y EGPRS, marcar TXn incluye automáticamente TX1 hasta TXn.
+
 Rellena el cuestionario y pulsa **Generar toma de datos**. Se crean `<nombre>.txt` y `<nombre>.xlsm` en la carpeta que elijas.
 
 ## Qué pestañas salen
@@ -18,13 +20,13 @@ Rellena el cuestionario y pulsa **Generar toma de datos**. Se crean `<nombre>.tx
 |---|---|
 | Overview | siempre (con nombre del proyecto, baterías y accesorios) |
 | Test Campaign | siempre |
-| SAR EN **o** SAR FCC-ISED | siempre una: EN → SAR EN; FCC e ISED → SAR FCC-ISED |
+| SAR EN y/o SAR FCC-ISED | EN → SAR EN; FCC e ISED → SAR FCC-ISED (una sola hoja compartida) |
 | Tune-Up | solo si aplican ensayos conducidos |
 | Conducted 2G-3G / LTE / LTE CATM1 / LTE NB-IoT / 5G / WiFi | solo si aplican ensayos conducidos **y** se ha marcado esa tecnología (2G y 3G comparten pestaña) |
 
 ## Reglas aplicadas
-* **Filas**: se generan solo las de las tecnologías/bandas/modos elegidos. En las Conducted se usa el bloque de región coherente con el que referencia la hoja SAR; en la columna B se escribe `EN` o `FCC/ISED` según la región.
-* **SAR**: solo las filas de la exposure condition elegida. Tras las filas TBD de cada grupo se añaden, en este orden:
+* **Filas**: se generan solo las de las tecnologías/bandas/modos elegidos. En las Conducted se usa el bloque de región coherente con el que referencia la hoja SAR; en la columna B se escribe `EN`, `FCC/ISED` o `EN/FCC/ISED` para las filas compartidas, según las regiones elegidas.
+* **SAR**: solo las filas de las exposure conditions elegidas. Tras las filas TBD de cada grupo se añaden, en este orden:
   `TBD - Variability: <nombre>` (spotchecking) → `TBD - Battery check N` (una por batería) → *(solo Body)* `Front of Face` → `Accesorio N: <nombre>`.
   En FCC-ISED se reutilizan las filas de la plantilla; si hay más baterías/accesorios/variantes que las de la plantilla (2 / 7 / 2) se crean copiando la última.
 * **Overview**: nombre del proyecto en `E4`, baterías en `J/K` desde la fila 28 y accesorios en `O/P`. Si caben menos de las pedidas (más de 5 baterías) se **insertan filas desplazando el resto** (fórmulas de todas las hojas, formatos condicionales, imagen/botón incluidos); no se borra ni se pisa nada.

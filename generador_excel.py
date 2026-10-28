@@ -15,6 +15,7 @@ from sarlib import col2n, expand, _REF, _STR
 from seleccion import (plan_conducted, plan_sar, referencias, hojas_conducted_necesarias)
 from overview import editar_overview
 from validacion_datos import validar_datos
+from opciones_ensayo import seleccion_multiple
 
 DIR_PLANTILLA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plantilla')
 ARCHIVOS = {
@@ -57,20 +58,24 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     man = json.loads(base.read('manifest.json'))
     t = datos['tecnologias']
     conducida = bool(datos['conducida'])
-    sar_name = 'SAR EN' if datos['region'] == 'EN' else 'SAR FCC-ISED'
-    tipo = 'EN' if datos['region'] == 'EN' else 'FCC'
+    regions = seleccion_multiple(datos['region'])
+    sar_names = (['SAR EN'] if 'EN' in regions else []) + (
+        ['SAR FCC-ISED'] if any(r in regions for r in ('FCC', 'ISED')) else [])
 
     # ---- 1) qué hojas habrá ----
     conds = hojas_conducted_necesarias(t) if conducida else []
-    orden = ['Overview'] + (['Tune-Up'] if conducida else []) + conds + [sar_name, 'Test Campaign']
+    orden = ['Overview'] + (['Tune-Up'] if conducida else []) + conds + sar_names + ['Test Campaign']
     orden.sort(key=lambda n: _numero_hoja(man, n))
     log('Hojas: ' + ', '.join(orden))
 
     # ---- 2) planes de filas ----
-    hojas = {sar_name: Hoja(os.path.join(dirp, ARCHIVOS[sar_name]))}
-    plan_sar_items = plan_sar(hojas[sar_name], tipo, datos)
-    refs = referencias(hojas[sar_name], plan_sar_items)
-    planes = {sar_name: plan_sar_items}
+    hojas, planes, refs = {}, {}, {}
+    for sar_name in sar_names:
+        hojas[sar_name] = Hoja(os.path.join(dirp, ARCHIVOS[sar_name]))
+        planes[sar_name] = plan_sar(hojas[sar_name], 'EN' if sar_name == 'SAR EN' else 'FCC', datos)
+        family = 'EN' if sar_name == 'SAR EN' else 'FCC'
+        for sheet, rows in referencias(hojas[sar_name], planes[sar_name]).items():
+            refs.setdefault(sheet, {}).setdefault(family, set()).update(rows)
     for c in conds:
         hojas[c] = Hoja(os.path.join(dirp, ARCHIVOS[c]))
         planes[c] = plan_conducted(hojas[c], datos, refs.get(c))
@@ -195,14 +200,19 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     resumen['sin_resolver_cols'] = {f'{a}:{b}': n for (a, b), n in sorted(ctx.unres_cols.items(), key=lambda x: -x[1])}
     resumen['referencias_rotas_plantilla'] = dict(ctx.broken)
     resumen['avisos'] = []
+    if conducida and ctx.unresolved:
+        resumen['avisos'].append('Hay fórmulas de la plantilla sin enlace disponible; se han dejado vacías: ' +
+                                ', '.join(f'{n} ({count})' for n, count in ctx.unresolved.items()) +
+                                '. Revisa las referencias de origen antes de usar los resultados.')
     if ctx.broken:
         resumen['avisos'].append('La plantilla contiene fórmulas con #REF!: ' +
                                 ', '.join(f'{n} ({count})' for n, count in ctx.broken.items()) +
                                 '. Revisa estas fórmulas en Excel antes de usar los resultados.')
     if not conducida:
         resumen['avisos'].append('Sin ensayos conducidos: las potencias quedan vacías para introducirlas manualmente.')
-    if not resumen['filas'].get(sar_name):
-        resumen['avisos'].append('No hay filas SAR compatibles con la selección; revisa tecnología, región y exposición.')
+    for sar_name in sar_names:
+        if not resumen['filas'].get(sar_name):
+            resumen['avisos'].append(f'No hay filas compatibles en {sar_name}; revisa tecnología, región y exposición.')
     base.close()
     log(f'Generado: {salida}')
     return resumen

@@ -1,0 +1,43 @@
+{
+  "proyecto": "Ejemplo SAR",
+  "region": [
+    "EN",
+    "FCC",
+    "ISED"
+  ],
+  "exposure": [
+    "Body",
+    "Close to ear",
+    "Close to Head",
+    "Extremity"
+  ],
+  "conducida": true,
+  "baterias": [
+    "Batería A"
+  ],
+  "accesorios": [
+    "Funda"
+  ],
+  "spotchecking": [
+    "Variante A"
+  ],
+  "tecnologias": {
+    "LTE": [
+      "FDD5"
+    ],
+    "2G": {
+      "GPRS": [
+        "TX1",
+        "TX2",
+        "TX3"
+      ],
+      "EGPRS": [
+        "TX1",
+        "TX2"
+      ]
+    },
+    "LTE CAT M1": [
+      "FDD5"
+    ]
+  }
+}

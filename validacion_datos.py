@@ -1,4 +1,5 @@
 """Validación compartida por la interfaz y la generación automática."""
+from opciones_ensayo import seleccion_multiple
 
 
 def validar_datos(datos):
@@ -11,10 +12,14 @@ def validar_datos(datos):
         raise ValueError('Faltan campos: ' + ', '.join(sorted(missing)))
     if not isinstance(datos['proyecto'], str) or not datos['proyecto'].strip():
         raise ValueError('Escribe el nombre del proyecto.')
-    if datos['region'] not in ('EN', 'FCC', 'ISED'):
-        raise ValueError('Región no válida: usa EN, FCC o ISED.')
-    if datos['exposure'] not in ('Close to ear', 'Close to Head', 'Body', 'Extremity'):
-        raise ValueError('Exposure condition no válida.')
+    for field, allowed in (('region', ('EN', 'FCC', 'ISED')),
+                           ('exposure', ('Close to ear', 'Close to Head', 'Body', 'Extremity'))):
+        values = seleccion_multiple(datos[field])
+        if not isinstance(values, list) or not values or any(
+                not isinstance(v, str) or v not in allowed for v in values):
+            raise ValueError(f'Selecciona al menos una opción válida para {field}.')
+        if len(values) != len(set(values)):
+            raise ValueError(f'Selección duplicada para {field}.')
     if type(datos['conducida']) is not bool:
         raise ValueError('conducida debe ser true o false.')
     for field in ('baterias', 'accesorios', 'spotchecking'):
@@ -51,8 +56,8 @@ def validar_datos(datos):
             for mode, selection in value.items():
                 if mode == 'GSM' and type(selection) is not bool:
                     raise ValueError('GSM debe ser true o false.')
-                if mode != 'GSM' and selection not in (None, 'TX1', 'TX2', 'TX3', 'TX4'):
-                    raise ValueError('Selecciona TX1, TX2, TX3 o TX4.')
+                if mode != 'GSM' and selection is not None:
+                    check_list(seleccion_multiple(selection), {'TX1', 'TX2', 'TX3', 'TX4'}, mode)
         elif name == 'WLAN':
             if not isinstance(value, dict) or not value or set(value) - {'2,4 GHz', '5 GHz'}:
                 raise ValueError('Selección WLAN no válida.')
