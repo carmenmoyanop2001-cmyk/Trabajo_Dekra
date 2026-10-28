@@ -60,3 +60,11 @@ La reubicación de referencias sigue siendo necesaria cuando se filtran filas, s
 SAR EN inserta las baterías al final de cada bloque de exposición original, justo tras sus TBD. En Body añade además Front Face y los accesorios. Se mantienen los límites y medidas EN de 10 g. Consulta `docs/formulas_sar_en.md`.
 
 Se incluye `ejemplos/SAR_EN_GSM_2_baterias.xlsm`, generado con dos baterías y dos accesorios para los cuatro puntos del ejemplo GSM. Es una demostración con datos ficticios. Si una selección no existe en la hoja SAR original, la aplicación avisa y conserva el Excel anterior en lugar de guardar una hoja SAR vacía.
+
+## Mode combinado y valores originales
+
+En SAR EN, Mode (BY) es una única celda combinada por tecnología y banda, incluyendo todas sus exposiciones y las filas adicionales. Cuando hay varios modos originales, se muestran juntos. Los modos por fila se conservan en CG, que ya estaba oculta; los cálculos leen esa columna. Las celdas conservan el color original y el resumen de Mode se centra y ajusta a varias líneas.
+
+Se guardan los valores originales de Channel (CC), Freq (CD) y las posiciones TBD junto con sus fórmulas. También se conservan los resultados de las fórmulas de la columna O de CATM1. El libro solicita recálculo automático al abrirlo. No se eliminan filas de ensayo por tener una fórmula pendiente de calcular: solo se omiten las filas que no cumplen la selección y las restantes se escriben consecutivamente, sin filas espaciadoras.
+
+El ejemplo `ejemplos/SAR_EN_5G_CATM1_3_baterias.xlsm` permite comprobar 5G n1, CATM1 FDD1 y GSM, con tres baterías y tres accesorios. Los datos de sus respuestas son ficticios. Véase `docs/valores_y_mode.md` para las comprobaciones.

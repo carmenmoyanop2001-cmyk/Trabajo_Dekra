@@ -17,8 +17,13 @@ test_formula_y_indirect_en_limite_de_bloque_sin_tocar_macros (test_nombres_hojas
 test_lte_seleccionado_sin_prefijo_y_con_enlaces_sar_actualizados (test_nombres_hojas.NombresTests.test_lte_seleccionado_sin_prefijo_y_con_enlaces_sar_actualizados) ... ok
 test_gsm_original_y_dos_baterias_en_cada_flecha (test_sar_en_cuatro_puntos.CuatroPuntosTests.test_gsm_original_y_dos_baterias_en_cada_flecha) ... ok
 test_no_sobrescribe_un_excel_con_una_seleccion_sar_sin_filas_originales (test_sar_en_cuatro_puntos.CuatroPuntosTests.test_no_sobrescribe_un_excel_con_una_seleccion_sar_sin_filas_originales) ... ok
+test_cache_de_toda_la_columna_o_contra_los_35752_valores_del_excel_original (test_valores_y_mode.ValoresModeTests.test_cache_de_toda_la_columna_o_contra_los_35752_valores_del_excel_original) ... ok
+test_canales_frecuencias_y_tbd_guardan_valor_sin_eliminar_formulas (test_valores_y_mode.ValoresModeTests.test_canales_frecuencias_y_tbd_guardan_valor_sin_eliminar_formulas) ... ok
+test_columna_o_catm1_coincide_con_todos_los_valores_del_original (test_valores_y_mode.ValoresModeTests.test_columna_o_catm1_coincide_con_todos_los_valores_del_original) ... ok
+test_mode_una_celda_por_tecnologia_banda_y_modos_auxiliares_conservados (test_valores_y_mode.ValoresModeTests.test_mode_una_celda_por_tecnologia_banda_y_modos_auxiliares_conservados) ... ok
+test_sin_huecos_ni_exposiciones_no_seleccionadas_y_recalculo_automatico (test_valores_y_mode.ValoresModeTests.test_sin_huecos_ni_exposiciones_no_seleccionadas_y_recalculo_automatico) ... ok
 
 ----------------------------------------------------------------------
-Ran 19 tests in 81.774s
+Ran 24 tests in 107.958s
 
 OK

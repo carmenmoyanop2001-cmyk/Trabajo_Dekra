@@ -59,6 +59,9 @@ class Contexto:
         self.defaults = {}    # hoja -> nº de fórmulas sustituidas por el valor por defecto de la plantilla
         self.no_cache = False
         self.broken = {}  # fórmulas #REF! heredadas, sin inventar sustituciones
+        self.column_aliases = {}
+        self.display_merges = {}
+        self.style_overrides = {}
 
     def set_rows(self, name, mapping):
         self.rowmap[name] = mapping
@@ -104,7 +107,7 @@ def _inline(txt):
     return f'<is><t{sp}>{escape(txt)}</t></is>'
 
 
-def _cell_xml(col, newrow, s, kind, val):
+def _cell_xml(col, newrow, s, kind, val, cached=None):
     ref = f'{col}{newrow}'
     st = f' s="{s}"' if s else ''
     if kind == 0 or val is None:
@@ -118,7 +121,16 @@ def _cell_xml(col, newrow, s, kind, val):
     if kind == 10:
         return f'<c r="{ref}"{st} t="e"><v>{escape(val)}</v></c>'
     if kind == 3:
-        return f'<c r="{ref}"{st}><f>{escape(val)}</f></c>'
+        # Conservar también el resultado del original. Excel y los visores
+        # pueden mostrar vacío un <f> sin <v> hasta recalcular el libro.
+        if cached is not None:
+            try:
+                float(cached)
+                cache_type = ''
+            except (ValueError, TypeError):
+                cache_type = ' t="str"'
+            return f'<c r="{ref}"{st}{cache_type}><f>{escape(val)}</f><v>{escape(str(cached))}</v></c>'
+        return f'<c r="{ref}"{st}><f>{escape(val)}</f><v/></c>'
     raise ValueError(kind)
 
 
@@ -153,6 +165,21 @@ def desindirect(pat, r_old, h):
     return _IND.sub(one, pat)
 
 
+_CATM_O = re.compile('IF\\(' + re.escape(T1) + r'\|\$?J\|r:0' + re.escape(T2) +
+                     r'="Cat M1",(\d+),(\d+)\)')
+
+
+def valor_formula_original(h, index, col, pattern):
+    cached = h.kv(index).get(col)
+    if h.name == 'Conducted LTE CATM1' and col == 'O':
+        match = _CATM_O.fullmatch(pattern)
+        if match:
+            # Las expresiones del original dependen solo de J en la misma
+            # fila. Guardar su resultado no reemplaza ni cambia la fórmula.
+            cached = match.group(1 if h.kv(index).get('J') == 'Cat M1' else 2)
+    return cached
+
+
 def emit_row(h, ctx, resolve, item, newrow):
     """XML de una fila de salida."""
     r_old, tid, consts, aid, kv = h.rows[item.i]
@@ -161,13 +188,17 @@ def emit_row(h, ctx, resolve, item, newrow):
     cells = []
     k = 0
     for ci, s, kind, payload in tm:
+        s = ctx.style_overrides.get((h.name, newrow, ci), s)
         col = n2col(ci)
         val = None
+        cached = None
         if kind in (1, 2, 9, 10):
             val = h.cpool[consts[k]][1]
             k += 1
         elif kind == 3 and ci not in ovr:
-            pat = h.patterns[payload]
+            pat = sarlib.remap_columns(h.patterns[payload], h.name, ctx.column_aliases)
+            if not item.clone:
+                cached = valor_formula_original(h, item.i, col, pat)
             if 'INDIRECT(' in pat:
                 pat = desindirect(pat, r_old, h)
             val = expand(pat, r_old, resolve, h.name, newrow if item.clone else None, ctx.inline, None)
@@ -192,13 +223,14 @@ def emit_row(h, ctx, resolve, item, newrow):
                 kind, val = 0, None
             elif isinstance(o, tuple):          # ('f', formula ya resuelta)
                 kind, val = 3, o[1]
+                cached = o[2] if len(o) > 2 else None
             elif isinstance(o, (int, float)):
                 kind, val = 1, repr(o) if isinstance(o, float) else str(o)
             else:
                 kind, val = 2, str(o)
         if kind == 3 and val and any('#REF!' in part for part in sarlib._STR.split(val)[::2]):
             ctx.broken[h.name] = ctx.broken.get(h.name, 0) + 1
-        cells.append(_cell_xml(col, newrow, s, kind, val))
+        cells.append(_cell_xml(col, newrow, s, kind, val, cached))
     return f'<row r="{newrow}"{_attr_str(h.attrs[aid])}>' + ''.join(cells) + '</row>'
 
 
@@ -269,6 +301,17 @@ def procesar_cola(tail, h, ctx, resolve, last_row, clones=()):
     tail = re.sub(r'(<autoFilter ref=")([^"]+)"', fix_ref, tail, count=1)
     tail = re.sub(r'<ignoredErrors>.*?</ignoredErrors>', '', tail, flags=re.S)
     tail = re.sub(r'<extLst>.*</extLst>', '', tail, flags=re.S)
+    merges = ctx.display_merges.get(h.name, [])
+    if merges:
+        block = f'<mergeCells count="{len(merges)}">' + ''.join(
+            f'<mergeCell ref="{ref}"/>' for ref in merges) + '</mergeCells>'
+        after_merges = (r'<(?:phoneticPr|conditionalFormatting|dataValidations|hyperlinks|printOptions|'
+                        r'pageMargins|pageSetup|headerFooter|rowBreaks|colBreaks|customProperties|'
+                        r'cellWatches|ignoredErrors|smartTags|drawing|legacyDrawing|legacyDrawingHF|'
+                        r'picture|oleObjects|controls|webPublishItems|tableParts|extLst)\b')
+        at = re.search(after_merges, tail)
+        index = at.start() if at else tail.rfind('</worksheet>')
+        tail = tail[:index] + block + tail[index:]
 
     def cf_block(m):
         block = m.group(0)

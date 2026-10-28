@@ -1,0 +1,32 @@
+{
+  "proyecto": "Ejemplo 5G y CATM1 - datos conservados",
+  "region": "EN",
+  "exposure": [
+    "Close to ear",
+    "Body",
+    "Extremity"
+  ],
+  "conducida": true,
+  "baterias": [
+    "B1",
+    "B2",
+    "B3"
+  ],
+  "accesorios": [
+    "Acc1",
+    "Acc2",
+    "Acc3"
+  ],
+  "spotchecking": [],
+  "tecnologias": {
+    "2G": {
+      "GSM": true
+    },
+    "LTE CAT M1": [
+      "FDD1"
+    ],
+    "5G": [
+      "n1"
+    ]
+  }
+}

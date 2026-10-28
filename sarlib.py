@@ -65,6 +65,20 @@ LAST_MISS = [None]
 _ONE = T1 + r"([^|]*)\|([^|]*)\|([ra]):(-?\d+)" + T2
 _TOKR = re.compile(_ONE + "(?::" + _ONE + ")?")
 
+
+def remap_columns(pattern, own_sheet, aliases):
+    """Reubica dependencias cuando una columna pasa a ser solo de presentación."""
+    if not aliases:
+        return pattern
+    def one(m):
+        sheet, column, mode, delta = m.groups()
+        dest = aliases.get((sheet or own_sheet, column.lstrip('$')))
+        if not dest:
+            return m.group(0)
+        column = ('$' if column.startswith('$') else '') + dest
+        return f'{T1}{sheet}|{column}|{mode}:{delta}{T2}'
+    return re.sub(_ONE, one, pattern)
+
 def expand(pat, row, resolve, own_sheet, newrow=None, inline=None, blank=None):
     """Patron -> formula A1.
     resolve(hoja, fila_antigua, rol) -> fila nueva o None.  rol: 'single' | 'start' | 'end'.

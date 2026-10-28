@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sarlib import *
 NS = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
 Z = os.environ['DATASHEET_XLSM']      # ruta del datasheet original (.xlsm)
-KEYCOLS = ['B','F','J','K','M','N','Q','R','S','T','U','X','Y','BT','BU','BW','BX','BY','BZ','CA','CB','CC','CD']
+KEYCOLS = ['B','F','J','K','M','N','O','Q','R','S','T','U','X','Y','BT','BU','BW','BX','BY','BZ','CA','CB','CC','CD']
 
 def sst():
     z = zipfile.ZipFile(Z); out = []

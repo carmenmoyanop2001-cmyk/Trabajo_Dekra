@@ -51,7 +51,14 @@ class ConservacionTests(unittest.TestCase):
                 with zipfile.ZipFile(path) as z:
                     sheet_versions.append(z.read('xl/worksheets/sheet12.xml'))
                     with zipfile.ZipFile(Path(DIR_PLANTILLA) / 'plantilla_base.zip') as base:
-                        self.assertEqual(z.read('xl/styles.xml'), base.read('xl/styles.xml'))
+                        old_styles = E.fromstring(base.read('xl/styles.xml'))
+                        new_styles = E.fromstring(z.read('xl/styles.xml'))
+                        for tag in ('fonts', 'fills', 'borders', 'numFmts'):
+                            self.assertEqual(E.tostring(old_styles.find('s:' + tag, NS)),
+                                             E.tostring(new_styles.find('s:' + tag, NS)))
+                        old_xfs, new_xfs = old_styles.find('s:cellXfs', NS), new_styles.find('s:cellXfs', NS)
+                        for old, new in zip(old_xfs, new_xfs):
+                            self.assertEqual(E.tostring(old), E.tostring(new))
             self.assertEqual(sheet_versions[0], sheet_versions[1])
             rows = E.fromstring(sheet_versions[0]).findall('s:sheetData/s:row', NS)[2:]
             self.assertEqual(len(rows), len(original))

@@ -18,6 +18,8 @@ from validacion_datos import validar_datos
 from opciones_ensayo import seleccion_multiple
 from nombres_hojas import renombrar_tecnologias, renombrar_resumen
 from sar_en_formulas import aplicar_formulas_extras
+from presentacion_sar_en import combinar_mode
+from sarlib import remap_columns
 
 DIR_PLANTILLA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plantilla')
 ARCHIVOS = {
@@ -115,7 +117,10 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     if 'SAR EN' in hojas and any(item.extra for item in planes['SAR EN']):
         fcc = hojas.get('SAR FCC-ISED') or Hoja(os.path.join(dirp, ARCHIVOS['SAR FCC-ISED']))
         aplicar_formulas_extras(hojas['SAR EN'], planes['SAR EN'], fcc, ctx.rowmap['SAR EN'])
-    ctx.inline = _hacer_inline(hojas, resolve)
+    if 'SAR EN' in hojas:
+        modificadas['xl/styles.xml'] = combinar_mode(hojas['SAR EN'], planes['SAR EN'], ctx,
+                                                      base.read('xl/styles.xml'))
+    ctx.inline = _hacer_inline(hojas, resolve, ctx.column_aliases)
     ctx.blank = lambda sh: (HEADER_ROWS + len(planes[sh]) + 3) if sh in planes else None
     resumen = {'hojas': orden, 'filas': {}, 'sin_resolver': ctx.unresolved}
 
@@ -142,7 +147,7 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
         for p in man['global_parts']:
             if p in ('xl/workbook.xml', 'xl/_rels/workbook.xml.rels'):
                 continue
-            zo.writestr(p, base.read(p)); escritas.add(p)
+            zo.writestr(p, modificadas.get(p, base.read(p))); escritas.add(p)
         for n in orden:
             num = nums[n]
             sp = f'xl/worksheets/sheet{num}.xml'
@@ -177,7 +182,11 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
         wb = re.sub(r'<definedNames>.*?</definedNames>', f'<definedNames>{dn}</definedNames>' if dn else '', wb, flags=re.S)
         wb = re.sub(r'<mc:AlternateContent.*?</mc:AlternateContent>', '', wb, flags=re.S)
         wb = re.sub(r'<xr:revisionPtr[^>]*/>', '', wb)
-        wb = wb.replace('<calcPr calcId="191029"/>', '<calcPr calcId="191029" fullCalcOnLoad="1"/>')
+        calc = '<calcPr calcId="0" calcMode="auto" fullCalcOnLoad="1" forceFullCalc="1" calcOnSave="1"/>'
+        if re.search(r'<calcPr\b', wb):
+            wb = re.sub(r'<calcPr\b[^>]*/>', calc, wb)
+        else:
+            wb = wb.replace('</workbook>', calc + '</workbook>')
         zo.writestr('xl/workbook.xml', wb)
 
         rels = base.read('xl/_rels/workbook.xml.rels').decode('utf8')
@@ -239,7 +248,7 @@ def _sheet_id(wb, nombre):
     return m.group(1) if m else '99'
 
 
-def _hacer_inline(hojas, resolve):
+def _hacer_inline(hojas, resolve, column_aliases=None):
     """Contenido de una celda maestra (para sustituir referencias a filas que no están en la selección)."""
     memo = {}
 
@@ -259,7 +268,8 @@ def _hacer_inline(hojas, resolve):
                 val = h.cpool[consts[k]][1]; k += 1
             if ci == objetivo:
                 if kind == 3:
-                    txt = expand(h.patterns[payload], r_old, resolve, h.name, None, inline, None)
+                    pattern = remap_columns(h.patterns[payload], h.name, column_aliases or {})
+                    txt = expand(pattern, r_old, resolve, h.name, None, inline, None)
                     # solo se sustituye si la fórmula es autocontenida (sin referencias a celdas de la propia hoja)
                     if txt is not None and any(m.group(1) is None
                                                for p in _STR.split(txt)[::2] for m in _REF.finditer(p)):
