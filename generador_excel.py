@@ -16,6 +16,7 @@ from seleccion import (plan_conducted, plan_sar, referencias, hojas_conducted_ne
 from overview import editar_overview
 from validacion_datos import validar_datos
 from opciones_ensayo import seleccion_multiple
+from nombres_hojas import renombrar_tecnologias, renombrar_resumen
 
 DIR_PLANTILLA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plantilla')
 ARCHIVOS = {
@@ -43,6 +44,11 @@ def generar(datos, salida, dir_plantilla=None, log=print):
     with tempfile.TemporaryDirectory(dir=target.parent) as tmp:
         candidate = Path(tmp) / 'datos.xlsm'
         resumen = _generar(datos, str(candidate), dir_plantilla, log)
+        if not datos['conducida']:
+            names = {s: s.removeprefix('Conducted ') for s in resumen['hojas'] if s.startswith('Conducted ')}
+            if names:
+                renombrar_tecnologias(candidate, names)
+                renombrar_resumen(resumen, names)
         errors = validar(str(candidate), verbose=False)
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))
@@ -63,8 +69,10 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
         ['SAR FCC-ISED'] if any(r in regions for r in ('FCC', 'ISED')) else [])
 
     # ---- 1) qué hojas habrá ----
-    conds = hojas_conducted_necesarias(t) if conducida else []
-    orden = ['Overview'] + (['Tune-Up'] if conducida else []) + conds + sar_names + ['Test Campaign']
+    conds = hojas_conducted_necesarias(t)
+    # Las hojas seleccionadas son también plantillas de toma de datos cuando
+    # no se prevén conducidos. Tune-Up conserva sus enlaces y límites originales.
+    orden = ['Overview'] + (['Tune-Up'] if conds else []) + conds + sar_names + ['Test Campaign']
     orden.sort(key=lambda n: _numero_hoja(man, n))
     log('Hojas: ' + ', '.join(orden))
 
@@ -81,7 +89,7 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
         planes[c] = plan_conducted(hojas[c], datos, refs.get(c))
 
     ctx = Contexto()
-    ctx.whole = {'Overview', 'Test Campaign'} | ({'Tune-Up'} if conducida else set())
+    ctx.whole = {'Overview', 'Test Campaign'} | ({'Tune-Up'} if conds else set())
     for name, plan in planes.items():
         h = hojas[name]
         ctx.set_rows(name, {h.rows[it.i][0]: HEADER_ROWS + 1 + k for k, it in enumerate(plan) if not it.clone})
@@ -200,7 +208,7 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     resumen['sin_resolver_cols'] = {f'{a}:{b}': n for (a, b), n in sorted(ctx.unres_cols.items(), key=lambda x: -x[1])}
     resumen['referencias_rotas_plantilla'] = dict(ctx.broken)
     resumen['avisos'] = []
-    if conducida and ctx.unresolved:
+    if ctx.unresolved:
         resumen['avisos'].append('Hay fórmulas de la plantilla sin enlace disponible; se han dejado vacías: ' +
                                 ', '.join(f'{n} ({count})' for n, count in ctx.unresolved.items()) +
                                 '. Revisa las referencias de origen antes de usar los resultados.')
@@ -209,7 +217,7 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
                                 ', '.join(f'{n} ({count})' for n, count in ctx.broken.items()) +
                                 '. Revisa estas fórmulas en Excel antes de usar los resultados.')
     if not conducida:
-        resumen['avisos'].append('Sin ensayos conducidos: las potencias quedan vacías para introducirlas manualmente.')
+        resumen['avisos'].append('Ensayos conducidos no previstos: se incluyen las pestañas de tecnologías como plantilla, sin añadir medidas.')
     for sar_name in sar_names:
         if not resumen['filas'].get(sar_name):
             resumen['avisos'].append(f'No hay filas compatibles en {sar_name}; revisa tecnología, región y exposición.')

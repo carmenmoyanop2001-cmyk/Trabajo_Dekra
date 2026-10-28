@@ -1,3 +1,7 @@
+test_en_inserta_debajo_sin_variability_y_con_formato_superior (test_conservacion_sar.ConservacionTests.test_en_inserta_debajo_sin_variability_y_con_formato_superior) ... ok
+test_fcc_solo_filtra_y_conserva_posiciones_formulas_y_estilos (test_conservacion_sar.ConservacionTests.test_fcc_solo_filtra_y_conserva_posiciones_formulas_y_estilos) ... ok
+test_hojas_de_todas_las_tecnologias_incluso_sin_conducidos (test_conservacion_sar.ConservacionTests.test_hojas_de_todas_las_tecnologias_incluso_sin_conducidos) ... ok
+test_reglas_de_formato_y_validacion_incluyen_filas_insertadas (test_conservacion_sar.ConservacionTests.test_reglas_de_formato_y_validacion_incluyen_filas_insertadas) ... ok
 test_2g_formato_real_interfaz (test_generacion.GeneracionTests.test_2g_formato_real_interfaz) ... ok
 test_bloques_conducidos_de_cada_region_y_filas_comunes (test_generacion.GeneracionTests.test_bloques_conducidos_de_cada_region_y_filas_comunes) ... ok
 test_cli_genera_respuestas_y_no_sobrescribe (test_generacion.GeneracionTests.test_cli_genera_respuestas_y_no_sobrescribe) ... ok
@@ -9,8 +13,10 @@ test_rechaza_selecciones_invalidas_sin_tocar_salida (test_generacion.GeneracionT
 test_respuestas_e_informe_interfaz_con_varias_opciones (test_generacion.GeneracionTests.test_respuestas_e_informe_interfaz_con_varias_opciones) ... ok
 test_slots_interfaz_acumulativos_e_independientes (test_generacion.GeneracionTests.test_slots_interfaz_acumulativos_e_independientes) ... ok
 test_validacion_multiseleccion_y_slots_anteriores (test_generacion.GeneracionTests.test_validacion_multiseleccion_y_slots_anteriores) ... ok
+test_formula_y_indirect_en_limite_de_bloque_sin_tocar_macros (test_nombres_hojas.NombresTests.test_formula_y_indirect_en_limite_de_bloque_sin_tocar_macros) ... ok
+test_lte_seleccionado_sin_prefijo_y_con_enlaces_sar_actualizados (test_nombres_hojas.NombresTests.test_lte_seleccionado_sin_prefijo_y_con_enlaces_sar_actualizados) ... ok
 
 ----------------------------------------------------------------------
-Ran 11 tests in 34.148s
+Ran 17 tests in 73.305s
 
 OK

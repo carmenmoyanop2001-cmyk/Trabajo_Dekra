@@ -21,17 +21,16 @@ Rellena el cuestionario y pulsa **Generar toma de datos**. Se crean `<nombre>.tx
 | Overview | siempre (con nombre del proyecto, baterías y accesorios) |
 | Test Campaign | siempre |
 | SAR EN y/o SAR FCC-ISED | EN → SAR EN; FCC e ISED → SAR FCC-ISED (una sola hoja compartida) |
-| Tune-Up | solo si aplican ensayos conducidos |
-| Conducted 2G-3G / LTE / LTE CATM1 / LTE NB-IoT / 5G / WiFi | solo si aplican ensayos conducidos **y** se ha marcado esa tecnología (2G y 3G comparten pestaña) |
+| Tune-Up | soporte de los enlaces y límites de las hojas de tecnologías |
+| 2G-3G / LTE / LTE CATM1 / LTE NB-IoT / 5G / WiFi | siempre que se seleccione la tecnología; con prefijo `Conducted ` si aplican ensayos conducidos. 2G y 3G comparten pestaña |
 
 ## Reglas aplicadas
 * **Filas**: se generan solo las de las tecnologías/bandas/modos elegidos. En las Conducted se usa el bloque de región coherente con el que referencia la hoja SAR; en la columna B se escribe `EN`, `FCC/ISED` o `EN/FCC/ISED` para las filas compartidas, según las regiones elegidas.
-* **SAR**: solo las filas de las exposure conditions elegidas. Tras las filas TBD de cada grupo se añaden, en este orden:
-  `TBD - Variability: <nombre>` (spotchecking) → `TBD - Battery check N` (una por batería) → *(solo Body)* `Front of Face` → `Accesorio N: <nombre>`.
-  En FCC-ISED se reutilizan las filas de la plantilla; si hay más baterías/accesorios/variantes que las de la plantilla (2 / 7 / 2) se crean copiando la última.
+* **SAR FCC-ISED**: solo se filtran las filas originales por tecnología, banda, exposición y modos seleccionados. Se conservan sus posiciones, baterías y Variability originales; no se añaden ni se renombran filas por las respuestas sobre baterías, accesorios o spotchecking.
+* **SAR EN**: se conservan las filas originales filtradas. Debajo de cada grupo se insertan `TBD - Battery check N` y, solo en Body, `Front of Face` y `Accesorio N: nombre`. Las filas nuevas copian el formato y las fórmulas de la fila superior; el contenido siguiente se desplaza, no se sobrescribe. No se generan filas Variability ni se sustituyen las fórmulas de las filas nuevas por N/A.
 * **Overview**: nombre del proyecto en `E4`, baterías en `J/K` desde la fila 28 y accesorios en `O/P`. Si caben menos de las pedidas (más de 5 baterías) se **insertan filas desplazando el resto** (fórmulas de todas las hojas, formatos condicionales, imagen/botón incluidos); no se borra ni se pisa nada.
 * **Fórmulas**: se conservan y se reubican a las nuevas filas. Referencias a filas que no están en la selección: apuntan a una celda vacía (equivale a "sin medir"), o se sustituyen por la celda maestra del límite SAR. Los `INDIRECT` de Tune-Up/Conducted 5G se convierten en referencias directas.
-* **Sin ensayos conducidos**: las celdas SAR que enlazaban con Conducted/Tune-Up toman el valor por defecto de la plantilla (banda, canal, frecuencia, modo, BW); **potencia máxima y potencia conducida quedan vacías** para rellenar a mano.
+* **Nombres de tecnologías**: con conducidos se usan `Conducted LTE`, etc.; sin conducidos se usan `LTE`, etc. Los enlaces de las fórmulas se actualizan al nombre de cada pestaña. Tune-Up se mantiene para conservar sus referencias. Las fórmulas se reubican al filtrar o insertar filas; no se cambian los datos originales de FCC por las respuestas de baterías/accesorios.
 
 ## Cosas que conviene saber
 * Es `.xlsm` porque `MyTimestamp` (fechas al introducir un valor) es una macro. Hay que **habilitar macros**; sin ellas las columnas de fecha dan error. Al abrir saldrá el formulario antiguo de "selección de hojas" (viene del proyecto VBA): se puede cerrar.
@@ -39,7 +38,7 @@ Rellena el cuestionario y pulsa **Generar toma de datos**. Se crean `<nombre>.tx
 * SAR solo tiene filas para GSM, GPRS 4TX, WCDMA, LTE, LTE CATM1, 5G, WLAN, BT y Custom; EGPRS, GPRS 1-3TX, HSDPA/HSPA/DC-HSDPA y NB-IoT solo aparecen en las Conducted. Si una banda no existe en SAR para esa región/exposición, no sale.
 * BT y Custom1-8 aún no están en el cuestionario.
 * `#N/A` en la columna de peor caso de batería es normal mientras no haya medidas.
-* Validado con LibreOffice y con `herramientas/validar_paquete.py` (estructura del paquete). **No se ha podido probar en Excel**: conviene abrir el primer archivo en Excel y comprobarlo.
+* Comprobado con pruebas automatizadas y con `herramientas/validar_paquete.py` (estructura del paquete). **No se ha podido probar en Excel**: conviene abrir el primer archivo en Excel y comprobarlo.
 
 ## Si algún día cambia el datasheet
 `python herramientas/extraer_plantilla.py ruta/datasheet.xlsm` regenera `plantilla/` (la hoja de 5G tarda ~10 min).

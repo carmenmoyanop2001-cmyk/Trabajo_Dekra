@@ -179,20 +179,22 @@ def _tipo_extra(h, i):
 
 
 def plan_sar(h, tipo, datos):
-    """Lista de Item para SAR EN / SAR FCC-ISED, con las filas de variabilidad (spotchecking),
-    baterías y accesorios creadas a partir del número y los nombres introducidos."""
-    spot, bats, accs = datos['spotchecking'], datos['baterias'], datos['accesorios']
-    c = {k: col2n(k) for k in ('CA', 'CB', 'CC', 'CD', 'DB', 'DN')}
-    na_cols = (['CC', 'CD', 'DB'] if tipo == 'EN' else ['CC', 'CD', 'DN'])
+    """FCC: filtrar originales. EN: conservar originales e insertar extras debajo.
+
+    No generar filas Variability ni sustituir fórmulas por N/A al insertar.
+    """
+    selected = [i for i, r in enumerate(h.rows)
+                if r[0] > HEADER_ROWS and pred_sar(h.kv(i), datos)]
+    if tipo != 'EN':
+        return [Item(i) for i in selected]
+    bats, accs = datos['baterias'], datos['accesorios']
+    c = {k: col2n(k) for k in ('CA', 'CB')}
     # filas seleccionadas, en orden. Un grupo termina al cambiar (tecnología, banda, exposición, BW),
     # al perder la contigüidad o al pasar de filas extra (variabilidad/batería/accesorio) a filas normales.
     grupos, cur, prev, prev_key, prev_extra = [], None, None, None, False
-    for i, r in enumerate(h.rows):
-        if r[0] <= HEADER_ROWS:
-            continue
+    for i in selected:
+        r = h.rows[i]
         kv = h.kv(i)
-        if 'BT' not in kv or not pred_sar(kv, datos):
-            continue
         key = (kv['BT'], kv['BU'], kv['BX'], kv.get('BZ'))
         extra = _tipo_extra(h, i) is not None
         if cur is None or key != prev_key or r[0] != prev + 1 or (prev_extra and not extra):
@@ -202,12 +204,7 @@ def plan_sar(h, tipo, datos):
         prev, prev_key, prev_extra = r[0], key, extra
     items = []
     for g in grupos:
-        base = [i for i in g if _tipo_extra(h, i) is None]
-        extra = defaultdict(list)
-        for i in g:
-            te = _tipo_extra(h, i)
-            if te:
-                extra[te].append(i)
+        base = g
         for i in base:
             items.append(Item(i))
         if not base:
@@ -215,29 +212,19 @@ def plan_sar(h, tipo, datos):
         anchor = base[-1]
         body = h.kv(anchor).get('BX', '').lower() == 'body'
 
-        def nuevo(proto_list, n, texto, extra_ovr=None, cb=None):
-            """n filas: usa filas de plantilla si existen; si no, clona la última / la fila ancla."""
+        def nuevo(n, texto, cb=None):
+            """Inserta copias de la fila superior, modificando solo su posición/distancia."""
             out = []
             for k in range(n):
-                if k < len(proto_list):
-                    src, clone = proto_list[k], False
-                else:
-                    src, clone = (proto_list[-1] if proto_list else anchor), True
                 ovr = {c['CA']: texto(k)}
                 if cb is not None:
                     ovr[c['CB']] = cb
-                if tipo == 'EN' or (not proto_list):
-                    for nc in na_cols:
-                        ovr[c[nc]] = 'N/A'
-                if extra_ovr:
-                    ovr.update(extra_ovr)
-                out.append(Item(src, ovr, clone))
+                out.append(Item(anchor, ovr, True))
             return out
-        items += nuevo(extra['var'], len(spot), lambda k: f'TBD - Variability: {spot[k]}')
-        items += nuevo(extra['bat'], len(bats), lambda k: f'TBD - Battery check {k + 1}')
+        items += nuevo(len(bats), lambda k: f'TBD - Battery check {k + 1}')
         if body and accs:
-            items += nuevo(extra['fof'], 1, lambda k: 'Front of Face', cb=25)
-            items += nuevo(extra['acc'], len(accs), lambda k: f'Accesorio {k + 1}: {accs[k]}', cb=0)
+            items += nuevo(1, lambda k: 'Front of Face', cb=25)
+            items += nuevo(len(accs), lambda k: f'Accesorio {k + 1}: {accs[k]}', cb=0)
     # una fila de plantilla solo puede aparecer una vez como original
     vistos, res = set(), []
     for it in items:

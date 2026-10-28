@@ -205,7 +205,7 @@ def emit_row(h, ctx, resolve, item, newrow):
 # ----------------------------------------------------------------------------------------
 #  Cabecera y cola de la hoja
 # ----------------------------------------------------------------------------------------
-def _remap_range_rows(rng, rowmap_sorted, rowmap):
+def _remap_range_rows(rng, rowmap_sorted, rowmap, clones=()):
     """'AI4:AI434' -> lista de rangos (tramos contiguos en filas nuevas)."""
     m = re.match(r'^([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?$', rng)
     if not m:
@@ -216,7 +216,8 @@ def _remap_range_rows(rng, rowmap_sorted, rowmap):
         return [rng]
     lo = bisect.bisect_left(rowmap_sorted, max(r1, HEADER_ROWS + 1))
     hi = bisect.bisect_right(rowmap_sorted, r2)
-    news = [rowmap[o] for o in rowmap_sorted[lo:hi]]
+    news = sorted({rowmap[o] for o in rowmap_sorted[lo:hi]} |
+                  {new for old, new in clones if r1 <= old <= r2})
     runs = []
     for n in news:
         if runs and n == runs[-1][1] + 1:
@@ -258,7 +259,7 @@ def _remap_formula_text(txt, own, resolve):
     return ''.join(parts) if ok[0] else None
 
 
-def procesar_cola(tail, h, ctx, resolve, last_row):
+def procesar_cola(tail, h, ctx, resolve, last_row, clones=()):
     """Ajusta autoFilter, formatos condicionales y validaciones a las nuevas filas."""
     rm, rs = ctx.rowmap[h.name], ctx.sorted[h.name]
 
@@ -274,7 +275,7 @@ def procesar_cola(tail, h, ctx, resolve, last_row):
         sq = re.search(r'sqref="([^"]+)"', block).group(1)
         rngs = []
         for r in sq.split():
-            rngs += _remap_range_rows(r, rs, rm)
+            rngs += _remap_range_rows(r, rs, rm, clones)
         if not rngs:
             return ''
         def f(mm):
@@ -291,7 +292,7 @@ def procesar_cola(tail, h, ctx, resolve, last_row):
         sq = re.search(r'sqref="([^"]+)"', block).group(1)
         rngs = []
         for r in sq.split():
-            rngs += _remap_range_rows(r, rs, rm)
+            rngs += _remap_range_rows(r, rs, rm, clones)
         if not rngs:
             return ''
         def f(mm):
@@ -335,4 +336,5 @@ def iter_hoja(h, plan, ctx, resolve):
             yield ''.join(buf); buf = []
     if buf:
         yield ''.join(buf)
-    yield procesar_cola(h.sd['tail'], h, ctx, resolve, last)
+    clones = [(h.rows[it.i][0], HEADER_ROWS + 1 + i) for i, it in enumerate(plan) if it.clone]
+    yield procesar_cola(h.sd['tail'], h, ctx, resolve, last, clones)

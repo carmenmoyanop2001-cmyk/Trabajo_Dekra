@@ -161,7 +161,7 @@ class GeneracionTests(unittest.TestCase):
                    str(source), str(output)]
             first = subprocess.run(cmd, capture_output=True, text=True)
             self.assertEqual(first.returncode, 0, first.stderr)
-            self.assertIn('potencias', output.with_suffix('.txt').read_text(encoding='utf-8'))
+            self.assertIn('pestañas de tecnologías', output.with_suffix('.txt').read_text(encoding='utf-8'))
             content = output.read_bytes()
             second = subprocess.run(cmd, capture_output=True, text=True)
             self.assertNotEqual(second.returncode, 0)
@@ -224,7 +224,8 @@ class GeneracionTests(unittest.TestCase):
                         self.assertIn(sar, sheets)
                         self.assertIn('Overview', sheets)
                         self.assertIn('Test Campaign', sheets)
-                        self.assertEqual('Tune-Up' in sheets, conducted)
+                        self.assertIn('Tune-Up', sheets)
+                        self.assertIn('Conducted LTE' if conducted else 'LTE', sheets)
                         self.assertEqual('Conducted 5G' in sheets, conducted)
                         self.assertIn('xl/vbaProject.bin', z.namelist())
                         ov = E.fromstring(z.read('xl/worksheets/sheet1.xml'))
@@ -236,7 +237,7 @@ class GeneracionTests(unittest.TestCase):
                         self.assertTrue(summary['referencias_rotas_plantilla'])
                         self.assertTrue(any('#REF!' in w for w in summary['avisos']))
                     else:
-                        self.assertTrue(any('potencias' in w for w in summary['avisos']))
+                        self.assertTrue(any('pestañas de tecnologías' in w for w in summary['avisos']))
 
 
 if __name__ == '__main__':
