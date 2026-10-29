@@ -13,7 +13,7 @@ Requiere Python 3.10 o posterior, con tkinter.
 5. Marca regiones, exposiciones, tecnologías y bandas. Las bandas proceden de la base cargada. GPRS y EGPRS conservan los slots acumulativos.
 6. Pulsa **Generar toma de datos**. Guarda los tres archivos que se crean juntos.
 
-Las bandas se escriben por números separados por comas y se confirman con **Aceptar bandas**: por ejemplo `900, 1800`, `1, 3, 7` para LTE o `77, 78` para 5G. **Ver disponibles** muestra las etiquetas válidas de la base sin llenar la pantalla de casillas. En 2G, GPRS, EGPRS y GSM tienen cada uno su propio campo de bandas; los slots de GPRS/EGPRS siguen siendo acumulativos. Las opciones habituales de 3G, variantes 5G y modos WiFi se conservan. BT y Custom quedan en **Mostrar otras tecnologías**.
+En **Bandas** aparecen directamente las opciones con casillas para marcar, distribuidas en filas según el ancho de la ventana. Puedes seleccionar varias sin escribir números ni pulsar un botón de confirmación. En 2G, las bandas de GPRS y EGPRS aparecen justo debajo de sus respectivos slots y GSM tiene sus propias bandas. Los slots siguen siendo acumulativos. Las opciones habituales de 3G, variantes 5G y modos WiFi se conservan. BT y Custom quedan en **Mostrar otras tecnologías**.
 
 [Vista de la interfaz](docs/interfaz_bandas.png)
 
