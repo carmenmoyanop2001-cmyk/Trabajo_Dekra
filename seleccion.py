@@ -34,6 +34,20 @@ def _wlan_ok(banda, modo, bw, wlan):
     return bool(five) and banda in five['bandas'] and tok in five['modos']
 
 
+def _wlan_sar_ok(banda, modo, bw, wlan):
+    # SAR reserva filas con modo/BW TBD para el peor caso que se determine
+    # posteriormente. No son un modo concreto de Conducted WiFi y no deben
+    # descartarse por no llamarse literalmente n40, ac40, etc.
+    # Las filas adicionales originales de FCC (baterías/variabilidad) también
+    # usan N/A o un modo vacío; pertenecen al mismo bloque de banda/exposición.
+    if modo is None or str(modo).strip().upper() in ('', 'TBD', 'TBD / NA', 'TBD / N/A', 'N/A', 'NA'):
+        if banda == '2.4 GHz':
+            return bool(wlan.get('2,4 GHz'))
+        five = wlan.get('5 GHz')
+        return bool(five) and banda in five['bandas'] and bool(five.get('modos'))
+    return _wlan_ok(banda, modo, bw, wlan)
+
+
 def pred_conducted(nombre, kv, t):
     """¿Esta fila de una pestaña Conducted pertenece a la selección?"""
     if 'K' not in kv:
@@ -144,7 +158,7 @@ def pred_sar(kv, datos):
     if bt == '5G':
         return bu in t.get('5G', [])
     if bt == 'WLAN':
-        return 'WLAN' in t and _wlan_ok(bu, kv.get('BY'), kv.get('BZ'), t['WLAN'])
+        return 'WLAN' in t and _wlan_sar_ok(bu, kv.get('BY'), kv.get('BZ'), t['WLAN'])
     return False
 
 

@@ -72,3 +72,9 @@ El ejemplo `ejemplos/SAR_EN_5G_CATM1_3_baterias.xlsm` permite comprobar 5G n1, C
 Corrección puntual: Cert. (B) en todas las tecnologías conserva los valores originales por fila para cualquier región, sin asignar EN/FCC/ISED a una fila por el hecho de compartirla entre regiones. En SAR EN, BX se combina por tecnología, banda y exposure condition, incluyendo las filas adicionales; FCC-ISED permanece igual.
 
 La auditoría de Cert. está en `docs/auditoria_cert_originales.json`: se contrastaron 80.612 filas identificables en los siete originales recibidos. El archivo 5G recibido es parcial y tiene referencias rotas en sus últimas filas. Los marcadores ? y #REF! de origen se conservan y se avisan; no se deducen certificaciones nuevas. El ejemplo `ejemplos/Cert_regiones_multiples.xlsm` muestra todas las tecnologías disponibles con EN, FCC e ISED seleccionadas.
+
+## WLAN en SAR
+
+Las hojas SAR originales reservan las filas WLAN con Mode/BW `TBD`, `TBD / NA` o sin modo concreto. Se conservan las filas de la banda y exposure condition elegidas, incluidas las filas adicionales originales de FCC. Elegir varios modos, como n40 y ac40, no duplica esas filas SAR. En Conducted WiFi sí se filtran los modos concretos seleccionados. No se sustituyen los marcadores originales por medidas o modos inventados.
+
+`ejemplos/ejemplo_seleccion_wlan_sar.json` reproduce la selección que provocaba el error de SAR EN vacío. Su Excel de ejemplo es `ejemplos/SAR_EN_seleccion_WLAN.xlsm`, con baterías ficticias. Las tecnologías sin filas en la plantilla SAR original siguen teniendo su pestaña de tecnología; no se crean filas SAR para ellas.

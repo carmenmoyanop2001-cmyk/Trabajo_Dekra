@@ -1,0 +1,16 @@
+{
+  "proyecto": "Selección WLAN SAR",
+  "region": "EN",
+  "exposure": ["Close to ear"],
+  "conducida": true,
+  "baterias": ["Batería 1", "Batería 2"],
+  "accesorios": [],
+  "spotchecking": [],
+  "tecnologias": {
+    "2G": {"GPRS": null, "EGPRS": ["TX1", "TX2"], "GSM": false},
+    "3G": ["DC-HSDPA", "HSPA", "HSPA+"],
+    "LTE CAT M1": ["FDD1", "FDD2", "FDD8", "FDD9"],
+    "LTE NB-IoT": ["FDD1", "FDD2", "FDD9", "FDD12", "FDD14"],
+    "WLAN": {"2,4 GHz": ["n40", "ac40"]}
+  }
+}
