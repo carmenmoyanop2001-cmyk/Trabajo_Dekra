@@ -232,10 +232,10 @@ def plan_sar(h, tipo, datos):
                 ovr = {c['CA']: texto(k)}
                 if cb is not None:
                     ovr[c['CB']] = cb
-                out.append(Item(anchor, ovr, True, {'tipo': tipo_extra,
+                out.append(Item(anchor, ovr, True, {'tipo': tipo_extra, 'numero': k + 1,
                            'grupo': tuple(h.rows[i][0] for i in base)}))
             return out
-        items += nuevo(len(bats), lambda k: f'TBD-Battery check {k + 1}', 'bat')
+        items += nuevo(len(bats), lambda k: f'TBD - Battery check {k + 1}', 'bat')
         if body:
             items += nuevo(1, lambda k: 'Front Face', 'fof', cb=25)
             items += nuevo(len(accs), lambda k: f'Accesorio {k + 1}: {accs[k]}', 'acc', cb=0)

@@ -35,6 +35,7 @@ class WlanSarTests(unittest.TestCase):
             with zipfile.ZipFile(output) as z:
                 sar = E.fromstring(z.read('xl/worksheets/sheet11.xml'))
                 wifi = E.fromstring(z.read('xl/worksheets/sheet8.xml'))
+                styles = E.fromstring(z.read('xl/styles.xml'))
         self.assertEqual(json.dumps(data, sort_keys=True), before)
         positions = []
         batteries = set()
@@ -44,14 +45,17 @@ class WlanSarTests(unittest.TestCase):
             self.assertEqual(text(cells['BU']), '2.4 GHz')
             if text(cells['BX']):
                 self.assertEqual(text(cells['BX']).lower(), 'close to ear')
+                xf = styles.find('s:cellXfs', NS)[int(cells['BX'].get('s', '0'))]
+                font = styles.find('s:fonts', NS)[int(xf.get('fontId'))]
+                self.assertEqual(font.find('s:color', NS).attrib, {'rgb': 'FF000000'})
             position = text(cells['CA'])
-            if position.startswith('TBD-Battery check '):
+            if position.startswith('TBD - Battery check '):
                 batteries.add(position)
             else:
                 positions.append(position)
         self.assertEqual(len(positions), len(expected))
         self.assertGreater(len(expected), 0)
-        self.assertEqual(batteries, {'TBD-Battery check 1', 'TBD-Battery check 2'})
+        self.assertEqual(batteries, {'TBD - Battery check 1', 'TBD - Battery check 2'})
         # No aparecen modos ajenos a la selección en Conducted WiFi.
         modes = set()
         from seleccion import token_modo
@@ -60,6 +64,33 @@ class WlanSarTests(unittest.TestCase):
             self.assertEqual(text(cells['K']), '2.4 GHz')
             modes.add(token_modo(text(cells['S']), text(cells['M'])))
         self.assertEqual(modes, {'n40', 'ac40'})
+
+    def test_diez_baterias_concatenan_posicion_original_sin_encadenar_baterias(self):
+        data = dict(proyecto='Baterías dinámicas', region='EN', exposure=['Body', 'Extremity'],
+                    conducida=False, baterias=[f'B{n}' for n in range(1, 11)], accesorios=['Funda'],
+                    spotchecking=[], tecnologias={'2G': {'GSM': True}, '5G': ['n1']})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'baterias.xlsm'
+            generar(data, path, log=lambda *_: None)
+            with zipfile.ZipFile(path) as z:
+                sar = E.fromstring(z.read('xl/worksheets/sheet11.xml'))
+        cells = {c.get('r'): c for c in sar.findall('s:sheetData/s:row/s:c', NS)}
+        numbers = set()
+        import re
+        for ref, cell in cells.items():
+            if not ref.startswith('CA') or ' - Battery check ' not in text(cell):
+                continue
+            number = int(text(cell).rsplit(' ', 1)[1])
+            numbers.add(number)
+            formula = cell.find('s:f', NS).text
+            match = re.fullmatch(r'CONCATENATE\((CA\d+)," - Battery check (\d+)"\)', formula)
+            self.assertIsNotNone(match)
+            self.assertEqual(int(match[2]), number)
+            anchor = cells[match[1]]
+            self.assertEqual(text(anchor), 'TBD')
+            self.assertIsNotNone(anchor.find('s:f', NS))
+            self.assertLess(int(match[1][2:]), int(ref[2:]))
+        self.assertEqual(numbers, set(range(1, 11)))
 
     def test_plantillas_wlan_solo_banda_y_exposicion_sin_duplicados(self):
         for filename, family in [('sar_en.xz', 'EN'), ('sar_fcc.xz', 'FCC')]:

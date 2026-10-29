@@ -28,7 +28,10 @@ class CuatroPuntosTests(unittest.TestCase):
         for start, end, first_battery in ((3, 8, 9), (11, 18, 19), (21, 28, 29), (34, 41, 42)):
             for n in (1, 2):
                 row = first_battery + n - 1
-                self.assertEqual(text(row, 'CA'), f'TBD-Battery check {n}')
+                self.assertEqual(text(row, 'CA'), f'TBD - Battery check {n}')
+                self.assertEqual(rows[row]['CA'].find('s:f', NS).text,
+                                 f'CONCATENATE(CA{end - 2 + n}," - Battery check {n}")')
+                self.assertEqual(rows[row]['CA'].get('t'), 'str')
                 self.assertIn(f'$CO${start}:$CO${end}', rows[row]['CC'].find('s:f', NS).text)
                 self.assertIn(f'$CO${start}:$CO${end}', rows[row]['DB'].find('s:f', NS).text)
                 self.assertEqual(rows[row]['CQ'].find('s:f', NS).text,

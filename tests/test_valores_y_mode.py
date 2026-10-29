@@ -92,7 +92,7 @@ class ValoresModeTests(unittest.TestCase):
         for row in self.en.findall('s:sheetData/s:row', NS)[2:]:
             r = row.get('r')
             pos = value(self.en_cells['CA' + r])
-            if pos.startswith(('TBD-Battery check ', 'Accesorio ')) or (
+            if pos.startswith(('TBD - Battery check ', 'Accesorio ')) or (
                     pos == 'Front Face' and value(self.en_cells['CB' + r]) == '25'):
                 continue
             cc, cd = self.en_cells['CC' + r], self.en_cells['CD' + r]

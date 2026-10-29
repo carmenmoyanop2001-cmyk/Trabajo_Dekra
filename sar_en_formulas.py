@@ -39,6 +39,44 @@ def _formula_local(pattern, oldrow, newrow):
     return result if valid else None
 
 
+def _posicion_bateria(en, meta, fcc, prototype, rowmap):
+    """CONCATENATE con la posición TBD equivalente, nunca con otra batería.
+
+    FCC usa el primer TBD para batería 1 y, según el bloque, el segundo para
+    batería 2. Las baterías adicionales reutilizan el ensayo de batería 1.
+    """
+    _, pattern = _celda(fcc, prototype, 'CA')
+    ordinal = 0
+    for match in re.finditer(_ONE, pattern):
+        sheet, col, mode, delta = match.groups()
+        if sheet in ('', 'SAR FCC-ISED') and col.lstrip('$') == 'CA':
+            old = fcc.rows[prototype][0] + int(delta) if mode == 'r' else int(delta)
+            target = fcc.kv_old(old)
+            while old - 1 in fcc.by_old:
+                previous = fcc.kv_old(old - 1)
+                if previous.get('CA') != 'TBD' or any(previous.get(k) != target.get(k) for k in ('BT', 'BU', 'BX')):
+                    break
+                ordinal += 1
+                old -= 1
+            break
+    positions = [old for old in meta['grupo'] if en.kv_old(old).get('CA') == 'TBD']
+    if not positions:
+        # En WLAN el modo/BW provisional cambia antes de los TBD y divide el
+        # grupo de búsqueda. La posición de referencia sigue estando en el
+        # mismo bloque contiguo de tecnología/banda/antena/exposición.
+        lo, hi = meta['grupo'][0], meta['grupo'][-1]
+        key = tuple(en.kv_old(lo).get(k) for k in ('BT', 'BU', 'BV', 'BW', 'BX'))
+        while lo - 1 in rowmap and tuple(en.kv_old(lo - 1).get(k) for k in ('BT', 'BU', 'BV', 'BW', 'BX')) == key:
+            lo -= 1
+        while hi + 1 in rowmap and tuple(en.kv_old(hi + 1).get(k) for k in ('BT', 'BU', 'BV', 'BW', 'BX')) == key:
+            hi += 1
+        positions = [old for old in range(lo, hi + 1) if en.kv_old(old).get('CA') == 'TBD']
+    old = positions[ordinal] if ordinal < len(positions) else (positions[0] if positions else meta['grupo'][-1])
+    suffix = f' - Battery check {meta["numero"]}'
+    cached = (en.kv_old(old).get('CA') or 'TBD') + suffix
+    return ('f', f'CONCATENATE(CA{rowmap[old]},"{suffix}")', cached)
+
+
 def aplicar_formulas_extras(en, plan, fcc, rowmap):
     prototypes = []
     for index in range(len(fcc.rows)):
@@ -53,7 +91,11 @@ def aplicar_formulas_extras(en, plan, fcc, rowmap):
                       v.get('BX', '').lower() == kv.get('BX', '').lower()]
         if candidates:
             index, _ = max(candidates, key=lambda iv: (
-                iv[1].get('BT') == kv.get('BT'), iv[1].get('BU') == kv.get('BU')))
+                iv[1].get('BT') == kv.get('BT'), iv[1].get('BU') == kv.get('BU'),
+                f'Battery check {meta["numero"] if meta["numero"] <= 2 else 1}"' in _celda(fcc, iv[0], 'CA')[1]
+                if meta['tipo'] == 'bat' else False))
+            if meta['tipo'] == 'bat':
+                item.ovr[col2n('CA')] = _posicion_bateria(en, meta, fcc, index, rowmap)
             for dest, source in EQUIVALENTES.items():
                 kind, pattern = _celda(fcc, index, source)
                 if kind == 3:

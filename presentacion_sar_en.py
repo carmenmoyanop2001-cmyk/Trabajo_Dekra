@@ -9,9 +9,13 @@ def _text_formula(value):
     return '(' + '&CHAR(10)&'.join(parts) + ')' if len(parts) > 1 else parts[0]
 
 
-def _centrar_estilo(xfs, style_map, old_style):
-    if old_style not in style_map:
+def _centrar_estilo(xfs, style_map, old_style, font_id=None):
+    key = (old_style, font_id)
+    if key not in style_map:
         xf = deepcopy(xfs[old_style])
+        if font_id is not None:
+            xf.set('fontId', str(font_id))
+            xf.set('applyFont', '1')
         alignment = xf.find('{*}alignment')
         if alignment is None:
             alignment = etree.Element('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}alignment')
@@ -20,13 +24,14 @@ def _centrar_estilo(xfs, style_map, old_style):
         alignment.set('vertical', 'center')
         alignment.set('wrapText', '1')
         xf.set('applyAlignment', '1')
-        style_map[old_style] = len(xfs)
+        style_map[key] = len(xfs)
         xfs.append(xf)
-    return style_map[old_style]
+    return style_map[key]
 
 
-def _combinar_exposiciones(en, plan, ctx, xfs, style_map):
+def _combinar_exposiciones(en, plan, ctx, xfs, style_map, fonts):
     bx = col2n('BX')
+    visible_fonts = {}
     groups = []
     previous = None
     for row, item in enumerate(plan, start=3):
@@ -47,7 +52,21 @@ def _combinar_exposiciones(en, plan, ctx, xfs, style_map):
         if first != last:
             ctx.display_merges['SAR EN'].append(f'BX{first}:BX{last}')
         old_style = next(c[1] for c in en.templates[en.rows[first_item.i][1]] if c[0] == bx)
-        ctx.style_overrides[('SAR EN', first, bx)] = _centrar_estilo(xfs, style_map, old_style)
+        # El original oculta etiquetas repetidas con la fuente del color del
+        # relleno. La única etiqueta del bloque combinado debe ser legible.
+        old_font = int(xfs[old_style].get('fontId', '0'))
+        if old_font not in visible_fonts:
+            font = deepcopy(fonts[old_font])
+            color = font.find('{*}color')
+            if color is None:
+                color = etree.SubElement(font, '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}color')
+            color.attrib.clear()
+            color.set('rgb', 'FF000000')
+            visible_fonts[old_font] = len(fonts)
+            fonts.append(font)
+        ctx.style_overrides[('SAR EN', first, bx)] = _centrar_estilo(
+            xfs, style_map, old_style, visible_fonts[old_font])
+    fonts.set('count', str(len(fonts)))
 
 
 def combinar_mode(en, plan, ctx, styles_xml):
@@ -96,6 +115,6 @@ def combinar_mode(en, plan, ctx, styles_xml):
         old_style = next(c[1] for c in en.templates[en.rows[first_item.i][1]] if c[0] == by)
         ctx.style_overrides[('SAR EN', first, by)] = _centrar_estilo(xfs, style_map, old_style)
     ctx.display_merges['SAR EN'] = merges
-    _combinar_exposiciones(en, plan, ctx, xfs, style_map)
+    _combinar_exposiciones(en, plan, ctx, xfs, style_map, styles.find('{*}fonts'))
     xfs.set('count', str(len(xfs)))
     return etree.tostring(styles, encoding='UTF-8', xml_declaration=True, standalone=True)

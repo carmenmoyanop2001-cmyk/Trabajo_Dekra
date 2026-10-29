@@ -55,6 +55,8 @@ SAR FCC-ISED conserva sus filas originales que cumplen el filtro de tecnologías
 
 En SAR EN se conservan todas las filas originales seleccionadas y se insertan debajo de cada grupo las baterías elegidas y, para Body, Front Face y accesorios. Se copian los estilos de la fila superior y se adaptan las fórmulas equivalentes de FCC-ISED a EN; no se sustituyen esas fórmulas por constantes N/A; también se amplían las reglas de formato condicional y las validaciones que afectaban a esa fila. Las filas posteriores se desplazan. No se añaden filas Variability. Spotchecking se registra en el resumen de respuestas, pero no añade filas SAR.
 
+La posición de cada batería en CA es una fórmula, como `CONCATENATE(CA9," - Battery check 1")`, adaptada a su fila de referencia en EN. Inicialmente muestra «TBD - Battery check n» y se actualiza con la posición del ensayo de referencia. El nombre de la exposure condition se muestra en negro en BX, conservando la celda combinada y su fondo original.
+
 La reubicación de referencias sigue siendo necesaria cuando se filtran filas, se insertan otras o se cambia el nombre de las hojas. Se conservan las fórmulas de origen; los enlaces que no pueden resolverse siguen notificándose en los avisos. Las macros se conservan y requieren comprobación en Excel.
 
 SAR EN inserta las baterías al final de cada bloque de exposición original, justo tras sus TBD. En Body añade además Front Face y los accesorios. Se mantienen los límites y medidas EN de 10 g. Consulta `docs/formulas_sar_en.md`.

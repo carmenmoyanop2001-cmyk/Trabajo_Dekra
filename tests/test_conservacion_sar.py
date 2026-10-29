@@ -53,7 +53,9 @@ class ConservacionTests(unittest.TestCase):
                     with zipfile.ZipFile(Path(DIR_PLANTILLA) / 'plantilla_base.zip') as base:
                         old_styles = E.fromstring(base.read('xl/styles.xml'))
                         new_styles = E.fromstring(z.read('xl/styles.xml'))
-                        for tag in ('fonts', 'fills', 'borders', 'numFmts'):
+                        for old, new in zip(old_styles.find('s:fonts', NS), new_styles.find('s:fonts', NS)):
+                            self.assertEqual(E.tostring(old), E.tostring(new))
+                        for tag in ('fills', 'borders', 'numFmts'):
                             self.assertEqual(E.tostring(old_styles.find('s:' + tag, NS)),
                                              E.tostring(new_styles.find('s:' + tag, NS)))
                         old_xfs, new_xfs = old_styles.find('s:cellXfs', NS), new_styles.find('s:cellXfs', NS)
@@ -96,14 +98,14 @@ class ConservacionTests(unittest.TestCase):
             cells = cell_map(row)
             pos = value(cells['CA'])
             self.assertNotIn('Variability', pos)
-            added = pos.startswith(('TBD-Battery check ', 'Accesorio ')) or (pos == 'Front Face' and value(cells['CB']) == '25')
+            added = pos.startswith(('TBD - Battery check ', 'Accesorio ')) or (pos == 'Front Face' and value(cells['CB']) == '25')
             if added:
                 previous = cell_map(rows[i - 1])
                 self.assertEqual({c: e.get('s') for c, e in cells.items()},
                                  {c: e.get('s') for c, e in previous.items()})
                 for col in ('CC', 'CD', 'DB'):
                     self.assertIsNotNone(cells[col].find('s:f', NS))
-                if pos.startswith('TBD-Battery check '): batteries += 1
+                if pos.startswith('TBD - Battery check '): batteries += 1
                 if pos.startswith('Accesorio '): accessories += 1
             else:
                 unchanged.append(row)

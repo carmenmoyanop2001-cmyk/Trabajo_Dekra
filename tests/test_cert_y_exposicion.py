@@ -54,6 +54,7 @@ class CertExposicionTests(unittest.TestCase):
             generar(DATA, path, log=lambda *_: None)
             with zipfile.ZipFile(path) as z:
                 root = E.fromstring(z.read('xl/worksheets/sheet11.xml'))
+                styles = E.fromstring(z.read('xl/styles.xml'))
         cells = {c.get('r'): c for c in root.findall('s:sheetData/s:row/s:c', NS)}
         ranges = [r for r in root.xpath('//s:mergeCell/@ref', namespaces=NS) if r.startswith('BX')]
         covered = {}
@@ -61,6 +62,9 @@ class CertExposicionTests(unittest.TestCase):
         for span in ranges:
             first, last = (int(c[2:]) for c in span.split(':'))
             exposure = text(cells[f'BX{first}'])
+            xf = styles.find('s:cellXfs', NS)[int(cells[f'BX{first}'].get('s', '0'))]
+            font = styles.find('s:fonts', NS)[int(xf.get('fontId'))]
+            self.assertEqual(font.find('s:color', NS).attrib, {'rgb': 'FF000000'})
             key = (text(cells[f'BT{first}']), text(cells[f'BU{first}']))
             self.assertIn(exposure, ('Close to Ear', 'Body', 'Extremity'))
             for row in range(first, last + 1):
@@ -70,7 +74,7 @@ class CertExposicionTests(unittest.TestCase):
                 if row != first:
                     self.assertEqual(text(cells[f'BX{row}']), '')
                 position = text(cells[f'CA{row}'])
-                has_batteries |= position.startswith('TBD-Battery check ')
+                has_batteries |= position.startswith('TBD - Battery check ')
                 if position.startswith('Accesorio '):
                     has_accessories = True
                     self.assertEqual(exposure, 'Body')
