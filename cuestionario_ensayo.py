@@ -68,7 +68,8 @@ class ScrollFrame(ttk.Frame):
             self.canvas.yview_moveto(0.0)
             return
         total = max(self.inner.winfo_reqheight(), 1)
-        self.canvas.yview_moveto(max(widget.winfo_y() - 10, 0) / total)
+        offset = widget.winfo_rooty() - self.inner.winfo_rooty()
+        self.canvas.yview_moveto(max(offset - 10, 0) / total)
 
 
 # --------------------------------------------------------------------------
@@ -528,6 +529,27 @@ class PanelWLAN(ttk.Frame):
                     f"    Modos ({len(modos)}): " + ", ".join(modos)]
         return out
 
+    def cargar(self, data):
+        if isinstance(data, list) or (isinstance(data, dict) and 'bandas' in data):
+            bands = data if isinstance(data, list) else data['bandas']
+            modes = [] if isinstance(data, list) else data.get('modos', [])
+            data = {}
+            if '2.4 GHz' in bands:
+                data[WLAN_24] = [m for m in modes if m in WLAN_MODOS_24]
+            unii = [b for b in bands if b in WLAN_UNII]
+            if unii:
+                data[WLAN_5] = {'bandas': unii, 'modos': [m for m in modes if m in [WLAN_MODO_5] + WLAN_MODOS_5]}
+        for freq, variable in self.sel.items():
+            variable.set(freq in data)
+            self._al_cambiar(freq)
+        for mode, variable in self.modos_24.items():
+            variable.set(mode in data.get(WLAN_24, []))
+        five = data.get(WLAN_5, {})
+        for band, variable in self.unii.items():
+            variable.set(band in five.get('bandas', []))
+        for mode, variable in self.modos_5.items():
+            variable.set(mode in five.get('modos', []))
+
 
 class TecnologiaBloque(ttk.Frame):
     """Casilla de una tecnología; al marcarla aparece su panel justo debajo."""
@@ -682,7 +704,7 @@ class App(tk.Tk):
             self.elementos[cat["clave"]] = sec
 
         # Tecnologías: se marcan y aparecen sus opciones debajo
-        marco_tec = self.marco_tec = ttk.LabelFrame(cont, text="Tecnologías de la base cargada", padding=(10, 6))
+        marco_tec = self.marco_tec = ttk.LabelFrame(cont, text="Tecnologías", padding=(10, 6))
         marco_tec.pack(fill="x", pady=4)
         ttk.Label(marco_tec, text="Marca las tecnologías que aplican:",
                   foreground="#555555").pack(anchor="w", pady=(0, 4))
@@ -692,15 +714,38 @@ class App(tk.Tk):
         from formulario_bd import fabricas
         for bloque in self.tecnologias.values():
             bloque.destroy()
+        if getattr(self, 'marco_otros', None):
+            self.marco_otros.destroy()
         self.tecnologias = {}
-        for nombre, fabrica in fabricas(self.catalogo) if self.catalogo else []:
-            bloque = TecnologiaBloque(self.marco_tec, nombre, fabrica)
+        self.marco_otros = None
+        for nombre, fabrica in fabricas(self.catalogo, wlan=PanelWLAN) if self.catalogo else []:
+            parent = self.marco_tec
+            if nombre == 'BT' or nombre.startswith('Custom'):
+                if self.marco_otros is None:
+                    self.marco_otros = ttk.Frame(self.marco_tec)
+                    self.marco_otros.pack(fill='x', pady=(8, 0))
+                    self.otros_contenido = ttk.Frame(self.marco_otros)
+                    self.otros_boton = ttk.Button(self.marco_otros, text='Mostrar otras tecnologías', command=self._mostrar_otros)
+                    self.otros_boton.pack(anchor='w')
+                parent = self.otros_contenido
+            bloque = TecnologiaBloque(parent, nombre, fabrica)
             bloque.pack(fill="x", pady=2)
             self.tecnologias[nombre] = bloque
             if anteriores and nombre in anteriores:
                 bloque.panel.cargar(anteriores[nombre])
                 bloque.var.set(True)
                 bloque._al_cambiar()
+                if parent is not self.marco_tec:
+                    self.otros_contenido.pack(fill='x')
+                    self.otros_boton.configure(text='Ocultar otras tecnologías')
+
+    def _mostrar_otros(self):
+        if self.otros_contenido.winfo_manager():
+            self.otros_contenido.pack_forget()
+            self.otros_boton.configure(text='Mostrar otras tecnologías')
+        else:
+            self.otros_contenido.pack(fill='x')
+            self.otros_boton.configure(text='Ocultar otras tecnologías')
 
     def _elegir_base(self):
         path = filedialog.askopenfilename(title='Elegir base de datos de tecnologías', filetypes=[('Base de datos Excel', '*.xlsx')])

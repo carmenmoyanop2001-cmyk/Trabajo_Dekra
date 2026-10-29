@@ -172,10 +172,12 @@ class Catalogo:
         for name, value in datos['tecnologias'].items():
             if name == '2G':
                 bands = value.get('bandas')
+                per_mode = value.get('bandas_por_modo', {})
                 if value.get('GSM'):
-                    wanted.append(('GSM', bands, None))
+                    wanted.append(('GSM', per_mode.get('GSM', bands), None))
                 for mode in ('GPRS', 'EGPRS'):
-                    wanted.extend((f'{mode} {slot[2:]}TX', bands, None) for slot in slots_incluidos(value.get(mode)))
+                    wanted.extend((f'{mode} {slot[2:]}TX', per_mode.get(mode, bands), None)
+                                  for slot in slots_incluidos(value.get(mode)))
             elif name == '3G':
                 if isinstance(value, dict):
                     wanted.extend((t, b.get('bandas'), b.get('modos')) if isinstance(b, dict) else (t, b, None)

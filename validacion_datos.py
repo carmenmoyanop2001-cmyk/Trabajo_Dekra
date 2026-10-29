@@ -33,8 +33,11 @@ def validar_datos(datos, catalogo=None):
     if catalogo is not None:
         for name, value in technologies.items():
             if name == '2G':
-                if not isinstance(value, dict) or set(value) - {'GSM', 'GPRS', 'EGPRS', 'bandas'}:
+                if not isinstance(value, dict) or set(value) - {'GSM', 'GPRS', 'EGPRS', 'bandas', 'bandas_por_modo'}:
                     raise ValueError('Selección 2G no válida.')
+                per_mode = value.get('bandas_por_modo', {})
+                if not isinstance(per_mode, dict) or set(per_mode) - {'GSM', 'GPRS', 'EGPRS'}:
+                    raise ValueError('Las bandas 2G deben asignarse por GSM, GPRS o EGPRS.')
                 if not any(value.get(k) for k in ('GSM', 'GPRS', 'EGPRS')):
                     raise ValueError('Selecciona al menos un modo 2G.')
                 if 'GSM' in value and type(value['GSM']) is not bool:

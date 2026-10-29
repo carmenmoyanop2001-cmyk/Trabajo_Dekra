@@ -179,17 +179,24 @@ class BaseDatosTests(unittest.TestCase):
             def __init__(self, value=False): self.v = value
             def get(self): return self.v
             def set(self, v): self.v = v
+        class B:
+            def __init__(self, bands): self.bands = bands
+            def seleccion(self): return self.bands
+            def cargar(self, bands): self.bands = bands
+            def actualizar(self, available): pass
         p = SimpleNamespace(sel={m: V() for m in ('GSM', 'GPRS', 'EGPRS')},
             slots={m: {f'TX{n}': V() for n in range(1, 5)} for m in ('GPRS', 'EGPRS')},
-            bandas={'900': V(True), '850': V(False)})
+            bandas_modo={m: B(['900']) for m in ('GSM', 'GPRS', 'EGPRS')},
+            _disponibles=lambda mode: ['900', '850'], _mostrar=lambda mode: None)
         p.slots['GPRS']['TX3'].set(True)
         Panel2GCatalogo._cambiar(p, 'GPRS', 'TX3')
         data = Panel2GCatalogo.seleccion(p)
         self.assertEqual(data['GPRS'], ['TX1', 'TX2', 'TX3'])
-        self.assertEqual(data['bandas'], ['900'])
-        Panel2GCatalogo.cargar(p, dict(data, GSM=True))
+        self.assertEqual(data['bandas_por_modo'], {'GPRS': ['900']})
+        Panel2GCatalogo.cargar(p, dict(data, GSM=True, bandas=['900']))
         self.assertTrue(p.sel['GSM'].get())
-        generic = SimpleNamespace(bandas={'FDD101': V()}, modos={}, modos_libres=V(''))
+        generic = SimpleNamespace(entrada=B([]), modos_guardados=[],
+            lbl_modos=SimpleNamespace(configure=lambda **_: None, pack=lambda **_: None))
         PanelCatalogo.cargar(generic, dict(bandas=['FDD101'], modos=['Nuevo modo']))
         self.assertEqual(PanelCatalogo.seleccion(generic), dict(bandas=['FDD101'], modos=['Nuevo modo']))
 
