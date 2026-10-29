@@ -20,6 +20,9 @@ test_slots_interfaz_acumulativos_e_independientes (test_generacion.GeneracionTes
 test_validacion_multiseleccion_y_slots_anteriores (test_generacion.GeneracionTests.test_validacion_multiseleccion_y_slots_anteriores) ... ok
 test_formula_y_indirect_en_limite_de_bloque_sin_tocar_macros (test_nombres_hojas.NombresTests.test_formula_y_indirect_en_limite_de_bloque_sin_tocar_macros) ... ok
 test_lte_seleccionado_sin_prefijo_y_con_enlaces_sar_actualizados (test_nombres_hojas.NombresTests.test_lte_seleccionado_sin_prefijo_y_con_enlaces_sar_actualizados) ... ok
+test_fcc_conserva_ceros_formulas_estilos_y_filas_sin_anadir_baterias (test_regiones_y_fcc_original.RegionesFccTests.test_fcc_conserva_ceros_formulas_estilos_y_filas_sin_anadir_baterias) ... ok
+test_las_siete_combinaciones_de_regiones_generan_las_hojas_solicitadas (test_regiones_y_fcc_original.RegionesFccTests.test_las_siete_combinaciones_de_regiones_generan_las_hojas_solicitadas) ... ok
+test_no_publica_excel_si_una_hoja_solicitada_falta_o_esta_oculta (test_regiones_y_fcc_original.RegionesFccTests.test_no_publica_excel_si_una_hoja_solicitada_falta_o_esta_oculta) ... ok
 test_gsm_original_y_dos_baterias_en_cada_flecha (test_sar_en_cuatro_puntos.CuatroPuntosTests.test_gsm_original_y_dos_baterias_en_cada_flecha) ... ok
 test_no_sobrescribe_un_excel_con_una_seleccion_sar_sin_filas_originales (test_sar_en_cuatro_puntos.CuatroPuntosTests.test_no_sobrescribe_un_excel_con_una_seleccion_sar_sin_filas_originales) ... ok
 test_cache_de_toda_la_columna_o_contra_los_35752_valores_del_excel_original (test_valores_y_mode.ValoresModeTests.test_cache_de_toda_la_columna_o_contra_los_35752_valores_del_excel_original) ... ok
@@ -33,6 +36,6 @@ test_plantillas_wlan_solo_banda_y_exposicion_sin_duplicados (test_wlan_sar.WlanS
 test_seleccion_de_la_captura_genera_sar_y_tecnologias (test_wlan_sar.WlanSarTests.test_seleccion_de_la_captura_genera_sar_y_tecnologias) ... ok
 
 ----------------------------------------------------------------------
-Ran 33 tests in 255.598s
+Ran 36 tests in 299.994s
 
 OK

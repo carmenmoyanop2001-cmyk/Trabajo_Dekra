@@ -172,6 +172,8 @@ _CATM_O = re.compile('IF\\(' + re.escape(T1) + r'\|\$?J\|r:0' + re.escape(T2) +
 
 def valor_formula_original(h, index, col, pattern):
     cached = h.kv(index).get(col)
+    if cached is None:
+        cached = h.sd.get('formula_cache', {}).get(h.rows[index][0], {}).get(col)
     if h.name == 'Conducted LTE CATM1' and col == 'O':
         match = _CATM_O.fullmatch(pattern)
         if match:
@@ -205,8 +207,9 @@ def emit_row(h, ctx, resolve, item, newrow):
                 pat = desindirect(pat, r_old, h)
             val = expand(pat, r_old, resolve, h.name, newrow if item.clone else None, ctx.inline, None)
             if val is None:
-                cached = h.kv(item.i).get(col)         # valor por defecto que traía la plantilla (banda, canal, frecuencia, modo...)
-                if cached is not None and not ctx.no_cache:
+                default = h.kv(item.i).get(col)        # metadatos que traía la plantilla (banda, canal, frecuencia, modo...)
+                if default is not None and not ctx.no_cache:
+                    cached = default
                     try:
                         float(cached); kind, val = 1, cached
                     except ValueError:

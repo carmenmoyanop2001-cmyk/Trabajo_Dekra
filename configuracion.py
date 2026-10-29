@@ -1,6 +1,6 @@
 """Opciones de la toma de datos compartidas por interfaz y generador."""
 REGIONES = ["EN", "FCC", "ISED"]
-REGION_AYUDA = {"EN": "Europa", "FCC": "Estados Unidos", "ISED": "Canadá"}
+REGION_AYUDA = {"EN": "Europa — SAR EN", "FCC": "Estados Unidos — SAR FCC-ISED", "ISED": "Canadá — SAR FCC-ISED"}
 EXPOSICIONES = ["Close to ear", "Close to Head", "Body", "Extremity"]
 SI, NO = "Sí", "No"
 

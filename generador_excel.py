@@ -55,9 +55,49 @@ def generar(datos, salida, dir_plantilla=None, log=print):
         errors = validar(str(candidate), verbose=False)
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))
+        _validar_hojas_sar(candidate, datos['region'])
         os.replace(candidate, target)
     log(f'Excel validado: {target}')
     return resumen
+
+
+def _hojas_sar(regiones):
+    regions = seleccion_multiple(regiones)
+    return (['SAR EN'] if 'EN' in regions else []) + (
+        ['SAR FCC-ISED'] if any(r in regions for r in ('FCC', 'ISED')) else [])
+
+
+def _validar_hojas_sar(path, regiones):
+    """Verificar el libro emitido, no solo el plan o el mensaje de éxito."""
+    from lxml import etree
+    from posixpath import normpath
+    ns = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+    expected = set(_hojas_sar(regiones))
+    with zipfile.ZipFile(path) as z:
+        wb = etree.fromstring(z.read('xl/workbook.xml'))
+        sheets = {s.get('name'): s for s in wb.findall('s:sheets/s:sheet', ns)}
+        actual = set(sheets) & {'SAR EN', 'SAR FCC-ISED'}
+        if actual != expected:
+            raise ValueError('Las hojas SAR del Excel no corresponden a las regiones seleccionadas. '
+                             f'Esperadas: {sorted(expected)}; encontradas: {sorted(actual)}.')
+        rels = {r.get('Id'): r.get('Target') for r in etree.fromstring(z.read('xl/_rels/workbook.xml.rels'))}
+        for name in expected:
+            sheet = sheets[name]
+            if sheet.get('state', 'visible') != 'visible':
+                raise ValueError(f'La hoja solicitada {name} ha quedado oculta.')
+            target = rels[sheet.get('{' + NS_REL + '}id')]
+            part = normpath('xl/' + target) if not target.startswith('/') else target.lstrip('/')
+            found = False
+            with z.open(part) as data:
+                for _, row in etree.iterparse(data, tag='{' + ns['s'] + '}row'):
+                    if int(row.get('r')) > 2 and any(c.get('r', '').startswith('BT') and len(c) for c in row):
+                        found = True
+                        break
+                    row.clear()
+                    while row.getprevious() is not None:
+                        del row.getparent()[0]
+            if not found:
+                raise ValueError(f'La hoja solicitada {name} ha quedado sin filas de ensayo.')
 
 
 def _generar(datos, salida, dir_plantilla=None, log=print):
@@ -68,8 +108,7 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     t = datos['tecnologias']
     conducida = bool(datos['conducida'])
     regions = seleccion_multiple(datos['region'])
-    sar_names = (['SAR EN'] if 'EN' in regions else []) + (
-        ['SAR FCC-ISED'] if any(r in regions for r in ('FCC', 'ISED')) else [])
+    sar_names = _hojas_sar(regions)
 
     # ---- 1) qué hojas habrá ----
     conds = hojas_conducted_necesarias(t)

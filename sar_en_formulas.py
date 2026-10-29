@@ -91,11 +91,15 @@ def aplicar_formulas_extras(en, plan, fcc, rowmap):
                       v.get('BX', '').lower() == kv.get('BX', '').lower()]
         if candidates:
             index, _ = max(candidates, key=lambda iv: (
-                iv[1].get('BT') == kv.get('BT'), iv[1].get('BU') == kv.get('BU'),
-                f'Battery check {meta["numero"] if meta["numero"] <= 2 else 1}"' in _celda(fcc, iv[0], 'CA')[1]
-                if meta['tipo'] == 'bat' else False))
+                iv[1].get('BT') == kv.get('BT'), iv[1].get('BU') == kv.get('BU')))
             if meta['tipo'] == 'bat':
-                item.ovr[col2n('CA')] = _posicion_bateria(en, meta, fcc, index, rowmap)
+                # Solo CA usa el prototipo de batería numerado. Las demás
+                # columnas mantienen la adaptación de la versión anterior.
+                number = meta['numero'] if meta['numero'] <= 2 else 1
+                battery_index, _ = max(candidates, key=lambda iv: (
+                    iv[1].get('BT') == kv.get('BT'), iv[1].get('BU') == kv.get('BU'),
+                    f'Battery check {number}"' in _celda(fcc, iv[0], 'CA')[1]))
+                item.ovr[col2n('CA')] = _posicion_bateria(en, meta, fcc, battery_index, rowmap)
             for dest, source in EQUIVALENTES.items():
                 kind, pattern = _celda(fcc, index, source)
                 if kind == 3:

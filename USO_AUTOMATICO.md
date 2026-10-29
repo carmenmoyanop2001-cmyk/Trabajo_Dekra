@@ -43,6 +43,8 @@ Se han contrastado también las fórmulas de las filas 3 a 10 de las nueve hojas
 
 Se pueden marcar varias regiones y varias exposure conditions. El Excel reúne las condiciones seleccionadas en cada hoja SAR. EN añade SAR EN; FCC e ISED comparten SAR FCC-ISED y no duplican sus filas. Las hojas Conducted conservan los bloques necesarios para ambas familias de región. Los accesorios y Front Face de SAR EN se añaden únicamente a sus grupos Body. FCC conserva las posiciones y baterías que ya contiene la plantilla original.
 
+La aplicación comprueba en el archivo terminado que las hojas SAR de las regiones elegidas existen, están visibles y contienen filas. Si falta una hoja solicitada, no sustituye el Excel anterior. Las opciones de región indican qué pestaña generan: EN → SAR EN; FCC/ISED → SAR FCC-ISED. No se añade una región que no se haya marcado.
+
 En GPRS y EGPRS, marcar TX3 activa TX1, TX2 y TX3. Marcar TX4 activa los cuatro. Al desmarcar TX2, por ejemplo, solo queda TX1. GPRS y EGPRS se configuran de forma independiente. La selección se refleja en el resumen de texto y en las filas Conducted. La plantilla SAR solo tiene GPRS 4TX, por lo que elegir TX1-TX3 no crea modos SAR inexistentes.
 
 Para JSON, `region` y `exposure` admiten listas; se mantiene la compatibilidad con los archivos antiguos que contienen una sola cadena. GPRS y EGPRS admiten una lista de slots o la cadena antigua del máximo: `"TX3"` incluye también TX1 y TX2. Consulta `ejemplos/ejemplo_multiple.json`.
@@ -56,6 +58,8 @@ SAR FCC-ISED conserva sus filas originales que cumplen el filtro de tecnologías
 En SAR EN se conservan todas las filas originales seleccionadas y se insertan debajo de cada grupo las baterías elegidas y, para Body, Front Face y accesorios. Se copian los estilos de la fila superior y se adaptan las fórmulas equivalentes de FCC-ISED a EN; no se sustituyen esas fórmulas por constantes N/A; también se amplían las reglas de formato condicional y las validaciones que afectaban a esa fila. Las filas posteriores se desplazan. No se añaden filas Variability. Spotchecking se registra en el resumen de respuestas, pero no añade filas SAR.
 
 La posición de cada batería en CA es una fórmula, como `CONCATENATE(CA9," - Battery check 1")`, adaptada a su fila de referencia en EN. Inicialmente muestra «TBD - Battery check n» y se actualiza con la posición del ensayo de referencia. El nombre de la exposure condition se muestra en negro en BX, conservando la celda combinada y su fondo original.
+
+Se ha retomado la adaptación anterior para las otras columnas de las filas añadidas EN: la elección del prototipo de batería numerado afecta solo a CA. En FCC se conservan también los resultados guardados de fórmulas coincidentes con el original recibido, incluidos los ceros de los límites SAR. El informe `docs/cache_fcc_original.json` documenta la recuperación. No se importan sus referencias rotas ni se sustituyen fórmulas, filas o estilos de la plantilla completa.
 
 La reubicación de referencias sigue siendo necesaria cuando se filtran filas, se insertan otras o se cambia el nombre de las hojas. Se conservan las fórmulas de origen; los enlaces que no pueden resolverse siguen notificándose en los avisos. Las macros se conservan y requieren comprobación en Excel.
 
