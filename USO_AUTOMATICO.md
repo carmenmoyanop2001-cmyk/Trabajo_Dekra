@@ -16,6 +16,10 @@ Las opciones mantienen la organización anterior. Al marcar GPRS o EGPRS aparece
 
 Los JSON nuevos usan `tecnologias.2G.bandas_por_modo` para mantener bandas independientes de GSM, GPRS y EGPRS. Se siguen admitiendo las respuestas anteriores con una lista compartida `bandas`, que al cargar se aplica a cada modo activo. Se admiten números y etiquetas completas; si un número corresponde a más de una banda, las opciones muestran las etiquetas para evitar ambigüedades. Si una banda guardada ya no existe en la base cargada, se muestra un aviso. Los cambios escritos se deben confirmar antes de generar.
 
+Las tecnologías con una única banda posible no piden seleccionarla: la usan automáticamente. Esto incluye BT y Custom en la base incluida. Si la base se actualiza para añadirles más bandas, aparece el campo de selección. Las bandas de LTE CAT M1 y tecnologías equivalentes se presentan como números tanto en la entrada como en la confirmación y el resumen de bandas del archivo de texto. Las respuestas JSON conservan los identificadores que utiliza la base.
+
+En el original, WCDMA, HSPA, HSPA+, HSDPA y DC-HSDPA tienen las mismas 12 bandas. Cuando la base solo aporta WCDMA, sus bandas, canales y frecuencias sirven también para las otras opciones 3G, conservando la tecnología elegida. Los parámetros específicos ausentes no se recuperan del Excel original. Una tabla específica en la base tiene prioridad sobre este catálogo común. La comprobación del original está en `docs/bandas_3g_original.json`.
+
 El JSON guarda la ruta y el identificador de la base usada. Al cargarlo desde el formulario se utiliza la base que tengas elegida en ese momento; así puedes repetir una configuración con otra versión. Si mueves archivos a otro ordenador, elige primero su base allí. La CLI permite sustituir la referencia con `--base-datos`.
 
 ## Hojas originales conservadas

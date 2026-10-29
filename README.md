@@ -15,6 +15,10 @@ Requiere Python 3.10 o posterior, con tkinter.
 
 Cada tecnología muestra sus opciones como texto: **Bandas disponibles: (1, 2, 3, …)**. Debajo puedes escribir los números que elijas, separados por comas, y pulsar **Aceptar bandas**. En 2G, las opciones y el campo de GPRS y EGPRS aparecen justo debajo de sus respectivos slots; GSM tiene los suyos. Los slots siguen siendo acumulativos. Las opciones habituales de 3G, variantes 5G y modos WiFi se conservan. BT y Custom quedan en **Mostrar otras tecnologías**.
 
+Si una tecnología solo tiene una banda posible en la base, se utiliza automáticamente y no muestra opciones ni campo de bandas. En LTE, LTE CAT M1 y LTE NB-IoT se muestran los números también al cargar respuestas y confirmar la selección: `1, 2, 3` en lugar de `FDD1, FDD2, FDD3`. Los identificadores completos se conservan internamente para generar el Excel.
+
+HSPA, HSPA+, HSDPA y DC-HSDPA usan el catálogo de bandas, canales y frecuencias WCDMA de la base cuando no tienen una tabla propia. Se ha contrastado en el Excel original que comparten las 12 bandas de 3G. Si añades registros específicos para una de estas tecnologías a la base, pasan a tener prioridad. Los parámetros propios que falten quedan vacíos.
+
 [Vista de la interfaz](docs/interfaz_bandas.png)
 
 Para repetir un ensayo: elige la base actualizada, pulsa **Cargar respuestas (.json)…** y genera otra salida. **Recargar base** actualiza las opciones si has editado el XLSX mientras el formulario estaba abierto. Las selecciones que ya no existen se rechazan; no se sustituyen por datos antiguos.

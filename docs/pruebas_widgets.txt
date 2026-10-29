@@ -1,9 +1,10 @@
 test_app_wlan_opciones_anteriores_y_otros_colapsados (test_interfaz_bandas.InterfazRealTests.test_app_wlan_opciones_anteriores_y_otros_colapsados) ... ok
 test_bandas_lte_variantes_5g_y_opciones_3g (test_interfaz_bandas.InterfazRealTests.test_bandas_lte_variantes_5g_y_opciones_3g) ... ok
 test_cambio_catalogo_y_respuestas_con_bandas_eliminadas (test_interfaz_bandas.InterfazRealTests.test_cambio_catalogo_y_respuestas_con_bandas_eliminadas) ... ok
+test_catm1_numeros_y_tecnologias_con_banda_fija (test_interfaz_bandas.InterfazRealTests.test_catm1_numeros_y_tecnologias_con_banda_fija) ... ok
 test_subpaneles_2g_colocacion_y_carga_antigua (test_interfaz_bandas.InterfazRealTests.test_subpaneles_2g_colocacion_y_carga_antigua) ... ok
 
 ----------------------------------------------------------------------
-Ran 4 tests in 6.805s
+Ran 5 tests in 7.495s
 
 OK

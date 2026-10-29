@@ -31,6 +31,7 @@ class BandasTextoTests(unittest.TestCase):
             displayed = opciones_bandas(bands)
             self.assertEqual(resolver_bandas(', '.join(displayed), bands), bands)
         self.assertEqual(opciones_bandas(['FDD1', 'FDD3', 'TDD38']), ['1', '3', '38'])
+        self.assertEqual(opciones_bandas(['FDD1'], ['FDD1', 'TDD1']), ['FDD1'])
 
     def test_bandas_por_modo_se_reflejan_en_el_excel(self):
         from generador_excel import generar
@@ -129,6 +130,10 @@ class InterfazRealTests(unittest.TestCase):
             five.cargar(['n78 RSS-192'])
             self.assertEqual(five.seleccion(), ['n78 RSS-192'])
             self.assertEqual(list(three.options), OPCIONES_3G)
+            for tech, (_, panel) in three.options.items():
+                self.assertEqual(panel.entrada.disponibles, self.catalogo.bandas('WCDMA'))
+                panel.entrada.texto.set('1, 3')
+                self.assertTrue(panel.entrada.aceptar(), tech)
         finally:
             lte.destroy(); five.destroy(); three.destroy()
 
@@ -150,6 +155,34 @@ class InterfazRealTests(unittest.TestCase):
             self.assertIn('1900', bands.estado.cget('text'))
         finally:
             bands.destroy()
+
+    def test_catm1_numeros_y_tecnologias_con_banda_fija(self):
+        from formulario_bd import PanelCatalogo
+        panels = [PanelCatalogo(self.root, tech, self.catalogo) for tech in ('LTE CAT M1', 'BT', 'Custom1')]
+        try:
+            catm, bt, custom = panels
+            for panel in panels:
+                panel.pack(fill='x')
+            catm.cargar(['FDD1', 'FDD3'])
+            self.root.update()
+            self.assertEqual(catm.entrada.texto.get(), '1, 3')
+            self.assertEqual(catm.entrada.estado.cget('text'), 'Seleccionadas: 1, 3')
+            self.assertEqual(catm.lineas(), ['Bandas: 1, 3'])
+            self.assertEqual(catm.seleccion(), ['FDD1', 'FDD3'])
+            for panel, bands in [(bt, ['2.4 GHz']), (custom, ['?'])]:
+                self.assertFalse(panel.entrada.controles.winfo_ismapped())
+                self.assertFalse(panel.entrada.estado.winfo_ismapped())
+                self.assertEqual(panel.validar(), [])
+                self.assertEqual(panel.seleccion(), bands)
+                panel.cargar(bands)
+                self.assertEqual(panel.validar(), [])
+            bt.entrada.actualizar(['2.4 GHz', '5 GHz'])
+            self.root.update()
+            self.assertTrue(bt.entrada.controles.winfo_ismapped())
+            self.assertEqual(bt.seleccion(), ['2.4 GHz'])
+        finally:
+            for panel in panels:
+                panel.destroy()
 
     def test_app_wlan_opciones_anteriores_y_otros_colapsados(self):
         from cuestionario_ensayo import App

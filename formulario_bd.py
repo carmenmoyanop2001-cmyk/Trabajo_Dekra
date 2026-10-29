@@ -14,10 +14,12 @@ class SelectorBandas(ttk.Frame):
         self.al_cambiar = None
         self.aceptadas = []
         self.texto = tk.StringVar(self)
-        self.opciones = ttk.Label(self, foreground='#555555', wraplength=570)
+        self.controles = ttk.Frame(self)
+        self.controles.pack(fill='x')
+        self.opciones = ttk.Label(self.controles, foreground='#555555', wraplength=570)
         self.opciones.pack(anchor='w')
-        ttk.Label(self, text='Bandas elegidas (separadas por comas):').pack(anchor='w', pady=(4, 0))
-        row = ttk.Frame(self)
+        ttk.Label(self.controles, text='Bandas elegidas (separadas por comas):').pack(anchor='w', pady=(4, 0))
+        row = ttk.Frame(self.controles)
         row.pack(fill='x', pady=(3, 0))
         self.entry = ttk.Entry(row, textvariable=self.texto, width=32)
         self.entry.pack(side='left')
@@ -32,8 +34,18 @@ class SelectorBandas(ttk.Frame):
         options = opciones_bandas(self.disponibles)
         self.opciones.configure(text='Bandas disponibles: (' + ', '.join(options) + ')' if options else
                                'La base no contiene bandas para esta opción.')
+        if len(self.disponibles) > 1:
+            self.estado.pack(anchor='w', pady=(3, 0))
+            self.controles.pack(fill='x', before=self.estado)
+        else:
+            self.controles.pack_forget()
+        if len(self.disponibles) == 1 and not self.texto.get().strip():
+            self.texto.set(options[0])
         if self.texto.get().strip():
             self.aceptar()
+        elif not self.disponibles:
+            self.estado.configure(text='La base no contiene bandas para esta opción.', foreground='#B00020')
+            self.estado.pack(anchor='w', pady=(3, 0))
 
     def aceptar(self):
         try:
@@ -41,10 +53,20 @@ class SelectorBandas(ttk.Frame):
         except ValueError as exc:
             self.aceptadas = []
             self.estado.configure(text=str(exc), foreground='#B00020')
+            self.estado.pack(anchor='w', pady=(3, 0))
+            if self.disponibles:
+                self.controles.pack(fill='x', before=self.estado)
             if self.al_cambiar:
                 self.al_cambiar()
             return False
-        self.estado.configure(text='Seleccionadas: ' + ', '.join(self.aceptadas), foreground='#1F5FA8')
+        shown = opciones_bandas(self.aceptadas, self.disponibles)
+        self.texto.set(', '.join(shown))
+        self.estado.configure(text='Seleccionadas: ' + ', '.join(shown), foreground='#1F5FA8')
+        if len(self.disponibles) == 1:
+            self.controles.pack_forget()
+            self.estado.pack_forget()
+        else:
+            self.estado.pack(anchor='w', pady=(3, 0))
         if self.al_cambiar:
             self.al_cambiar()
         return True
@@ -53,6 +75,8 @@ class SelectorBandas(ttk.Frame):
         return list(self.aceptadas)
 
     def validar(self):
+        if not self.disponibles:
+            return [f'{self.nombre}: la base no contiene bandas para esta opción.']
         try:
             bands = resolver_bandas(self.texto.get(), self.disponibles)
         except ValueError as exc:
@@ -60,7 +84,7 @@ class SelectorBandas(ttk.Frame):
         return [] if bands == self.aceptadas else [f'{self.nombre}: pulsa «Aceptar bandas» para confirmar los cambios.']
 
     def cargar(self, bands):
-        self.texto.set(', '.join(bands))
+        self.texto.set(', '.join(opciones_bandas(bands, self.disponibles)))
         self.aceptar()
 
 
@@ -89,7 +113,7 @@ class PanelCatalogo(ttk.Frame):
             self.lbl_modos.pack(anchor='w')
 
     def lineas(self):
-        return ['Bandas: ' + ', '.join(self.entrada.seleccion())] + (
+        return ['Bandas: ' + ', '.join(opciones_bandas(self.entrada.seleccion(), self.entrada.disponibles))] + (
             ['Modos: ' + ', '.join(self.modos_guardados)] if self.modos_guardados else [])
 
 
@@ -243,7 +267,8 @@ class Panel2GCatalogo(ttk.Frame):
             if self.sel[mode].get():
                 slots = ', '.join(s for s, v in self.slots.get(mode, {}).items() if v.get())
                 lines.append(mode + (': ' + slots if slots else ''))
-                lines.append('  Bandas: ' + ', '.join(self.bandas_modo[mode].seleccion()))
+                entrada = self.bandas_modo[mode]
+                lines.append('  Bandas: ' + ', '.join(opciones_bandas(entrada.seleccion(), entrada.disponibles)))
         return lines
 
 

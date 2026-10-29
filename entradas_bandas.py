@@ -41,11 +41,14 @@ def resolver_bandas(texto, disponibles):
     return result
 
 
-def opciones_bandas(disponibles):
+def opciones_bandas(disponibles, contexto=None):
     """Muestra números que se pueden escribir; conserva etiquetas ambiguas."""
-    numbers = [_numero(b) for b in disponibles]
-    return [str(n) if n is not None and numbers.count(n) == 1 else b
-            for b, n in zip(disponibles, numbers)]
+    numbers = [_numero(b) for b in (disponibles if contexto is None else contexto)]
+    result = []
+    for band in disponibles:
+        number = _numero(band)
+        result.append(str(number) if number is not None and numbers.count(number) == 1 else band)
+    return result
 
 
 def banda_base_5g(value):

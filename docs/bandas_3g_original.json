@@ -1,0 +1,77 @@
+{
+  "origen": "FAN22_09 - SAR Datasheet_Original_2G_3G.xlsm",
+  "hoja": "Conducted 2G-3G",
+  "bandas_por_tecnologia": {
+    "WCDMA": [
+      "FDDI",
+      "FDDII",
+      "FDDIII",
+      "FDDIV",
+      "FDDV",
+      "FDDVI",
+      "FDDVII",
+      "FDDVIII",
+      "FDDXI",
+      "FDDXII",
+      "FDDXIII",
+      "FDDXIX"
+    ],
+    "HSDPA": [
+      "FDDI",
+      "FDDII",
+      "FDDIII",
+      "FDDIV",
+      "FDDV",
+      "FDDVI",
+      "FDDVII",
+      "FDDVIII",
+      "FDDXI",
+      "FDDXII",
+      "FDDXIII",
+      "FDDXIX"
+    ],
+    "HSPA": [
+      "FDDI",
+      "FDDII",
+      "FDDIII",
+      "FDDIV",
+      "FDDV",
+      "FDDVI",
+      "FDDVII",
+      "FDDVIII",
+      "FDDXI",
+      "FDDXII",
+      "FDDXIII",
+      "FDDXIX"
+    ],
+    "HSPA+": [
+      "FDDI",
+      "FDDII",
+      "FDDIII",
+      "FDDIV",
+      "FDDV",
+      "FDDVI",
+      "FDDVII",
+      "FDDVIII",
+      "FDDXI",
+      "FDDXII",
+      "FDDXIII",
+      "FDDXIX"
+    ],
+    "DC-HSDPA": [
+      "FDDI",
+      "FDDII",
+      "FDDIII",
+      "FDDIV",
+      "FDDV",
+      "FDDVI",
+      "FDDVII",
+      "FDDVIII",
+      "FDDXI",
+      "FDDXII",
+      "FDDXIII",
+      "FDDXIX"
+    ]
+  },
+  "uso": "Referencia para compartir el catálogo 3G. Los canales y frecuencias de salida proceden del XLSX de base de datos."
+}

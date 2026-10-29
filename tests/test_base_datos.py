@@ -200,6 +200,34 @@ class BaseDatosTests(unittest.TestCase):
         PanelCatalogo.cargar(generic, dict(bandas=['FDD101'], modos=['Nuevo modo']))
         self.assertEqual(PanelCatalogo.seleccion(generic), dict(bandas=['FDD101'], modos=['Nuevo modo']))
 
+    def test_catalogo_3g_comun_editable_y_tablas_especificas(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / '3g.xlsx'
+            for frequency in (1922.4, 1930.6):
+                database(path, [['WCDMA', 'FDDI', 9612, frequency], ['WCDMA', 'FDDIII', 937, 1712.4],
+                                ['HSDPA', 'FDDII', 9262, 1852.4]])
+                cat = Catalogo(path)
+                for tech in ('HSPA', 'HSPA+', 'DC-HSDPA'):
+                    self.assertEqual(cat.bandas(tech), ['FDDI', 'FDDIII'])
+                    data = dict(DATA, tecnologias={'3G': {tech: ['FDDI']}})
+                    rows = cat.seleccionar(data)
+                    self.assertEqual([(r.tech, r.band, r.channel, r.frequency) for r in rows],
+                                     [(tech, 'FDDI', 9612, frequency)])
+                self.assertEqual(cat.bandas('HSDPA'), ['FDDII'])
+                rows = cat.seleccionar(dict(DATA, tecnologias={'3G': {'HSDPA': ['FDDII']}}))
+                self.assertEqual(rows[0].frequency, 1852.4)
+                with self.assertRaises(ValueError):
+                    cat.seleccionar(dict(DATA, tecnologias={'3G': {'HSDPA': ['FDDI']}}))
+            output = Path(tmp) / '3g.xlsm'
+            generar(dict(DATA, tecnologias={'3G': {'WCDMA': ['FDDI'], 'HSPA': ['FDDI'],
+                'HSPA+': ['FDDI'], 'HSDPA': ['FDDII'], 'DC-HSDPA': ['FDDIII']}}),
+                output, catalogo=cat, log=lambda *_: None)
+            rows = sheet(output, 3).findall('s:sheetData/s:row', NS)[2:]
+            records = {value(cells(row)['J']): cells(row) for row in rows}
+            self.assertEqual(set(records), {'WCDMA', 'HSPA', 'HSPA+', 'HSDPA', 'DC-HSDPA'})
+            self.assertEqual(float(value(records['HSPA']['U'])), 1930.6)
+            self.assertEqual(float(value(records['HSDPA']['U'])), 1852.4)
+
     def test_todas_las_familias_se_llenan_desde_la_base_recibida(self):
         data = dict(DATA, tecnologias={'2G': {'GSM': True, 'GPRS': 'TX3', 'bandas': ['900']},
             '3G': {'WCDMA': ['FDDI']}, 'LTE': ['FDD1'], 'LTE CAT M1': ['FDD1'],

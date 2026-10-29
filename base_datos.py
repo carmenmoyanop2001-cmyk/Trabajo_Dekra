@@ -163,8 +163,16 @@ class Catalogo:
                             del row.getparent()[0]
         return records
 
+    def registros(self, tech):
+        """Catálogo 3G común; una tabla específica tiene prioridad."""
+        if tech in self.by_tech:
+            return self.by_tech[tech]
+        if tech in ('HSPA', 'HSPA+', 'HSDPA', 'DC-HSDPA'):
+            return [replace(r, tech=tech, params={}) for r in self.by_tech.get('WCDMA', [])]
+        return []
+
     def bandas(self, tech):
-        return list(dict.fromkeys(r.band for r in self.by_tech.get(tech, [])))
+        return list(dict.fromkeys(r.band for r in self.registros(tech)))
 
     def seleccionar(self, datos):
         from opciones_ensayo import slots_incluidos
@@ -195,8 +203,13 @@ class Catalogo:
                 wanted.append((name, value, None))
         selected = []
         for tech, bands, modes in wanted:
-            if tech not in self.by_tech:
+            records = self.registros(tech)
+            if not records:
                 raise ValueError(f'La base no contiene registros para {tech}.')
+            if tech not in self.by_tech:
+                note = f'{tech}: bandas, canales y frecuencias de la tabla WCDMA de la base; los parámetros específicos ausentes quedan vacíos.'
+                if note not in self.avisos:
+                    self.avisos.append(note)
             available = self.bandas(tech)
             bands = available if bands is None else bands
             if not isinstance(bands, list) or not bands or any(not isinstance(b, str) for b in bands):
@@ -208,7 +221,7 @@ class Catalogo:
             missing = set(bands) - set(available)
             if missing:
                 raise ValueError(f'{tech}: bandas no disponibles en la base: {", ".join(sorted(missing))}.')
-            rows = [r for r in self.by_tech[tech] if r.band in bands and
+            rows = [r for r in records if r.band in bands and
                     (not modes or not r.params.get('mode') or r.params['mode'] in modes)]
             if not rows:
                 raise ValueError(f'La base no contiene combinaciones para la selección de {tech}.')
