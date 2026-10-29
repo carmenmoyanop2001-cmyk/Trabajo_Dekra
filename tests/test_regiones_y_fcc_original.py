@@ -31,7 +31,7 @@ class RegionesFccTests(unittest.TestCase):
             for n, (regions, expected) in enumerate(cases):
                 with self.subTest(regions=regions):
                     output = Path(tmp) / 'regiones.xlsm'
-                    summary = gen.generar(dict(DATA, region=regions, conducida=bool(n % 2)),
+                    summary = gen.generar_heredado(dict(DATA, region=regions, conducida=bool(n % 2)),
                                           output, log=lambda *_: None)
                     with zipfile.ZipFile(output) as z:
                         wb = E.fromstring(z.read('xl/workbook.xml'))
@@ -69,7 +69,7 @@ class RegionesFccTests(unittest.TestCase):
 
                 with patch.object(gen, '_generar', side_effect=damaged):
                     with self.assertRaisesRegex(ValueError, 'hojas SAR|oculta'):
-                        gen.generar(dict(DATA, region='EN'), output, log=lambda *_: None)
+                        gen.generar_heredado(dict(DATA, region='EN'), output, log=lambda *_: None)
                 self.assertEqual(output.read_bytes(), b'Excel anterior intacto')
 
     def test_fcc_conserva_ceros_formulas_estilos_y_filas_sin_anadir_baterias(self):
@@ -81,7 +81,7 @@ class RegionesFccTests(unittest.TestCase):
                     source.kv(i).get('BX') in ('Body', 'Close to Ear')]
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / 'fcc.xlsm'
-            gen.generar(data, output, log=lambda *_: None)
+            gen.generar_heredado(data, output, log=lambda *_: None)
             with zipfile.ZipFile(output) as z:
                 root = E.fromstring(z.read('xl/worksheets/sheet12.xml'))
         rows = root.findall('s:sheetData/s:row', NS)[2:]

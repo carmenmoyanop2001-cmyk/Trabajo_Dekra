@@ -1,0 +1,57 @@
+{
+  "proyecto": "Ejemplo con base de datos editable",
+  "region": [
+    "EN",
+    "FCC",
+    "ISED"
+  ],
+  "exposure": [
+    "Close to ear",
+    "Body"
+  ],
+  "conducida": true,
+  "baterias": [
+    "Batería 1",
+    "Batería 2"
+  ],
+  "accesorios": [
+    "Funda"
+  ],
+  "spotchecking": [],
+  "tecnologias": {
+    "2G": {
+      "GSM": true,
+      "GPRS": [
+        "TX1",
+        "TX2",
+        "TX3"
+      ],
+      "bandas": [
+        "900"
+      ]
+    },
+    "3G": {
+      "WCDMA": [
+        "FDDI"
+      ]
+    },
+    "LTE": [
+      "FDD1"
+    ],
+    "LTE CAT M1": [
+      "FDD1"
+    ],
+    "LTE NB-IoT": [
+      "FDD1"
+    ],
+    "5G": [
+      "n2"
+    ],
+    "WLAN": [
+      "2.4 GHz"
+    ],
+    "BT": [
+      "2.4 GHz"
+    ]
+  }
+}

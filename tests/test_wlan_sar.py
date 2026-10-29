@@ -6,7 +6,7 @@ import unittest
 import zipfile
 
 from lxml import etree as E
-from generador_excel import generar, DIR_PLANTILLA
+from generador_excel import generar_heredado as generar, DIR_PLANTILLA
 from nucleo import Hoja
 from seleccion import pred_sar, pred_conducted, plan_sar
 

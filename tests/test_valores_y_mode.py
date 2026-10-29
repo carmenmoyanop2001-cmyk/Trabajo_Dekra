@@ -8,7 +8,7 @@ import zipfile
 from collections import defaultdict
 from lxml import etree as E
 
-from generador_excel import generar, DIR_PLANTILLA
+from generador_excel import generar_heredado as generar, DIR_PLANTILLA
 from nucleo import Hoja
 from seleccion import plan_conducted
 from sarlib import _REF, _STR, _sheetname

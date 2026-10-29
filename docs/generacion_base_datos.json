@@ -1,0 +1,52 @@
+{
+  "hojas": [
+    "Overview",
+    "Tune-Up",
+    "Conducted 2G-3G",
+    "Conducted LTE",
+    "Conducted LTE CATM1",
+    "Conducted LTE NB-IoT",
+    "Conducted 5G",
+    "Conducted WiFi",
+    "Conducted BT-Custom",
+    "Validations",
+    "SAR EN",
+    "SAR FCC-ISED",
+    "Test Campaign",
+    "Pretesting-Others"
+  ],
+  "filas": {
+    "Conducted 2G-3G": 15,
+    "Conducted LTE": 168,
+    "Conducted LTE CATM1": 263,
+    "Conducted LTE NB-IoT": 18,
+    "Conducted 5G": 18,
+    "Conducted WiFi": 7,
+    "Conducted BT-Custom": 5,
+    "SAR EN": 908,
+    "SAR FCC-ISED": 1220
+  },
+  "sin_resolver": {},
+  "valores_por_defecto": {},
+  "ejemplos": {},
+  "sin_resolver_cols": {},
+  "referencias_rotas_plantilla": {},
+  "avisos": [
+    "Revisar: la misma frecuencia aparece con varios canales en esta banda (18050 / 18300 / 18525)",
+    "Revisar: el mismo canal aparece con varias frecuencias en esta banda (1950 / 1972.5); Revisar: este canal figura con otra frecuencia en otra banda",
+    "Revisar: el mismo canal aparece con varias frecuencias en esta banda (1925 / 1950); Revisar: este canal figura con otra frecuencia en otra banda",
+    "Revisar: el mismo canal aparece con varias frecuencias en esta banda (1950 / 1972.5); Revisar: la misma frecuencia aparece con varios canales en esta banda (18050 / 18300 / 18525); Revisar: este canal figura con otra frecuencia en otra banda",
+    "Revisar: el mismo canal aparece con varias frecuencias en esta banda (1925 / 1950); Revisar: la misma frecuencia aparece con varios canales en esta banda (18050 / 18300 / 18525); Revisar: este canal figura con otra frecuencia en otra banda",
+    "Revisar: el mismo canal aparece con varias frecuencias en esta banda (1862.5 / 1880)",
+    "Revisar: el mismo canal aparece con varias frecuencias en esta banda (1862.5 / 1880); Revisar: la frecuencia no corresponde al NR-ARFCN (esperada 1862.5 MHz)",
+    "Modo: BR/EDR y LE",
+    "Modo: BR/EDR",
+    "Modo: LE",
+    "La base no informa todos los campos de modo/ancho de banda para: 5G, BT, GPRS 1TX, GPRS 2TX, GPRS 3TX, GSM, LTE, LTE CAT M1, LTE NB-IoT, WCDMA, WLAN. Los campos ausentes quedan vacíos; no se recuperan del datasheet."
+  ],
+  "base_datos": {
+    "archivo": "Base_de_datos_bandas_canales_frecuencias_v2.xlsx",
+    "sha256": "723079a6bd0ce0160bd9e43a27c0681b3ab050a42b4db45ffe86e00a7bbc56cb",
+    "registros_seleccionados": 494
+  }
+}

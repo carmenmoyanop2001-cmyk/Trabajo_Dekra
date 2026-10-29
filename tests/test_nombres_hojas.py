@@ -6,7 +6,7 @@ import zipfile
 from lxml import etree as E
 
 from nombres_hojas import renombrar_tecnologias
-from generador_excel import generar
+from generador_excel import generar_heredado as generar
 
 
 class NombresTests(unittest.TestCase):

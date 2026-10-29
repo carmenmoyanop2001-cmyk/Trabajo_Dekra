@@ -37,16 +37,28 @@ def _numero_hoja(manifest, nombre):
     raise KeyError(nombre)
 
 
-def generar(datos, salida, dir_plantilla=None, log=print):
+def generar(datos, salida, dir_plantilla=None, log=print, catalogo=None):
+    """Genera usando siempre la base XLSX elegida o la incluida en el programa."""
+    from base_datos import cargar
+    return _publicar(datos, salida, dir_plantilla, log, catalogo if catalogo is not None else cargar(datos))
+
+
+def generar_heredado(datos, salida, dir_plantilla=None, log=print):
+    """Solo para comprobar formatos históricos; la interfaz no usa esta ruta."""
+    return _publicar(datos, salida, dir_plantilla, log)
+
+
+def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
     """Valida y genera sin reemplazar la salida hasta comprobar el paquete."""
     from herramientas.validar_paquete import validar
-    validar_datos(datos)
+    validar_datos(datos, catalogo=catalogo)
     target = Path(salida)
     if target.suffix.lower() != '.xlsm':
         raise ValueError('La salida debe tener extensión .xlsm.')
     with tempfile.TemporaryDirectory(dir=target.parent) as tmp:
         candidate = Path(tmp) / 'datos.xlsm'
-        resumen = _generar(datos, str(candidate), dir_plantilla, log)
+        resumen = (_generar(datos, str(candidate), dir_plantilla, log, catalogo) if catalogo is not None else
+                   _generar(datos, str(candidate), dir_plantilla, log))
         if not datos['conducida']:
             names = {s: s.removeprefix('Conducted ') for s in resumen['hojas'] if s.startswith('Conducted ')}
             if names:
@@ -100,7 +112,7 @@ def _validar_hojas_sar(path, regiones):
                 raise ValueError(f'La hoja solicitada {name} ha quedado sin filas de ensayo.')
 
 
-def _generar(datos, salida, dir_plantilla=None, log=print):
+def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None):
     """datos: dict (ver README). Escribe el .xlsm en `salida` y devuelve un resumen (dict)."""
     dirp = dir_plantilla or DIR_PLANTILLA
     base = zipfile.ZipFile(os.path.join(dirp, 'plantilla_base.zip'))
@@ -112,15 +124,29 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
 
     # ---- 1) qué hojas habrá ----
     conds = hojas_conducted_necesarias(t)
+    db_warnings, db_records = [], []
+    if catalogo is not None:
+        from hojas_base_datos import construir
+        cache = {}
+        def source(name):
+            if name not in cache:
+                cache[name] = Hoja(os.path.join(dirp, 'formatos', ARCHIVOS[name]))
+            return cache[name]
+        hojas, planes, db_records, db_warnings = construir(catalogo, datos, source, base)
+        conds = [n for n in hojas if not n.startswith('SAR ')]
     # Las hojas seleccionadas son también plantillas de toma de datos cuando
     # no se prevén conducidos. Tune-Up conserva sus enlaces y límites originales.
     orden = ['Overview'] + (['Tune-Up'] if conds else []) + conds + sar_names + ['Test Campaign']
+    if catalogo is not None:
+        orden += ['Validations', 'Pretesting-Others']
     orden.sort(key=lambda n: _numero_hoja(man, n))
     log('Hojas: ' + ', '.join(orden))
 
     # ---- 2) planes de filas ----
-    hojas, planes, refs = {}, {}, {}
-    for sar_name in sar_names:
+    if catalogo is None:
+        hojas, planes = {}, {}
+    refs = {}
+    for sar_name in sar_names if catalogo is None else []:
         hojas[sar_name] = Hoja(os.path.join(dirp, ARCHIVOS[sar_name]))
         planes[sar_name] = plan_sar(hojas[sar_name], 'EN' if sar_name == 'SAR EN' else 'FCC', datos)
         if not planes[sar_name]:
@@ -130,12 +156,12 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
         family = 'EN' if sar_name == 'SAR EN' else 'FCC'
         for sheet, rows in referencias(hojas[sar_name], planes[sar_name]).items():
             refs.setdefault(sheet, {}).setdefault(family, set()).update(rows)
-    for c in conds:
+    for c in conds if catalogo is None else []:
         hojas[c] = Hoja(os.path.join(dirp, ARCHIVOS[c]))
         planes[c] = plan_conducted(hojas[c], datos, refs.get(c))
 
     ctx = Contexto()
-    ctx.whole = {'Overview', 'Test Campaign'} | ({'Tune-Up'} if conds else set())
+    ctx.whole = set(orden) - set(hojas)
     for name, plan in planes.items():
         h = hojas[name]
         ctx.set_rows(name, {h.rows[it.i][0]: HEADER_ROWS + 1 + k for k, it in enumerate(plan) if not it.clone})
@@ -153,12 +179,15 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     if v_part: modificadas[v_part] = vml.encode('utf8') if isinstance(vml, str) else vml
 
     resolve = ctx.resolver()
-    if 'SAR EN' in hojas and any(item.extra for item in planes['SAR EN']):
+    if catalogo is None and 'SAR EN' in hojas and any(item.extra for item in planes['SAR EN']):
         fcc = hojas.get('SAR FCC-ISED') or Hoja(os.path.join(dirp, ARCHIVOS['SAR FCC-ISED']))
         aplicar_formulas_extras(hojas['SAR EN'], planes['SAR EN'], fcc, ctx.rowmap['SAR EN'])
     if 'SAR EN' in hojas:
         modificadas['xl/styles.xml'] = combinar_mode(hojas['SAR EN'], planes['SAR EN'], ctx,
                                                       base.read('xl/styles.xml'))
+        if catalogo is not None:
+            from hojas_base_datos import restaurar_modos_dinamicos
+            restaurar_modos_dinamicos(hojas['SAR EN'], planes['SAR EN'], ctx, resolve)
     ctx.inline = _hacer_inline(hojas, resolve, ctx.column_aliases, ctx.cell_anchors)
     ctx.blank = lambda sh: (HEADER_ROWS + len(planes[sh]) + 3) if sh in planes else None
     resumen = {'hojas': orden, 'filas': {}, 'sin_resolver': ctx.unresolved}
@@ -201,7 +230,7 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
                     filtros[n] = f'${m.group(1)}${m.group(2)}:${m.group(3)}${m.group(4)}'
                 resumen['filas'][n] = len(planes[n])
             else:
-                data = ov_xml if n == 'Overview' else base.read(sp)
+                data = modificadas.get(sp, ov_xml if n == 'Overview' else base.read(sp))
                 zo.writestr(sp, data)
                 if n == 'Test Campaign':
                     filtros[n] = '$A$1:$BP$1'
@@ -264,6 +293,10 @@ def _generar(datos, salida, dir_plantilla=None, log=print):
     resumen['sin_resolver_cols'] = {f'{a}:{b}': n for (a, b), n in sorted(ctx.unres_cols.items(), key=lambda x: -x[1])}
     resumen['referencias_rotas_plantilla'] = dict(ctx.broken)
     resumen['avisos'] = []
+    if catalogo is not None:
+        resumen['base_datos'] = dict(archivo=catalogo.path.name, sha256=catalogo.sha256,
+                                     registros_seleccionados=len(db_records))
+        resumen['avisos'].extend(list(dict.fromkeys(db_warnings)))
     unknown_certs = {}
     for name in conds:
         count = sum(hojas[name].kv(it.i).get('B') in ('?', '#REF!') for it in planes[name])

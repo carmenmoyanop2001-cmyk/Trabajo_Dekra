@@ -4,7 +4,7 @@ import tempfile
 import unittest
 import zipfile
 from lxml import etree as E
-from generador_excel import generar
+from generador_excel import generar_heredado as generar
 
 NS = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
 

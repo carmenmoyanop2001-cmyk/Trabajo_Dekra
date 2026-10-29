@@ -1,86 +1,71 @@
-# Toma de datos SAR
+# Fuente de datos y formatos guardados
 
-## Interfaz de escritorio
+El programa usa dos elementos independientes: una base XLSX editable con los datos RF, y un paquete de formatos y hojas originales que viaja con el código. Las respuestas del formulario indican qué registros y condiciones utilizar. No hace falta conservar el Excel original junto al programa.
 
-Instala Python 3 con tkinter. Desde esta carpeta:
+## Flujo habitual
+
+1. Extrae el ZIP completo e instala `requirements.txt` si es necesario.
+2. Ejecuta `INICIAR_CUESTIONARIO.bat` o `python cuestionario_ensayo.py`.
+3. Elige la base XLSX con **Elegir base de datos…**. Se incluye una copia de la base recibida en `datos/`.
+4. Selecciona las opciones y genera el ensayo. Obtendrás TXT, JSON y XLSM.
+5. Para otra versión, elige la base actualizada y carga el JSON de respuestas. Puedes cambiar las opciones antes de generar.
+
+La base se vuelve a leer antes de generar. Si has cambiado un canal o frecuencia, la nueva salida usa el dato nuevo. Si has eliminado una banda seleccionada, la aplicación lo indica y conserva el Excel previo; no busca esa banda en las plantillas antiguas. **Recargar base** reconstruye las opciones del formulario con el contenido actual del archivo.
+
+El JSON guarda la ruta y el identificador de la base usada. Al cargarlo desde el formulario se utiliza la base que tengas elegida en ese momento; así puedes repetir una configuración con otra versión. Si mueves archivos a otro ordenador, elige primero su base allí. La CLI permite sustituir la referencia con `--base-datos`.
+
+## Hojas originales conservadas
+
+- **Overview:** presentación original, con proyecto, baterías y accesorios del cuestionario. Si hacen falta filas, se desplaza el contenido posterior.
+- **Tune-Up:** se conserva la hoja completa del original, incluidos datos, fórmulas, colores y celdas. La base de datos no la reconstruye ni borra sus potencias.
+- **Validations, Test Campaign y Pretesting-Others:** se guardan con el programa y se incluyen en la salida.
+- **SAR EN y SAR FCC-ISED:** se guardan los procedimientos, posiciones, formatos y cálculos. Los datos RF se enlazan con las hojas de tecnologías construidas desde la base actual.
+
+Las hojas de tecnologías aparecen con prefijo Conducted cuando se elige Sí y sin él cuando se elige No. EN genera SAR EN; FCC e ISED comparten SAR FCC-ISED sin duplicarla. El archivo terminado se verifica antes de sustituir la salida anterior.
+
+En SAR EN, BY se combina por tecnología/banda y BX por exposición. Las baterías usan fórmulas como `CONCATENATE(CA9," - Battery check 1")`, adaptando la referencia del procedimiento FCC equivalente. Se mantienen sus valores iniciales TBD junto a las fórmulas. En Body se añaden Front Face y accesorios. No se añaden filas Variability. FCC mantiene sus filas de posiciones, baterías y Variability guardadas, sin insertar las opciones adicionales del formulario.
+
+## Estructura de la base XLSX
+
+Cada tabla de datos tiene una fila de cabecera y estas columnas mínimas:
+
+| Columna | Contenido |
+| --- | --- |
+| Tecnología | Familia, por ejemplo GSM, GPRS 2TX, LTE, LTE-CAT M1, LTE NB-IoT, 5G o WLAN |
+| Banda | Etiqueta que aparecerá en el formulario y la salida |
+| Canal | Número, incluido 0 cuando el registro lo requiera |
+| Frecuencia (MHz) | Número, con punto o coma decimal |
+
+Columnas opcionales: Bandwidth (MHz), Modulation, UL RB Allocation, UL RB Start, Narrowband Index, SCS (kHz), MPR, Mode, Data Rate, Duty Cycle, Cert y Notas. Un guion o N/A en los parámetros opcionales significa no informado. Los campos ausentes quedan vacíos y no recuperan valores RF del datasheet. Tune-Up es una referencia fija independiente y se conserva del original.
+
+LTE, CAT M1 y NB-IoT pueden convivir en la hoja LTE: se distinguen por la columna Tecnología. Narrowband Index se escribe en P y SCS en L. Se conservan todas las combinaciones distintas de parámetros de las bandas elegidas, sin añadir las combinaciones que existían únicamente en el Excel antiguo.
+
+La entrega trae WLAN y Wifi duplicadas: se utiliza WLAN cuando está presente; si difieren, se informa. Si no existe WLAN se admite Wifi como alias. Los resúmenes sin parámetros no duplican combinaciones ya presentes en las tablas detalladas. Las hojas Notas se consideran documentación y no se ejecuta su contenido. Las notas de registros se conservan en Comment y se incluyen en los avisos de generación.
+
+Las fórmulas del XLSX de datos deben tener su resultado guardado: si lo calculas con Excel, guarda el archivo antes de cargarlo. El programa no ejecuta macros ni calcula fórmulas de la base.
+
+## Bandas nuevas y datos incompletos
+
+Las familias con formato guardado admiten bandas nuevas desde la base, sin consultar el Excel original. La presentación usa un bloque de esa familia, pero los valores RF proceden de los registros nuevos. Una familia de tecnología completamente nueva necesita definir su formato y procedimiento; no basta con inventarle posiciones SAR.
+
+La base recibida no informa todos los modos, anchos de banda y otros parámetros de 5G, WiFi y BT. Se dejan vacíos o se usa el modo indicado explícitamente en el formulario. No se deducen parámetros técnicos a partir de valores antiguos.
+
+GPRS/EGPRS conservan la selección acumulativa TX1–TXn. SAR no tiene procedimientos propios guardados para EGPRS, GPRS TX1–TX3, HSPA/HSDPA/DC-HSDPA o NB-IoT; estas selecciones tienen su hoja de tecnología. Si toda la selección carece de procedimiento SAR para una región solicitada, se avisa y no se guarda una hoja SAR vacía. CAT M1 EN reutiliza la presentación de posiciones LTE, con los datos RF de CAT M1.
+
+La Tune-Up guardada no se amplía ni modifica por añadir bandas en la base. Si una banda no tiene una referencia de potencia en esa hoja, la potencia objetivo queda pendiente; el programa no la toma de otra banda. Las medidas, potencias y resultados de ensayo no se inventan ni se rellenan con resultados antiguos.
+
+## Ejecución y pruebas
 
 ```sh
-python -m pip install -r requirements.txt
-python cuestionario_ensayo.py
-```
-
-Rellena el cuestionario y pulsa **Generar toma de datos**. Se guarda el texto con las respuestas y un `.xlsm` en la carpeta elegida. El Excel se valida antes de sustituir la salida: si falla la generación, se conserva el Excel anterior. La aplicación avisa de fórmulas con `#REF!` heredadas de la plantilla y de selecciones sin filas SAR. Las pestañas de tecnologías aparecen siempre: `Conducted LTE`, etc., si se eligen conducidos, y `LTE`, etc., si no; sus enlaces se actualizan.
-
-## Generación sin pantalla
-
-```sh
-python generar_desde_json.py ejemplos/ejemplo_EN.json salidas/mi_ensayo.xlsm
-```
-
-Cambia las respuestas del JSON para tu ensayo; los ejemplos son ficticios. Esta opción genera `.txt` y `.xlsm`, y rechaza sobrescribir archivos existentes. No necesita tkinter ni el datasheet original. Los identificadores de bandas y modos se comparten con el cuestionario. No se admiten tecnologías desconocidas ni bandas inexistentes.
-
-## Comprobaciones
-
-```sh
+python generar_desde_json.py ejemplos/ejemplo_base_datos.json salidas/ensayo.xlsm
+python generar_desde_json.py respuestas.json salidas/ensayo_actualizado.xlsm --base-datos base_actualizada.xlsx
 python -m unittest discover -s tests -v
 ```
 
-Se prueban las tres regiones, selección de hojas, seis baterías, ocho accesorios, tres variantes, conservación del proyecto VBA, entradas inválidas y preservación de archivos ante errores. La interfaz se importa y se comprueba su formato de respuestas 2G, pero no se ha probado visualmente en este entorno sin pantalla.
+La CLI rechaza sobrescribir salidas existentes. El formulario permite sustituirlas con su confirmación habitual. La escritura de XLSM es atómica y valida el paquete antes de publicarlo.
 
-## Contraste con los archivos originales
+`tests/test_base_datos.py` comprueba la ruta de producción: cambios de canales/frecuencias/parámetros, bandas nuevas, datos incompletos, tablas exactas de tecnologías, fuente independiente del Excel original, Tune-Up intacta, regiones, carga de respuestas y CLI. Las auditorías históricas usan explícitamente `generar_heredado`, que no está conectada a la interfaz ni a la CLI de producción.
 
-Se han inspeccionado las nueve hojas específicas de los diez libros recibidos. Los libros SAR EN y FCC, CATM1, NB-IoT y 5G contienen fórmulas con `#REF!`. El informe `docs/comparacion_originales.json` indica los recuentos y ejemplos; no demuestra cuándo ni por qué se rompieron. No se han usado estos libros para sobrescribir las plantillas completas: podrían perderse referencias, formatos o bandas.
+Los formatos reducidos de `plantilla/formatos/` evitan cargar los millones de filas antiguas para construir una tabla desde la base. Los scripts de `herramientas/` permiten preparar esos formatos y conservar las hojas estáticas; no se ejecutan al generar un ensayo.
 
-El archivo 5G recibido tiene 8.182 filas, frente a 220.322 de la plantilla incluida. Se conserva la plantilla completa. Los ejemplos conducidos seleccionados heredan 18 fórmulas con `#REF!` de NB-IoT; se notifican expresamente sin inventar referencias. Sin conducidos se conservan las pestañas de tecnologías y sus enlaces, con sus nombres sin el prefijo Conducted. No se introducen medidas nuevas.
-
-La validación XML comprueba estructura, relaciones y orden de filas/celdas; no calcula fórmulas ni ejecuta macros. Queda pendiente la comprobación funcional en Microsoft Excel y la resolución de referencias rotas de origen. Las fechas dependen de la macro MyTimestamp incluida.
-
-No se han añadido preguntas de antenas, BT ni Custom; se mantiene el alcance del cuestionario recibido.
-
-Se han contrastado también las fórmulas de las filas 3 a 10 de las nueve hojas específicas: 2107 fórmulas coincidentes y 42 diferencias, todas con #REF! en los archivos SAR recibidos. Es una muestra, no una comparación exhaustiva. Detalle en `docs/contraste_muestra_formulas.json`.
-
-## Selección múltiple y slots acumulativos
-
-Se pueden marcar varias regiones y varias exposure conditions. El Excel reúne las condiciones seleccionadas en cada hoja SAR. EN añade SAR EN; FCC e ISED comparten SAR FCC-ISED y no duplican sus filas. Las hojas Conducted conservan los bloques necesarios para ambas familias de región. Los accesorios y Front Face de SAR EN se añaden únicamente a sus grupos Body. FCC conserva las posiciones y baterías que ya contiene la plantilla original.
-
-La aplicación comprueba en el archivo terminado que las hojas SAR de las regiones elegidas existen, están visibles y contienen filas. Si falta una hoja solicitada, no sustituye el Excel anterior. Las opciones de región indican qué pestaña generan: EN → SAR EN; FCC/ISED → SAR FCC-ISED. No se añade una región que no se haya marcado.
-
-En GPRS y EGPRS, marcar TX3 activa TX1, TX2 y TX3. Marcar TX4 activa los cuatro. Al desmarcar TX2, por ejemplo, solo queda TX1. GPRS y EGPRS se configuran de forma independiente. La selección se refleja en el resumen de texto y en las filas Conducted. La plantilla SAR solo tiene GPRS 4TX, por lo que elegir TX1-TX3 no crea modos SAR inexistentes.
-
-Para JSON, `region` y `exposure` admiten listas; se mantiene la compatibilidad con los archivos antiguos que contienen una sola cadena. GPRS y EGPRS admiten una lista de slots o la cadena antigua del máximo: `"TX3"` incluye también TX1 y TX2. Consulta `ejemplos/ejemplo_multiple.json`.
-
-Algunas fórmulas FCC de LTE FDD5 apuntan a CATM1 en la plantilla original. Si CATM1 no se selecciona, los enlaces no disponibles quedan vacíos y se muestra un aviso; no se ha sustituido la referencia de origen.
-
-## Conservación de las hojas SAR
-
-SAR FCC-ISED conserva sus filas originales que cumplen el filtro de tecnologías, bandas, exposure conditions y modos. No se renombran posiciones ni baterías; tampoco se sustituyen sus filas Variability originales por variantes del cuestionario.
-
-En SAR EN se conservan todas las filas originales seleccionadas y se insertan debajo de cada grupo las baterías elegidas y, para Body, Front Face y accesorios. Se copian los estilos de la fila superior y se adaptan las fórmulas equivalentes de FCC-ISED a EN; no se sustituyen esas fórmulas por constantes N/A; también se amplían las reglas de formato condicional y las validaciones que afectaban a esa fila. Las filas posteriores se desplazan. No se añaden filas Variability. Spotchecking se registra en el resumen de respuestas, pero no añade filas SAR.
-
-La posición de cada batería en CA es una fórmula, como `CONCATENATE(CA9," - Battery check 1")`, adaptada a su fila de referencia en EN. Inicialmente muestra «TBD - Battery check n» y se actualiza con la posición del ensayo de referencia. El nombre de la exposure condition se muestra en negro en BX, conservando la celda combinada y su fondo original.
-
-Se ha retomado la adaptación anterior para las otras columnas de las filas añadidas EN: la elección del prototipo de batería numerado afecta solo a CA. En FCC se conservan también los resultados guardados de fórmulas coincidentes con el original recibido, incluidos los ceros de los límites SAR. El informe `docs/cache_fcc_original.json` documenta la recuperación. No se importan sus referencias rotas ni se sustituyen fórmulas, filas o estilos de la plantilla completa.
-
-La reubicación de referencias sigue siendo necesaria cuando se filtran filas, se insertan otras o se cambia el nombre de las hojas. Se conservan las fórmulas de origen; los enlaces que no pueden resolverse siguen notificándose en los avisos. Las macros se conservan y requieren comprobación en Excel.
-
-SAR EN inserta las baterías al final de cada bloque de exposición original, justo tras sus TBD. En Body añade además Front Face y los accesorios. Se mantienen los límites y medidas EN de 10 g. Consulta `docs/formulas_sar_en.md`.
-
-Se incluye `ejemplos/SAR_EN_GSM_2_baterias.xlsm`, generado con dos baterías y dos accesorios para los cuatro puntos del ejemplo GSM. Es una demostración con datos ficticios. Si una selección no existe en la hoja SAR original, la aplicación avisa y conserva el Excel anterior en lugar de guardar una hoja SAR vacía.
-
-## Mode combinado y valores originales
-
-En SAR EN, Mode (BY) es una única celda combinada por tecnología y banda, incluyendo todas sus exposiciones y las filas adicionales. Cuando hay varios modos originales, se muestran juntos. Los modos por fila se conservan en CG, que ya estaba oculta; los cálculos leen esa columna. Las celdas conservan el color original y el resumen de Mode se centra y ajusta a varias líneas.
-
-Se guardan los valores originales de Channel (CC), Freq (CD) y las posiciones TBD junto con sus fórmulas. También se conservan los resultados de las fórmulas de la columna O de CATM1. El libro solicita recálculo automático al abrirlo. No se eliminan filas de ensayo por tener una fórmula pendiente de calcular: solo se omiten las filas que no cumplen la selección y las restantes se escriben consecutivamente, sin filas espaciadoras.
-
-El ejemplo `ejemplos/SAR_EN_5G_CATM1_3_baterias.xlsm` permite comprobar 5G n1, CATM1 FDD1 y GSM, con tres baterías y tres accesorios. Los datos de sus respuestas son ficticios. Véase `docs/valores_y_mode.md` para las comprobaciones.
-
-Corrección puntual: Cert. (B) en todas las tecnologías conserva los valores originales por fila para cualquier región, sin asignar EN/FCC/ISED a una fila por el hecho de compartirla entre regiones. En SAR EN, BX se combina por tecnología, banda y exposure condition, incluyendo las filas adicionales; FCC-ISED permanece igual.
-
-La auditoría de Cert. está en `docs/auditoria_cert_originales.json`: se contrastaron 80.612 filas identificables en los siete originales recibidos. El archivo 5G recibido es parcial y tiene referencias rotas en sus últimas filas. Los marcadores ? y #REF! de origen se conservan y se avisan; no se deducen certificaciones nuevas. El ejemplo `ejemplos/Cert_regiones_multiples.xlsm` muestra todas las tecnologías disponibles con EN, FCC e ISED seleccionadas.
-
-## WLAN en SAR
-
-Las hojas SAR originales reservan las filas WLAN con Mode/BW `TBD`, `TBD / NA` o sin modo concreto. Se conservan las filas de la banda y exposure condition elegidas, incluidas las filas adicionales originales de FCC. Elegir varios modos, como n40 y ac40, no duplica esas filas SAR. En Conducted WiFi sí se filtran los modos concretos seleccionados. No se sustituyen los marcadores originales por medidas o modos inventados.
-
-`ejemplos/ejemplo_seleccion_wlan_sar.json` reproduce la selección que provocaba el error de SAR EN vacío. Su Excel de ejemplo es `ejemplos/SAR_EN_seleccion_WLAN.xlsm`, con baterías ficticias. Las tecnologías sin filas en la plantilla SAR original siguen teniendo su pestaña de tecnología; no se crean filas SAR para ellas.
+La validación estructural se complementa con el SDK oficial Open XML. No ejecuta Microsoft Excel, VBA ni cálculos. Se conserva MyTimestamp. La revisión visual de la interfaz y de los libros queda pendiente en un equipo con Excel. Los informes de originales de versiones anteriores están en docs/ como auditoría histórica, no como fuente RF de la generación actual.

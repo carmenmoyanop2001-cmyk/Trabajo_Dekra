@@ -2,7 +2,7 @@
 from opciones_ensayo import seleccion_multiple
 
 
-def validar_datos(datos):
+def validar_datos(datos, catalogo=None):
     if not isinstance(datos, dict):
         raise ValueError('Las respuestas deben ser un objeto.')
     required = {'proyecto', 'region', 'exposure', 'conducida', 'baterias',
@@ -30,6 +30,23 @@ def validar_datos(datos):
     technologies = datos['tecnologias']
     if not isinstance(technologies, dict) or not technologies:
         raise ValueError('Selecciona al menos una tecnología.')
+    if catalogo is not None:
+        for name, value in technologies.items():
+            if name == '2G':
+                if not isinstance(value, dict) or set(value) - {'GSM', 'GPRS', 'EGPRS', 'bandas'}:
+                    raise ValueError('Selección 2G no válida.')
+                if not any(value.get(k) for k in ('GSM', 'GPRS', 'EGPRS')):
+                    raise ValueError('Selecciona al menos un modo 2G.')
+                if 'GSM' in value and type(value['GSM']) is not bool:
+                    raise ValueError('GSM debe ser true o false.')
+                for mode in ('GPRS', 'EGPRS'):
+                    slots = seleccion_multiple(value.get(mode)) if value.get(mode) else []
+                    if any(s not in ('TX1', 'TX2', 'TX3', 'TX4') for s in slots):
+                        raise ValueError(f'Slots no válidos para {mode}.')
+            elif not isinstance(value, (list, dict)) or not value:
+                raise ValueError(f'Selección no válida para {name}.')
+        catalogo.seleccionar(datos)
+        return
     # Comparte los identificadores del cuestionario sin crear ventanas.
     from configuracion import (BANDAS_LTE, BANDAS_CATM1, BANDAS_NBIOT,
         BANDAS_5G, VARIANTES_5G, OPCIONES_3G, WLAN_MODOS_24, WLAN_UNII)

@@ -1,0 +1,11 @@
+{
+  "validator": "DocumentFormat.OpenXml 3.3.0 / Office2021",
+  "results": [
+    {
+      "File": "ejemplos/Ensayo_desde_base_datos.xlsm",
+      "Count": 0,
+      "Errors": []
+    }
+  ],
+  "nota": "Validación estructural; no ejecuta Excel ni VBA."
+}

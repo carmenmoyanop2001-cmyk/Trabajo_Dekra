@@ -1,0 +1,15 @@
+test_banda_eliminada_registro_invalido_y_no_sobrescritura (test_base_datos.BaseDatosTests.test_banda_eliminada_registro_invalido_y_no_sobrescritura) ... ok
+test_base_recibida_detalles_lte_alias_y_narrowband_scs (test_base_datos.BaseDatosTests.test_base_recibida_detalles_lte_alias_y_narrowband_scs) ... ok
+test_cli_base_nueva_y_respuestas_portables (test_base_datos.BaseDatosTests.test_cli_base_nueva_y_respuestas_portables) ... ok
+test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta (test_base_datos.BaseDatosTests.test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta) ... ok
+test_funciona_sin_plantillas_de_datos_heredados_ni_excel_original (test_base_datos.BaseDatosTests.test_funciona_sin_plantillas_de_datos_heredados_ni_excel_original) ... ok
+test_las_regiones_respetan_la_seleccion_con_la_fuente_nueva (test_base_datos.BaseDatosTests.test_las_regiones_respetan_la_seleccion_con_la_fuente_nueva) ... ok
+test_no_recupera_parametros_ausentes_del_excel_antiguo (test_base_datos.BaseDatosTests.test_no_recupera_parametros_ausentes_del_excel_antiguo) ... ok
+test_panel_2g_acumula_slots_y_conserva_bandas_y_carga (test_base_datos.BaseDatosTests.test_panel_2g_acumula_slots_y_conserva_bandas_y_carga) ... ok
+test_seleccion_vacia_no_expande_todas_las_bandas (test_base_datos.BaseDatosTests.test_seleccion_vacia_no_expande_todas_las_bandas) ... ok
+test_todas_las_familias_se_llenan_desde_la_base_recibida (test_base_datos.BaseDatosTests.test_todas_las_familias_se_llenan_desde_la_base_recibida) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 72.248s
+
+OK

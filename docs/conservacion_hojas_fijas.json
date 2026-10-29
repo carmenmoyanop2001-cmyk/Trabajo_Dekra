@@ -1,0 +1,22 @@
+[
+  {
+    "hoja": "Tune-Up",
+    "xml_identico": true,
+    "sha256": "c92fcd4250794d21fd49946eacd66b2ccb429deae485d8b3d9655164abd33059"
+  },
+  {
+    "hoja": "Validations",
+    "xml_identico": true,
+    "sha256": "7a263e0076b8b6f2f7175adc92de33d13bf6fa5f47dcf53893bf833ba4fef3e0"
+  },
+  {
+    "hoja": "Test Campaign",
+    "xml_identico": true,
+    "sha256": "6a3d5ca5a866d4876b26559871d1dad72a69d2f66d28abcc31ef952e67c50e2b"
+  },
+  {
+    "hoja": "Pretesting-Others",
+    "xml_identico": true,
+    "sha256": "303243467bda33731f5f225ec39885d0b97686b7520a72b775a9e5019f7b1c08"
+  }
+]

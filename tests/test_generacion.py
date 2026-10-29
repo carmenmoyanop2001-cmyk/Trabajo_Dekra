@@ -8,7 +8,7 @@ import subprocess
 import sys
 from lxml import etree as E
 
-from generador_excel import generar
+from generador_excel import generar_heredado as generar
 from validacion_datos import validar_datos
 from opciones_ensayo import slots_incluidos
 

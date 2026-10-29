@@ -12,6 +12,7 @@ Al pulsar «Generar toma de datos» se crean un archivo de texto y el Excel (.xl
 """
 
 import os
+import json
 import queue
 import sys
 import threading
@@ -20,6 +21,7 @@ from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from opciones_ensayo import slots_incluidos
+from base_datos import Catalogo, BASE_PREDETERMINADA
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 ERROR_GENERADOR = ''
@@ -636,6 +638,11 @@ class App(tk.Tk):
         self.carpeta_guardado = Path(__file__).resolve().parent
         self.elementos = {}                       # clave -> ElementoSeccion
         self.tecnologias = {}                     # nombre -> TecnologiaBloque
+        try:
+            self.catalogo = Catalogo()
+        except (OSError, ValueError):
+            self.catalogo = None
+        self.var_base = tk.StringVar(value=str(self.catalogo.path if self.catalogo else BASE_PREDETERMINADA))
 
         self._crear_widgets()
         self._configurar_rueda()
@@ -649,6 +656,13 @@ class App(tk.Tk):
         self.scroll = ScrollFrame(self)
         self.scroll.pack(fill="both", expand=True)
         cont = self.scroll.inner
+
+        marco_base = ttk.LabelFrame(cont, text='Base de datos de tecnologías (.xlsx)', padding=(10, 6))
+        marco_base.pack(fill='x', pady=4)
+        ttk.Label(marco_base, textvariable=self.var_base, wraplength=650).pack(anchor='w')
+        ttk.Button(marco_base, text='Elegir base de datos…', command=self._elegir_base).pack(side='left', pady=5)
+        ttk.Button(marco_base, text='Recargar base', command=self._recargar_base).pack(side='left', padx=8)
+        ttk.Button(marco_base, text='Cargar respuestas (.json)…', command=self._cargar_respuestas).pack(side='left', padx=8)
 
         self.marco_proyecto = ttk.LabelFrame(cont, text="Nombre del proyecto", padding=(10, 6))
         self.marco_proyecto.pack(fill="x", pady=4)
@@ -668,14 +682,76 @@ class App(tk.Tk):
             self.elementos[cat["clave"]] = sec
 
         # Tecnologías: se marcan y aparecen sus opciones debajo
-        marco_tec = ttk.LabelFrame(cont, text="Tecnologías", padding=(10, 6))
+        marco_tec = self.marco_tec = ttk.LabelFrame(cont, text="Tecnologías de la base cargada", padding=(10, 6))
         marco_tec.pack(fill="x", pady=4)
         ttk.Label(marco_tec, text="Marca las tecnologías que aplican:",
                   foreground="#555555").pack(anchor="w", pady=(0, 4))
-        for nombre, fabrica in TECNOLOGIAS:
-            bloque = TecnologiaBloque(marco_tec, nombre, fabrica)
+        self._actualizar_tecnologias()
+
+    def _actualizar_tecnologias(self, anteriores=None):
+        from formulario_bd import fabricas
+        for bloque in self.tecnologias.values():
+            bloque.destroy()
+        self.tecnologias = {}
+        for nombre, fabrica in fabricas(self.catalogo) if self.catalogo else []:
+            bloque = TecnologiaBloque(self.marco_tec, nombre, fabrica)
             bloque.pack(fill="x", pady=2)
             self.tecnologias[nombre] = bloque
+            if anteriores and nombre in anteriores:
+                bloque.panel.cargar(anteriores[nombre])
+                bloque.var.set(True)
+                bloque._al_cambiar()
+
+    def _elegir_base(self):
+        path = filedialog.askopenfilename(title='Elegir base de datos de tecnologías', filetypes=[('Base de datos Excel', '*.xlsx')])
+        if path:
+            self._aplicar_base(path)
+
+    def _recargar_base(self):
+        self._aplicar_base(self.var_base.get())
+
+    def _aplicar_base(self, path):
+        try:
+            catalogo = Catalogo(path)
+        except (OSError, ValueError, KeyError) as exc:
+            messagebox.showerror('Base no válida', str(exc))
+            return
+        anteriores = {n: b.seleccion() for n, b in self.tecnologias.items() if b.activa()}
+        self.catalogo = catalogo
+        self.var_base.set(str(catalogo.path))
+        self._actualizar_tecnologias(anteriores)
+
+    def _cargar_respuestas(self):
+        if self.catalogo is None:
+            messagebox.showerror('Falta la base de datos', 'Elige primero una base de datos XLSX válida.')
+            return
+        path = filedialog.askopenfilename(title='Cargar respuestas del ensayo', filetypes=[('Respuestas del cuestionario', '*.json')])
+        if not path:
+            return
+        try:
+            from validacion_datos import validar_datos
+            data = json.loads(Path(path).read_text(encoding='utf-8'))
+            validar_datos(data, catalogo=self.catalogo)
+        except (OSError, ValueError, KeyError) as exc:
+            messagebox.showerror('Respuestas no válidas para esta base', str(exc))
+            return
+        from opciones_ensayo import seleccion_multiple
+        self.var_proyecto.set(data['proyecto'])
+        for name, variable in self.var_region.items():
+            variable.set(name in seleccion_multiple(data['region']))
+        for name, variable in self.var_expo.items():
+            variable.set(name in seleccion_multiple(data['exposure']))
+        self.var_conducida.set(SI if data['conducida'] else NO)
+        for key, section in self.elementos.items():
+            names = data[key]
+            section.var.set(SI if names else NO)
+            section._al_cambiar()
+            if names:
+                section.detalle.count_var.set(str(len(names)))
+                section.detalle.generar()
+                for variable, text in zip(section.detalle._name_vars, names):
+                    variable.set(text)
+        self._actualizar_tecnologias(data['tecnologias'])
 
     def _pregunta(self, parent, texto, var, opciones, ayuda=None):
         marco = ttk.LabelFrame(parent, text=texto, padding=(10, 6))
@@ -746,6 +822,10 @@ class App(tk.Tk):
     def _validar_todo(self):
         """Devuelve (errores, widget donde mostrar el primer error o None)."""
         errores = self._validar_general()
+        try:
+            self.catalogo = Catalogo(self.var_base.get())
+        except (OSError, ValueError) as exc:
+            errores.append('Elige una base de datos XLSX válida: ' + str(exc))
         destino = self.marco_proyecto if errores else None
         for cat in CATEGORIAS:
             sec = self.elementos[cat["clave"]]
@@ -761,7 +841,7 @@ class App(tk.Tk):
         if not errores:
             from validacion_datos import validar_datos
             try:
-                validar_datos(self.datos_para_excel())
+                validar_datos(self.datos_para_excel(), catalogo=self.catalogo)
             except ValueError as exc:
                 errores.append(str(exc))
                 destino = self.marco_proyecto
@@ -791,6 +871,8 @@ class App(tk.Tk):
         L += ["", "TECNOLOGÍAS"]
         for bloque in self.tecnologias.values():
             L.extend(bloque.lineas())
+        if getattr(self, 'catalogo', None):
+            L += ['', 'Base de datos: ' + self.catalogo.path.name, 'SHA-256: ' + self.catalogo.sha256]
         return "\n".join(L) + "\n"
 
     # ------------------------------------------------------------------
@@ -830,7 +912,7 @@ class App(tk.Tk):
         def nombres(clave):
             sec = self.elementos[clave]
             return sec.detalle.nombres() if sec.var.get() == SI else []
-        return {
+        data = {
             'proyecto': self._nombre_proyecto(),
             'region': self._marcadas(self.var_region),
             'exposure': self._marcadas(self.var_expo),
@@ -840,6 +922,10 @@ class App(tk.Tk):
             'spotchecking': nombres('spotchecking'),
             'tecnologias': {n: b.seleccion() for n, b in self.tecnologias.items() if b.activa()},
         }
+        if getattr(self, 'catalogo', None):
+            data['base_datos'] = str(self.catalogo.path)
+            data['base_datos_sha256'] = self.catalogo.sha256
+        return data
 
     def _generar_excel(self, ruta_txt):
         if generar_excel is None:
@@ -853,12 +939,18 @@ class App(tk.Tk):
             messagebox.showinfo("Toma de datos generada", f"Archivo de texto generado en:\n{ruta_txt}")
             return
         datos = self.datos_para_excel()
+        catalogo = self.catalogo
+        try:
+            ruta_txt.with_suffix('.json').write_text(json.dumps(datos, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        except OSError as exc:
+            messagebox.showerror('Error al guardar las respuestas', str(exc))
+            return
         espera = ProgresoDialog(self, "Generando el Excel de la toma de datos…")
         cola = queue.Queue()
 
         def trabajo():
             try:
-                cola.put(('ok', generar_excel(datos, str(salida), log=lambda *a: None)))
+                cola.put(('ok', generar_excel(datos, str(salida), log=lambda *a: None, catalogo=catalogo)))
             except Exception as exc:                      # se muestra al usuario
                 cola.put(('error', exc))
 

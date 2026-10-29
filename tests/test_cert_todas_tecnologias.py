@@ -7,7 +7,7 @@ import unittest
 import zipfile
 from lxml import etree as E
 
-from generador_excel import generar, DIR_PLANTILLA, ARCHIVOS
+from generador_excel import generar_heredado as generar, DIR_PLANTILLA, ARCHIVOS
 from nucleo import Hoja
 from seleccion import plan_sar, referencias, plan_conducted, hojas_conducted_necesarias
 
