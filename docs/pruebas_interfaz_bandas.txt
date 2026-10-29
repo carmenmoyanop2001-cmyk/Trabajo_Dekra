@@ -1,7 +1,10 @@
-test_panel_2g_acumula_slots_y_conserva_bandas_y_carga (test_base_datos.BaseDatosTests.test_panel_2g_acumula_slots_y_conserva_bandas_y_carga) ... ok
 test_bandas_por_modo_se_reflejan_en_el_excel (test_interfaz_bandas.BandasTextoTests.test_bandas_por_modo_se_reflejan_en_el_excel) ... ok
+test_numeros_prefijos_romanos_y_bandas_nuevas (test_interfaz_bandas.BandasTextoTests.test_numeros_prefijos_romanos_y_bandas_nuevas) ... ok
+test_opciones_visibles_se_pueden_escribir_sin_ambiguedad (test_interfaz_bandas.BandasTextoTests.test_opciones_visibles_se_pueden_escribir_sin_ambiguedad) ... ok
+test_rechaza_vacio_desconocido_y_numero_ambiguo (test_interfaz_bandas.BandasTextoTests.test_rechaza_vacio_desconocido_y_numero_ambiguo) ... ok
+test_panel_2g_acumula_slots_y_conserva_bandas_y_carga (test_base_datos.BaseDatosTests.test_panel_2g_acumula_slots_y_conserva_bandas_y_carga) ... ok
 
 ----------------------------------------------------------------------
-Ran 2 tests in 6.268s
+Ran 5 tests in 6.406s
 
 OK

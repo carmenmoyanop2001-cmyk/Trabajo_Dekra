@@ -1,4 +1,4 @@
-"""Casillas de bandas visibles, selección 2G independiente y carga de respuestas."""
+"""Opciones como texto, entrada numérica y bandas 2G independientes."""
 import os
 from pathlib import Path
 import tempfile
@@ -7,7 +7,7 @@ import unittest
 import zipfile
 from lxml import etree as E
 
-from entradas_bandas import resolver_bandas
+from entradas_bandas import resolver_bandas, opciones_bandas
 from base_datos import Catalogo
 from validacion_datos import validar_datos
 
@@ -24,6 +24,13 @@ class BandasTextoTests(unittest.TestCase):
         for text, bands in [('', ['FDD1']), ('2', ['FDD1']), ('1', ['FDD1', 'TDD1'])]:
             with self.subTest(text=text), self.assertRaises(ValueError):
                 resolver_bandas(text, bands)
+
+    def test_opciones_visibles_se_pueden_escribir_sin_ambiguedad(self):
+        for bands in [['FDD1', 'FDD3', 'TDD38'], ['FDDI', 'FDDIII'], ['n77', 'n78'],
+                      ['FDD1', 'TDD1'], ['850', '900'], ['2.4 GHz']]:
+            displayed = opciones_bandas(bands)
+            self.assertEqual(resolver_bandas(', '.join(displayed), bands), bands)
+        self.assertEqual(opciones_bandas(['FDD1', 'FDD3', 'TDD38']), ['1', '3', '38'])
 
     def test_bandas_por_modo_se_reflejan_en_el_excel(self):
         from generador_excel import generar
@@ -73,7 +80,8 @@ class InterfazRealTests(unittest.TestCase):
                 p._mostrar(mode)
                 p.slots[mode][slot].set(True)
                 p._cambiar(mode, slot)
-                p.bandas_modo[mode].casillas[band].invoke()
+                p.bandas_modo[mode].texto.set(band)
+                self.assertTrue(p.bandas_modo[mode].aceptar())
             self.root.update()
             self.assertFalse(p.detalles['GSM'].winfo_ismapped())
             self.assertTrue(p.detalles['GPRS'].winfo_ismapped())
@@ -101,16 +109,19 @@ class InterfazRealTests(unittest.TestCase):
         try:
             lte.pack(fill='x')
             self.root.update()
-            for band in ['FDD1', 'FDD3', 'FDD7']:
-                self.assertTrue(lte.entrada.casillas[band].winfo_ismapped())
-                lte.entrada.casillas[band].invoke()
+            self.assertTrue(lte.entrada.opciones.winfo_ismapped())
+            self.assertTrue(lte.entrada.opciones.cget('text').startswith('Bandas disponibles: (1, 2, 3,'))
+            self.assertFalse(any(isinstance(w, tk.ttk.Checkbutton) for w in lte.entrada.winfo_children()))
+            lte.entrada.texto.set('1, 3, 7')
+            self.assertTrue(lte.entrada.aceptar())
             self.assertEqual(lte.seleccion(), ['FDD1', 'FDD3', 'FDD7'])
-            self.assertEqual(lte.validar(), [])  # Las casillas se aplican directamente.
-            lte.entrada.casillas['FDD7'].invoke()
+            self.assertEqual(lte.validar(), [])
+            lte.entrada.texto.set('1, 3')
+            self.assertTrue(lte.validar())  # Cambios sin confirmar.
+            self.assertTrue(lte.entrada.aceptar())
             self.assertEqual(lte.seleccion(), ['FDD1', 'FDD3'])
-            for check in lte.entrada.casillas.values():
-                self.assertLessEqual(check.winfo_x() + check.winfo_width(), lte.entrada.opciones.winfo_width())
-            five.entrada.casillas['n77'].invoke()
+            five.entrada.texto.set('77')
+            self.assertTrue(five.entrada.aceptar())
             self.assertTrue(five.validar())  # Hay que indicar la variante.
             five.variables['n77 part Q'].set(True)
             self.assertEqual(five.seleccion(), ['n77 part Q'])
@@ -129,9 +140,10 @@ class InterfazRealTests(unittest.TestCase):
             bands.cargar(['900', '1800'])
             self.assertEqual(bands.validar(), [])
             bands.actualizar(['850', '900'])
-            self.assertEqual(bands.seleccion(), ['900'])
+            self.assertEqual(bands.seleccion(), [])
             self.assertTrue(bands.validar())  # No se descartan silenciosamente.
-            bands.casillas['850'].invoke()
+            bands.texto.set('850, 900')
+            self.assertTrue(bands.aceptar())
             self.assertEqual(bands.validar(), [])
             bands.cargar(['1900'])
             self.assertTrue(bands.validar())

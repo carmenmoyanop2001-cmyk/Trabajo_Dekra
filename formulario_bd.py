@@ -1,82 +1,67 @@
 """Formulario con opciones de banda visibles bajo cada tecnología."""
 import tkinter as tk
 from tkinter import ttk
-from entradas_bandas import banda_base_5g
+from entradas_bandas import banda_base_5g, resolver_bandas, opciones_bandas
 from opciones_ensayo import slots_incluidos
 from configuracion import OPCIONES_2G, OPCIONES_3G, VARIANTES_5G
 
 
 class SelectorBandas(ttk.Frame):
-    """Casillas visibles y repartidas en filas según el espacio disponible."""
+    """Opciones visibles como texto y entrada de números separados por comas."""
     def __init__(self, master, nombre, disponibles):
         super().__init__(master, padding=(0, 4))
         self.nombre = nombre
         self.al_cambiar = None
-        self.variables, self.casillas = {}, {}
-        self.no_disponibles = []
-        ttk.Label(self, text='Bandas:').pack(anchor='w')
-        self.opciones = ttk.Frame(self)
-        self.opciones.pack(fill='x', pady=(3, 0))
-        self.opciones.bind('<Configure>', self._distribuir)
-        self.estado = ttk.Label(self, foreground='#B00020', wraplength=570)
+        self.aceptadas = []
+        self.texto = tk.StringVar(self)
+        self.opciones = ttk.Label(self, foreground='#555555', wraplength=570)
+        self.opciones.pack(anchor='w')
+        ttk.Label(self, text='Bandas elegidas (separadas por comas):').pack(anchor='w', pady=(4, 0))
+        row = ttk.Frame(self)
+        row.pack(fill='x', pady=(3, 0))
+        self.entry = ttk.Entry(row, textvariable=self.texto, width=32)
+        self.entry.pack(side='left')
+        self.entry.bind('<Return>', lambda _: self.aceptar())
+        ttk.Button(row, text='Aceptar bandas', command=self.aceptar).pack(side='left', padx=6)
+        self.estado = ttk.Label(self, foreground='#1F5FA8', wraplength=570)
+        self.estado.pack(anchor='w', pady=(3, 0))
         self.actualizar(disponibles)
 
-    def _distribuir(self, _evento=None):
-        width = self.opciones.winfo_width()
-        if width <= 1:
-            width = 550
-        cell_width = max((c.winfo_reqwidth() + 16 for c in self.casillas.values()), default=1)
-        columns = max(1, width // cell_width)
-        for index, check in enumerate(self.casillas.values()):
-            check.grid(row=index // columns, column=index % columns,
-                       sticky='w', padx=(0, 16), pady=2)
-
-    def _aviso(self):
-        if self.no_disponibles:
-            self.estado.configure(text='Bandas no disponibles: ' + ', '.join(self.no_disponibles) +
-                                  '. Elige de nuevo entre las opciones mostradas.')
-            self.estado.pack(anchor='w', pady=(3, 0))
-        elif not self.disponibles:
-            self.estado.configure(text='La base no contiene bandas para esta opción.')
-            self.estado.pack(anchor='w', pady=(3, 0))
-        else:
-            self.estado.pack_forget()
-
     def actualizar(self, disponibles):
-        selected = self.seleccion() + self.no_disponibles
         self.disponibles = list(dict.fromkeys(disponibles))
-        for child in self.opciones.winfo_children():
-            child.destroy()
-        self.variables, self.casillas = {}, {}
-        for band in self.disponibles:
-            variable = self.variables[band] = tk.BooleanVar(self, value=band in selected)
-            self.casillas[band] = ttk.Checkbutton(self.opciones, text=band, variable=variable,
-                                                 command=self._cambiar)
-        self.no_disponibles = [b for b in selected if b not in self.variables]
-        self._distribuir()
-        self._aviso()
+        options = opciones_bandas(self.disponibles)
+        self.opciones.configure(text='Bandas disponibles: (' + ', '.join(options) + ')' if options else
+                               'La base no contiene bandas para esta opción.')
+        if self.texto.get().strip():
+            self.aceptar()
 
-    def _cambiar(self):
-        self.no_disponibles = []
-        self._aviso()
+    def aceptar(self):
+        try:
+            self.aceptadas = resolver_bandas(self.texto.get(), self.disponibles)
+        except ValueError as exc:
+            self.aceptadas = []
+            self.estado.configure(text=str(exc), foreground='#B00020')
+            if self.al_cambiar:
+                self.al_cambiar()
+            return False
+        self.estado.configure(text='Seleccionadas: ' + ', '.join(self.aceptadas), foreground='#1F5FA8')
         if self.al_cambiar:
             self.al_cambiar()
+        return True
 
     def seleccion(self):
-        return [b for b, v in self.variables.items() if v.get()]
+        return list(self.aceptadas)
 
     def validar(self):
-        if self.no_disponibles:
-            return [f'{self.nombre}: bandas no disponibles: ' + ', '.join(self.no_disponibles) + '.']
-        return [] if self.seleccion() else [f'{self.nombre}: selecciona al menos una banda.']
+        try:
+            bands = resolver_bandas(self.texto.get(), self.disponibles)
+        except ValueError as exc:
+            return [f'{self.nombre}: {exc}']
+        return [] if bands == self.aceptadas else [f'{self.nombre}: pulsa «Aceptar bandas» para confirmar los cambios.']
 
     def cargar(self, bands):
-        for band, variable in self.variables.items():
-            variable.set(band in bands)
-        self.no_disponibles = [b for b in bands if b not in self.variables]
-        self._aviso()
-        if self.al_cambiar:
-            self.al_cambiar()
+        self.texto.set(', '.join(bands))
+        self.aceptar()
 
 
 class PanelCatalogo(ttk.Frame):

@@ -41,6 +41,13 @@ def resolver_bandas(texto, disponibles):
     return result
 
 
+def opciones_bandas(disponibles):
+    """Muestra números que se pueden escribir; conserva etiquetas ambiguas."""
+    numbers = [_numero(b) for b in disponibles]
+    return [str(n) if n is not None and numbers.count(n) == 1 else b
+            for b, n in zip(disponibles, numbers)]
+
+
 def banda_base_5g(value):
     match = re.match(r'^n(\d+)(?:\b|$)', value, re.I)
     return 'n' + match[1] if match else value
