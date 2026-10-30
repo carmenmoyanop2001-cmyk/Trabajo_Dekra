@@ -2,7 +2,7 @@
   "base": "Base_de_datos_bandas_canales_frecuencias_v2_3G.xlsx",
   "sha256_base": "6bc2cac508e78ab77db663a25a86d9103f0f31218763d8f9614772ed8b2c62f4",
   "salida": "Base_de_datos_bandas_canales_frecuencias_v2_3G_regiones.xlsx",
-  "sha256_salida": "f00f4ffa54a9485b81f3b97b992685f1f18e3b4c0f0ec3b06a9c49df88fcd6e1",
+  "sha256_salida": "b2170dabdee54e31650c789a11060066c561816a6f25e0a984ea80a04547e05d",
   "fuentes": [
     {
       "archivo": "FAN22_09 - SAR Datasheet_Original_LTE.xlsm",
@@ -51,7 +51,7 @@
   "hojas_actualizadas": {
     "5G": {
       "filas": 553,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "EN": 106,
         "FCC/ISED": 83,
@@ -63,7 +63,7 @@
     },
     "BT": {
       "filas": 5,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "EU/FCC/ISED": 5
       },
@@ -73,7 +73,7 @@
     },
     "Custom1": {
       "filas": 1,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "?": 1
       },
@@ -83,7 +83,7 @@
     },
     "Custom2": {
       "filas": 1,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "?": 1
       },
@@ -93,7 +93,7 @@
     },
     "Custom3": {
       "filas": 1,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "?": 1
       },
@@ -103,7 +103,7 @@
     },
     "Custom4": {
       "filas": 1,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "?": 1
       },
@@ -113,7 +113,7 @@
     },
     "Custom5": {
       "filas": 1,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "?": 1
       },
@@ -123,7 +123,7 @@
     },
     "Custom6": {
       "filas": 1,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "?": 1
       },
@@ -133,7 +133,7 @@
     },
     "Custom7": {
       "filas": 1,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "?": 1
       },
@@ -143,7 +143,7 @@
     },
     "Custom8": {
       "filas": 1,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "?": 1
       },
@@ -153,7 +153,7 @@
     },
     "GPRS 1TX": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -164,7 +164,7 @@
     },
     "GPRS 2TX": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -175,7 +175,7 @@
     },
     "GPRS 3TX": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -186,7 +186,7 @@
     },
     "GPRS 4TX": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -197,7 +197,7 @@
     },
     "EGPRS 1TX": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -208,7 +208,7 @@
     },
     "EGPRS 2TX": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -219,7 +219,7 @@
     },
     "EGPRS 3TX": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -230,7 +230,7 @@
     },
     "EGPRS 4TX": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -241,7 +241,7 @@
     },
     "GSM": {
       "filas": 12,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "FCC/ISED": 6,
         "EN": 6
@@ -252,7 +252,7 @@
     },
     "LTE": {
       "filas": 15717,
-      "columna_region": "L",
+      "columna_region": "A",
       "valores_region": {
         "EN/FCC/ISED": 2592,
         "FCC/ISED": 4617,
@@ -269,7 +269,7 @@
     },
     "WCDMA": {
       "filas": 39,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "EN": 9,
         "FCC/ISED": 9,
@@ -281,7 +281,7 @@
     },
     "WLAN": {
       "filas": 73,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "EN; FCC/ISED": 36,
         "EN": 29,
@@ -295,7 +295,7 @@
     },
     "LTE NB-IoT": {
       "filas": 87,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "EN/FCC/ISED": 12,
         "FCC/ISED": 58,
@@ -310,7 +310,7 @@
     },
     "Wifi": {
       "filas": 73,
-      "columna_region": "F",
+      "columna_region": "A",
       "valores_region": {
         "EN; FCC/ISED": 36,
         "EN": 29,
@@ -324,7 +324,7 @@
     },
     "HSDPA": {
       "filas": 144,
-      "columna_region": "G",
+      "columna_region": "A",
       "valores_region": {
         "EN": 36,
         "FCC/ISED": 36,
@@ -336,7 +336,7 @@
     },
     "DC-HSDPA": {
       "filas": 144,
-      "columna_region": "G",
+      "columna_region": "A",
       "valores_region": {
         "EN": 36,
         "FCC/ISED": 36,
@@ -348,7 +348,7 @@
     },
     "HSPA": {
       "filas": 144,
-      "columna_region": "G",
+      "columna_region": "A",
       "valores_region": {
         "EN": 36,
         "FCC/ISED": 36,
@@ -360,7 +360,7 @@
     },
     "HSPA+": {
       "filas": 144,
-      "columna_region": "G",
+      "columna_region": "A",
       "valores_region": {
         "EN": 36,
         "FCC/ISED": 36,
@@ -469,7 +469,7 @@
       "frecuencia": "5855"
     }
   ],
-  "conservacion": "Solo se añaden las columnas Región y se amplían las dimensiones, filtros y anchos. Todas las celdas anteriores, estilos y demás componentes se conservan exactamente.",
+  "conservacion": "Región ocupa la columna A y el resto de las columnas se desplaza una posición a la derecha. Los valores, tipos de celda, estilos y anchos anteriores se conservan; la hoja Notas y todos los demás componentes permanecen idénticos.",
   "regiones_multiples": "Los distintos valores encontrados en el original para una misma combinación se separan con punto y coma.",
   "regiones_desconocidas": "Se conservan los signos ? del original. Si una fórmula contiene un error pero otras filas originales de la misma combinación tienen una región válida, se utilizan los valores válidos. Las combinaciones sin coincidencia verificable se marcan con ?.",
   "comprobacion_5g": "El original completo conserva regiones válidas para las 553 combinaciones RF; 177 también tienen filas con #REF!, que no representan una región adicional y no se trasladan a la base.",
@@ -479,5 +479,41 @@
     "errores_openxml_heredados": 5,
     "errores_openxml_nuevos": 0,
     "observacion": "Se conserva styles.xml de la base recibida, con sus cinco avisos previos de esquema de fuentes."
+  },
+  "reordenacion": {
+    "sha256_antes": "f00f4ffa54a9485b81f3b97b992685f1f18e3b4c0f0ec3b06a9c49df88fcd6e1",
+    "sha256_despues": "b2170dabdee54e31650c789a11060066c561816a6f25e0a984ea80a04547e05d",
+    "hojas": [
+      "5G",
+      "BT",
+      "Custom1",
+      "Custom2",
+      "Custom3",
+      "Custom4",
+      "Custom5",
+      "Custom6",
+      "Custom7",
+      "Custom8",
+      "GPRS 1TX",
+      "GPRS 2TX",
+      "GPRS 3TX",
+      "GPRS 4TX",
+      "EGPRS 1TX",
+      "EGPRS 2TX",
+      "EGPRS 3TX",
+      "EGPRS 4TX",
+      "GSM",
+      "LTE",
+      "WCDMA",
+      "WLAN",
+      "LTE NB-IoT",
+      "Wifi",
+      "HSDPA",
+      "DC-HSDPA",
+      "HSPA",
+      "HSPA+"
+    ],
+    "verificacion_xml_inversa": "Correcta en las 28 hojas.",
+    "lectura_independiente": "Todos los valores, estilos y tipos coinciden tras rotar las columnas."
   }
 }
