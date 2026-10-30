@@ -1,0 +1,132 @@
+{
+  "base_recibida": "Base_de_datos_bandas_canales_frecuencias_v2.xlsx",
+  "sha256_base_recibida": "723079a6bd0ce0160bd9e43a27c0681b3ab050a42b4db45ffe86e00a7bbc56cb",
+  "original": "FAN22_09 - SAR Datasheet_Original_2G_3G.xlsm",
+  "sha256_original": "4768d6c9c9cbdaa99926a6f1c72e5e7053184f2879bb9d637d40ccd96fd9ec55",
+  "salida": "Base_de_datos_bandas_canales_frecuencias_v2_3G.xlsx",
+  "sha256_salida": "6bc2cac508e78ab77db663a25a86d9103f0f31218763d8f9614772ed8b2c62f4",
+  "columnas_origen": {
+    "Tecnología": "J",
+    "Banda": "K",
+    "Canal": "T",
+    "Frecuencia (MHz)": "U",
+    "Module port": "G"
+  },
+  "hojas_anteriores_conservadas_sin_cambios": [
+    "5G",
+    "BT",
+    "Custom1",
+    "Custom2",
+    "Custom3",
+    "Custom4",
+    "Custom5",
+    "Custom6",
+    "Custom7",
+    "Custom8",
+    "GPRS 1TX",
+    "GPRS 2TX",
+    "GPRS 3TX",
+    "GPRS 4TX",
+    "EGPRS 1TX",
+    "EGPRS 2TX",
+    "EGPRS 3TX",
+    "EGPRS 4TX",
+    "GSM",
+    "LTE",
+    "WCDMA",
+    "WLAN",
+    "LTE NB-IoT",
+    "Wifi",
+    "Notas"
+  ],
+  "componentes_anteriores_solo_actualizados_para_registrar_hojas": [
+    "[Content_Types].xml",
+    "xl/_rels/workbook.xml.rels",
+    "xl/workbook.xml"
+  ],
+  "nuevas_hojas": {
+    "HSDPA": {
+      "filas_datos": 144,
+      "filas_originales": 576,
+      "bandas": 12,
+      "module_ports": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "DC-HSDPA": {
+      "filas_datos": 144,
+      "filas_originales": 576,
+      "bandas": 12,
+      "module_ports": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "HSPA": {
+      "filas_datos": 144,
+      "filas_originales": 720,
+      "bandas": 12,
+      "module_ports": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "HSPA+": {
+      "filas_datos": 144,
+      "filas_originales": 144,
+      "bandas": 12,
+      "module_ports": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  "criterio_duplicados": "Una fila por combinación distinta de tecnología, banda, canal, frecuencia y Module port; los subensayos repetidos con los mismos cinco valores no duplican la base.",
+  "validacion": {
+    "lectura_independiente_openpyxl": "Correcta; 29 hojas y valores contrastados con el original.",
+    "errores_openxml_heredados": 5,
+    "errores_openxml_nuevos": 0,
+    "detalle_heredados": [
+      {
+        "Id": "Sch_UnexpectedElementContentExpectingComplex",
+        "Description": "The element has unexpected child element 'http://schemas.openxmlformats.org/spreadsheetml/2006/main:b'.",
+        "Part": "/xl/styles.xml",
+        "Path": "/x:styleSheet[1]/x:fonts[1]/x:font[5]"
+      },
+      {
+        "Id": "Sch_UnexpectedElementContentExpectingComplex",
+        "Description": "The element has unexpected child element 'http://schemas.openxmlformats.org/spreadsheetml/2006/main:b'.",
+        "Part": "/xl/styles.xml",
+        "Path": "/x:styleSheet[1]/x:fonts[1]/x:font[4]"
+      },
+      {
+        "Id": "Sch_UnexpectedElementContentExpectingComplex",
+        "Description": "The element has unexpected child element 'http://schemas.openxmlformats.org/spreadsheetml/2006/main:sz'.",
+        "Part": "/xl/styles.xml",
+        "Path": "/x:styleSheet[1]/x:fonts[1]/x:font[3]"
+      },
+      {
+        "Id": "Sch_UnexpectedElementContentExpectingComplex",
+        "Description": "The element has unexpected child element 'http://schemas.openxmlformats.org/spreadsheetml/2006/main:b'.",
+        "Part": "/xl/styles.xml",
+        "Path": "/x:styleSheet[1]/x:fonts[1]/x:font[2]"
+      },
+      {
+        "Id": "Sch_UnexpectedElementContentExpectingComplex",
+        "Description": "The element has unexpected child element 'http://schemas.openxmlformats.org/spreadsheetml/2006/main:color'.",
+        "Part": "/xl/styles.xml",
+        "Path": "/x:styleSheet[1]/x:fonts[1]/x:font[1]"
+      }
+    ],
+    "observacion": "Los cinco avisos de esquema de fuentes ya estaban en styles.xml de la base recibida. Este componente se conserva idéntico, según lo solicitado."
+  }
+}
