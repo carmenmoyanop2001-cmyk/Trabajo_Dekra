@@ -1,0 +1,483 @@
+{
+  "base": "Base_de_datos_bandas_canales_frecuencias_v2_3G.xlsx",
+  "sha256_base": "6bc2cac508e78ab77db663a25a86d9103f0f31218763d8f9614772ed8b2c62f4",
+  "salida": "Base_de_datos_bandas_canales_frecuencias_v2_3G_regiones.xlsx",
+  "sha256_salida": "f00f4ffa54a9485b81f3b97b992685f1f18e3b4c0f0ec3b06a9c49df88fcd6e1",
+  "fuentes": [
+    {
+      "archivo": "FAN22_09 - SAR Datasheet_Original_LTE.xlsm",
+      "sha256": "7ae009c1e917c584de6a882bdcdeacfae30ad33bbaf1033490ccaf8bc6cd730f",
+      "columna_region": "B",
+      "filas_contrastadas": 23245
+    },
+    {
+      "archivo": "FAN22_09 - SAR Datasheet_Original_LTE_NB_IoT.xlsm",
+      "sha256": "1dedd362d2de56097f11c0adcff4857bfef2460aab3a22d8c7343bd6fd97d3ee",
+      "columna_region": "B",
+      "filas_contrastadas": 4703
+    },
+    {
+      "archivo": "FAN22_09 - SAR Datasheet_Original_LTE_CATM1.xlsm",
+      "sha256": "73bcb22b0c410b53a15adf51c54572d83e5f0b823f752f774b904eb85e2ba9ac",
+      "columna_region": "B",
+      "filas_contrastadas": 31584
+    },
+    {
+      "archivo": "FAN22_09 - SAR Datasheet_Original_WiFi.xlsm",
+      "sha256": "7212af255debeaceb28a72b2cbd6051fc2ddbbdf4aedbbb9316206841d120c27",
+      "columna_region": "B",
+      "filas_contrastadas": 2713
+    },
+    {
+      "archivo": "FAN22_09 - SAR Datasheet_Original_BT.xlsm",
+      "sha256": "86899b27bf6b8e246cc7b7effd8fb53546a0d1d0150db71d262865b6d63f9677",
+      "columna_region": "BU",
+      "filas_contrastadas": 144
+    },
+    {
+      "archivo": "FAN22_09 - SAR Datasheet_Original_2G_3G.xlsm",
+      "sha256": "4768d6c9c9cbdaa99926a6f1c72e5e7053184f2879bb9d637d40ccd96fd9ec55",
+      "columna_region": "B",
+      "filas_contrastadas": 2592
+    },
+    {
+      "archivo": "toma_datos_sar.zip",
+      "componente": "toma_datos_sar/plantilla/cond_5g.xz",
+      "sha256_componente": "8f42618f73510d0406b420cf7d79c3940013a213b3a8e9413f6bbbd332ab7012",
+      "columna_region": "B",
+      "bandas": 25
+    }
+  ],
+  "hojas_actualizadas": {
+    "5G": {
+      "filas": 553,
+      "columna_region": "F",
+      "valores_region": {
+        "EN": 106,
+        "FCC/ISED": 83,
+        "EN/FCC/ISED": 364
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 553
+      }
+    },
+    "BT": {
+      "filas": 5,
+      "columna_region": "F",
+      "valores_region": {
+        "EU/FCC/ISED": 5
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 5
+      }
+    },
+    "Custom1": {
+      "filas": 1,
+      "columna_region": "F",
+      "valores_region": {
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 1
+      }
+    },
+    "Custom2": {
+      "filas": 1,
+      "columna_region": "F",
+      "valores_region": {
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 1
+      }
+    },
+    "Custom3": {
+      "filas": 1,
+      "columna_region": "F",
+      "valores_region": {
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 1
+      }
+    },
+    "Custom4": {
+      "filas": 1,
+      "columna_region": "F",
+      "valores_region": {
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 1
+      }
+    },
+    "Custom5": {
+      "filas": 1,
+      "columna_region": "F",
+      "valores_region": {
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 1
+      }
+    },
+    "Custom6": {
+      "filas": 1,
+      "columna_region": "F",
+      "valores_region": {
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 1
+      }
+    },
+    "Custom7": {
+      "filas": 1,
+      "columna_region": "F",
+      "valores_region": {
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 1
+      }
+    },
+    "Custom8": {
+      "filas": 1,
+      "columna_region": "F",
+      "valores_region": {
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 1
+      }
+    },
+    "GPRS 1TX": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "GPRS 2TX": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "GPRS 3TX": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "GPRS 4TX": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "EGPRS 1TX": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "EGPRS 2TX": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "EGPRS 3TX": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "EGPRS 4TX": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "GSM": {
+      "filas": 12,
+      "columna_region": "F",
+      "valores_region": {
+        "FCC/ISED": 6,
+        "EN": 6
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 12
+      }
+    },
+    "LTE": {
+      "filas": 15717,
+      "columna_region": "L",
+      "valores_region": {
+        "EN/FCC/ISED": 2592,
+        "FCC/ISED": 4617,
+        "?": 6239,
+        "EN": 2177,
+        "EN; ?": 20,
+        "EN; FCC/ISED": 48,
+        "EU": 24
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 14260,
+        "region_unica_para_toda_la_banda": 1457
+      }
+    },
+    "WCDMA": {
+      "filas": 39,
+      "columna_region": "F",
+      "valores_region": {
+        "EN": 9,
+        "FCC/ISED": 9,
+        "?": 21
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 39
+      }
+    },
+    "WLAN": {
+      "filas": 73,
+      "columna_region": "F",
+      "valores_region": {
+        "EN; FCC/ISED": 36,
+        "EN": 29,
+        "?": 6,
+        "FCC/ISED": 2
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 67,
+        "sin_coincidencia_verificable": 6
+      }
+    },
+    "LTE NB-IoT": {
+      "filas": 87,
+      "columna_region": "F",
+      "valores_region": {
+        "EN/FCC/ISED": 12,
+        "FCC/ISED": 58,
+        "EN; FCC/ISED": 1,
+        "EN": 11,
+        "EU": 4,
+        "?": 1
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 87
+      }
+    },
+    "Wifi": {
+      "filas": 73,
+      "columna_region": "F",
+      "valores_region": {
+        "EN; FCC/ISED": 36,
+        "EN": 29,
+        "?": 6,
+        "FCC/ISED": 2
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 67,
+        "sin_coincidencia_verificable": 6
+      }
+    },
+    "HSDPA": {
+      "filas": 144,
+      "columna_region": "G",
+      "valores_region": {
+        "EN": 36,
+        "FCC/ISED": 36,
+        "?": 72
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 144
+      }
+    },
+    "DC-HSDPA": {
+      "filas": 144,
+      "columna_region": "G",
+      "valores_region": {
+        "EN": 36,
+        "FCC/ISED": 36,
+        "?": 72
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 144
+      }
+    },
+    "HSPA": {
+      "filas": 144,
+      "columna_region": "G",
+      "valores_region": {
+        "EN": 36,
+        "FCC/ISED": 36,
+        "?": 72
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 144
+      }
+    },
+    "HSPA+": {
+      "filas": 144,
+      "columna_region": "G",
+      "valores_region": {
+        "EN": 36,
+        "FCC/ISED": 36,
+        "?": 72
+      },
+      "metodo": {
+        "coincidencia_banda_canal_frecuencia": 144
+      }
+    }
+  },
+  "filas_sin_coincidencia": [
+    {
+      "hoja": "WLAN",
+      "fila": 41,
+      "tecnologia": "WLAN",
+      "banda": "U-NII-4",
+      "canal": "169",
+      "frecuencia": "5845"
+    },
+    {
+      "hoja": "WLAN",
+      "fila": 42,
+      "tecnologia": "WLAN",
+      "banda": "U-NII-4",
+      "canal": "173",
+      "frecuencia": "5865"
+    },
+    {
+      "hoja": "WLAN",
+      "fila": 43,
+      "tecnologia": "WLAN",
+      "banda": "U-NII-4",
+      "canal": "177",
+      "frecuencia": "5885"
+    },
+    {
+      "hoja": "WLAN",
+      "fila": 44,
+      "tecnologia": "WLAN",
+      "banda": "U-NII-4",
+      "canal": "167",
+      "frecuencia": "5835"
+    },
+    {
+      "hoja": "WLAN",
+      "fila": 45,
+      "tecnologia": "WLAN",
+      "banda": "U-NII-4",
+      "canal": "175",
+      "frecuencia": "5875"
+    },
+    {
+      "hoja": "WLAN",
+      "fila": 46,
+      "tecnologia": "WLAN",
+      "banda": "U-NII-4",
+      "canal": "171",
+      "frecuencia": "5855"
+    },
+    {
+      "hoja": "Wifi",
+      "fila": 41,
+      "tecnologia": "Wifi",
+      "banda": "U-NII-4",
+      "canal": "169",
+      "frecuencia": "5845"
+    },
+    {
+      "hoja": "Wifi",
+      "fila": 42,
+      "tecnologia": "Wifi",
+      "banda": "U-NII-4",
+      "canal": "173",
+      "frecuencia": "5865"
+    },
+    {
+      "hoja": "Wifi",
+      "fila": 43,
+      "tecnologia": "Wifi",
+      "banda": "U-NII-4",
+      "canal": "177",
+      "frecuencia": "5885"
+    },
+    {
+      "hoja": "Wifi",
+      "fila": 44,
+      "tecnologia": "Wifi",
+      "banda": "U-NII-4",
+      "canal": "167",
+      "frecuencia": "5835"
+    },
+    {
+      "hoja": "Wifi",
+      "fila": 45,
+      "tecnologia": "Wifi",
+      "banda": "U-NII-4",
+      "canal": "175",
+      "frecuencia": "5875"
+    },
+    {
+      "hoja": "Wifi",
+      "fila": 46,
+      "tecnologia": "Wifi",
+      "banda": "U-NII-4",
+      "canal": "171",
+      "frecuencia": "5855"
+    }
+  ],
+  "conservacion": "Solo se añaden las columnas Región y se amplían las dimensiones, filtros y anchos. Todas las celdas anteriores, estilos y demás componentes se conservan exactamente.",
+  "regiones_multiples": "Los distintos valores encontrados en el original para una misma combinación se separan con punto y coma.",
+  "regiones_desconocidas": "Se conservan los signos ? del original. Si una fórmula contiene un error pero otras filas originales de la misma combinación tienen una región válida, se utilizan los valores válidos. Las combinaciones sin coincidencia verificable se marcan con ?.",
+  "comprobacion_5g": "El original completo conserva regiones válidas para las 553 combinaciones RF; 177 también tienen filas con #REF!, que no representan una región adicional y no se trasladan a la base.",
+  "validacion": {
+    "lectura_independiente_openpyxl": "Correcta; todas las regiones verificadas contra los índices del original.",
+    "celdas_anteriores": "Idénticas, comprobado tras retirar las columnas añadidas.",
+    "errores_openxml_heredados": 5,
+    "errores_openxml_nuevos": 0,
+    "observacion": "Se conserva styles.xml de la base recibida, con sus cinco avisos previos de esquema de fuentes."
+  }
+}
