@@ -1,6 +1,6 @@
 {
   "ejemplo": "Ensayo_tecnologias_ordenadas.xlsm",
-  "sha256_ejemplo": "fc3f93ed20dc2fea9eb776fd139bc9c5e1b1fec937e0ecfc60f507a95c7b03d6",
+  "sha256_ejemplo": "9c9e01986a39f20efdb274382d0fc02da86641789f808e8889d3217883703de0",
   "protegidas": {
     "Overview": {
       "identica": true,
@@ -120,5 +120,14 @@
   },
   "estilos_anteriores_inalterados": true,
   "capturas_inalteradas": true,
-  "base_incluida_sin_modificar": "e3eadb68532af6a80d6eb6eb868b61c36d058cb2e642473a0937f15871233588"
+  "base_incluida_sin_modificar": "e3eadb68532af6a80d6eb6eb868b61c36d058cb2e642473a0937f15871233588",
+  "codeNames_visibles_conservados": {
+    "xl/worksheets/sheet3.xml": "Hoja17",
+    "xl/worksheets/sheet4.xml": "Hoja18",
+    "xl/worksheets/sheet5.xml": "Hoja6",
+    "xl/worksheets/sheet6.xml": "Hoja20",
+    "xl/worksheets/sheet7.xml": "Hoja21",
+    "xl/worksheets/sheet8.xml": "Hoja15",
+    "xl/worksheets/sheet9.xml": "Hoja24"
+  }
 }

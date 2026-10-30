@@ -14,6 +14,8 @@ Las coordenadas que necesitan esas fórmulas se mantienen ocultas en las pestañ
 
 Los archivos de las cuatro capturas de 2G-3G, sus relaciones y sus anclajes se copian sin cambios. La base `Base_de_datos_bandas_canales_frecuencias_corregido.xlsx` incluida es idéntica al archivo que se recibió.
 
+Las pestañas visibles conservan sus identificadores internos `codeName`, asociados a los módulos de hoja del VBA original. La copia de apoyo no duplica ese identificador. El proyecto VBA se conserva sin ejecutarlo ni modificarlo.
+
 ## Verificación
 
 - Las pruebas de nombres cubren 2G, 3G y ambas familias, con y sin conducidos. Comparan las siete hojas protegidas y las celdas que utilizan sus fórmulas.

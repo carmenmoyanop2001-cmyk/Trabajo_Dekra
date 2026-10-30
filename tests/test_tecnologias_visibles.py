@@ -95,6 +95,14 @@ class TecnologiasVisiblesTests(unittest.TestCase):
                 for address, cell in old_cells.items():
                     self.assertEqual(E.tostring(cell, method='c14n', exclusive=True),
                                      E.tostring(current_cells[address], method='c14n', exclusive=True), (name, address))
+                from tablas_tecnologias import nombre_visible
+                original_name = name if data['conducida'] else 'Conducted ' + name
+                display = nombre_visible(original_name, data)
+                visible = E.fromstring(new.read(new_names[display][0]))
+                self.assertEqual(roots[name].find('s:sheetPr', NS).get('codeName'),
+                                 visible.find('s:sheetPr', NS).get('codeName'))
+                if display != name:
+                    self.assertIsNone(current.find('s:sheetPr', NS).get('codeName'))
         self.assertEqual(set(final['pestanas_protegidas_identicas']), PROTEGIDAS)
         return final
 

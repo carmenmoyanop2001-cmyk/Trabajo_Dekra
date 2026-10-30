@@ -190,6 +190,13 @@ def crear_hoja(original_xml, fields, rows, original, estilos=None):
     first = first or header_styles
     sheet = E.Element('{' + M + '}worksheet', nsmap={None: M, 'r': R})
     pr = E.SubElement(sheet, '{' + M + '}sheetPr')
+    original_pr = old.find('s:sheetPr', NS)
+    if original_pr is not None:
+        if original_pr.get('codeName'):
+            pr.set('codeName', original_pr.get('codeName'))
+        tab = original_pr.find('s:tabColor', NS)
+        if tab is not None:
+            pr.append(deepcopy(tab))
     E.SubElement(pr, '{' + M + '}pageSetUpPr', fitToPage='1')
     last = n2col(len(fields))
     E.SubElement(sheet, '{' + M + '}dimension', ref=f'A1:{last}{len(rows) + 1}')

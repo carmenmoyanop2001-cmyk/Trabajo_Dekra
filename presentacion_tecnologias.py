@@ -146,6 +146,9 @@ def _integrar_visible(original, visible, necessary, pictures):
 
 def _auxiliar(root):
     copy = deepcopy(root)
+    properties = copy.find('s:sheetPr', NS)
+    if properties is not None:
+        properties.attrib.pop('codeName', None)
     for element in list(copy.iter()):
         if E.QName(element).localname in ('drawing', 'legacyDrawing', 'legacyDrawingHF',
                                          'oleObjects', 'controls', 'hyperlinks', 'picture'):

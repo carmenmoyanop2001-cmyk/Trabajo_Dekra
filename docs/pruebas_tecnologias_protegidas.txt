@@ -2,6 +2,6 @@ test_lte_y_otras_tablas_solo_informacion_de_base (test_tecnologias_visibles.Tecn
 test_nombres_2g_3g_y_proteccion_con_y_sin_conducidos (test_tecnologias_visibles.TecnologiasVisiblesTests.test_nombres_2g_3g_y_proteccion_con_y_sin_conducidos) ... ok
 
 ----------------------------------------------------------------------
-Ran 2 tests in 84.354s
+Ran 2 tests in 86.455s
 
 OK
