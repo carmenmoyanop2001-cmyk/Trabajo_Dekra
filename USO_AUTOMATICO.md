@@ -12,11 +12,11 @@ El programa usa dos elementos independientes: una base XLSX editable con los dat
 
 La base se vuelve a leer antes de generar. Si has cambiado un canal o frecuencia, la nueva salida usa el dato nuevo. Si has eliminado una banda seleccionada, la aplicación lo indica y conserva el Excel previo; no busca esa banda en las plantillas antiguas. **Recargar base** reconstruye las opciones del formulario con el contenido actual del archivo.
 
-Las opciones mantienen la organización anterior. Al marcar GPRS o EGPRS aparecen sus slots y justo debajo **Bandas disponibles: (850, 900, 1800, 1900)** con un campo para escribir las elegidas. GSM tiene sus propias opciones y entrada. Las demás tecnologías también muestran sus opciones como texto entre paréntesis: por ejemplo, LTE **(1, 2, 3, …)**. Escribe los números separados por comas y pulsa **Aceptar bandas**. Las variantes 5G aparecen al aceptar sus bandas. WiFi conserva 2,4/5 GHz, modos y U-NII. Las opciones 3G siguen visibles; si una no tiene datos en la base elegida, se avisa en lugar de inventarlos.
+En 2G se marcan GSM, GPRS y EGPRS y solo se piden sus slots TX. Sus bandas se toman completas de la base seleccionada. El resto conserva las listas de bandas como texto y la entrada por números. Al pulsar **Aceptar bandas**, **Seleccionadas** muestra las etiquetas completas: por ejemplo, **FDDI, FDDIII** en HSDPA. Las variantes 5G y las opciones WiFi se conservan.
 
-Los JSON nuevos usan `tecnologias.2G.bandas_por_modo` para mantener bandas independientes de GSM, GPRS y EGPRS. Se siguen admitiendo las respuestas anteriores con una lista compartida `bandas`, que al cargar se aplica a cada modo activo. Se admiten números y etiquetas completas; si un número corresponde a más de una banda, las opciones muestran las etiquetas para evitar ambigüedades. Si una banda guardada ya no existe en la base cargada, se muestra un aviso. Los cambios escritos se deben confirmar antes de generar.
+Los JSON nuevos guardan únicamente modos y slots en `tecnologias.2G`. El formulario admite cargar respuestas anteriores, pero sus antiguas restricciones de bandas 2G se sustituyen por todas las bandas de la base actual. La CLI sigue admitiendo las respuestas antiguas. En las demás familias se admiten números y etiquetas completas y se comprueba que las bandas sigan en la base.
 
-Las tecnologías con una única banda posible no piden seleccionarla: la usan automáticamente. Esto incluye BT y Custom en la base incluida. Si la base se actualiza para añadirles más bandas, aparece el campo de selección. Las bandas de LTE CAT M1 y tecnologías equivalentes se presentan como números tanto en la entrada como en la confirmación y el resumen de bandas del archivo de texto. Las respuestas JSON conservan los identificadores que utiliza la base.
+Las tecnologías con una única banda posible la usan automáticamente. Esto incluye BT y Custom en la base incluida. Si se añaden más bandas, aparece la entrada. En ella se pueden escribir números; la confirmación y las respuestas JSON conservan las etiquetas de la base.
 
 En el original, WCDMA, HSPA, HSPA+, HSDPA y DC-HSDPA tienen las mismas 12 bandas. Cuando la base solo aporta WCDMA, sus bandas, canales y frecuencias sirven también para las otras opciones 3G, conservando la tecnología elegida. Los parámetros específicos ausentes no se recuperan del Excel original. Una tabla específica en la base tiene prioridad sobre este catálogo común. La comprobación del original está en `docs/bandas_3g_original.json`.
 
@@ -29,7 +29,11 @@ El JSON guarda la ruta y el identificador de la base usada. Al cargarlo desde el
 - **Validations, Test Campaign y Pretesting-Others:** se guardan con el programa y se incluyen en la salida.
 - **SAR EN y SAR FCC-ISED:** se guardan los procedimientos, posiciones, formatos y cálculos. Los datos RF se enlazan con las hojas de tecnologías construidas desde la base actual.
 
-Las hojas de tecnologías aparecen con prefijo Conducted cuando se elige Sí y sin él cuando se elige No. EN genera SAR EN; FCC e ISED comparten SAR FCC-ISED sin duplicarla. El archivo terminado se verifica antes de sustituir la salida anterior.
+La pestaña compartida se llama **2G**, **3G** o **2G-3G** según las familias marcadas. El resto conserva el prefijo Conducted cuando se elige Sí y lo omite cuando se elige No. EN genera SAR EN; FCC e ISED comparten SAR FCC-ISED sin duplicarla. El archivo terminado se verifica antes de sustituir la salida anterior.
+
+La presentación de tecnologías se aplica después del motor aprobado. Se comprueba que las siete hojas protegidas, las definiciones de estilos existentes y las imágenes permanecen idénticas. Se añaden estilos propios con texto negro para las tablas. Las coordenadas de apoyo de las fórmulas se conservan ocultas. Si cambia el nombre de 2G-3G, una copia de apoyo oculta conserva el nombre anterior para que las fórmulas SAR no se reescriban.
+
+Las tablas visibles tienen filtro, cabecera inmovilizada y orden por tecnología, banda y parámetros. Región ocupa la primera columna. 2G/3G solo muestra los cinco campos pedidos. Las otras familias muestran las columnas de la base que tienen datos, incluidas columnas adicionales. No se inventan modos ni se repiten filas por modos del formulario ausentes en la base. Las capturas de 2G-3G conservan sus archivos y anclajes.
 
 En SAR EN, BY se combina por tecnología/banda y BX por exposición. Las baterías usan fórmulas como `CONCATENATE(CA9," - Battery check 1")`, adaptando la referencia del procedimiento FCC equivalente. Se mantienen sus valores iniciales TBD junto a las fórmulas. En Body se añaden Front Face y accesorios. No se añaden filas Variability. FCC mantiene sus filas de posiciones, baterías y Variability guardadas, sin insertar las opciones adicionales del formulario.
 
@@ -46,9 +50,9 @@ Cada tabla de datos tiene una fila de cabecera y estas columnas mínimas:
 
 Columnas opcionales: Bandwidth (MHz), Modulation, UL RB Allocation, UL RB Start, Narrowband Index, SCS (kHz), MPR, Mode, Data Rate, Duty Cycle, Cert y Notas. Un guion o N/A en los parámetros opcionales significa no informado. Los campos ausentes quedan vacíos y no recuperan valores RF del datasheet. Tune-Up es una referencia fija independiente y se conserva del original.
 
-LTE, CAT M1 y NB-IoT pueden convivir en la hoja LTE: se distinguen por la columna Tecnología. Narrowband Index se escribe en P y SCS en L. Se conservan todas las combinaciones distintas de parámetros de las bandas elegidas, sin añadir las combinaciones que existían únicamente en el Excel antiguo.
+LTE, CAT M1 y NB-IoT pueden convivir en la hoja LTE: se distinguen por la columna Tecnología. Narrowband Index y SCS aparecen con sus cabeceras cuando tienen datos. Se conservan las combinaciones distintas de valores de la base, sin añadir las del Excel antiguo.
 
-La entrega trae WLAN y Wifi duplicadas: se utiliza WLAN cuando está presente; si difieren, se informa. Si no existe WLAN se admite Wifi como alias. Los resúmenes sin parámetros no duplican combinaciones ya presentes en las tablas detalladas. Las hojas Notas se consideran documentación y no se ejecuta su contenido. Las notas de registros se conservan en Comment y se incluyen en los avisos de generación.
+La entrega trae WLAN y Wifi duplicadas: se utiliza WLAN cuando está presente; si difieren, se informa. Si no existe WLAN se admite Wifi como alias. Los resúmenes sin parámetros no duplican combinaciones detalladas. Las hojas Notas se consideran documentación y no se ejecuta su contenido. Las notas de registros aparecen en Notas y en los avisos de generación; 2G/3G mantiene la tabla limitada a los cinco campos pedidos.
 
 Las fórmulas del XLSX de datos deben tener su resultado guardado: si lo calculas con Excel, guarda el archivo antes de cargarlo. El programa no ejecuta macros ni calcula fórmulas de la base.
 
@@ -65,7 +69,7 @@ La Tune-Up guardada no se amplía ni modifica por añadir bandas en la base. Si 
 ## Ejecución y pruebas
 
 ```sh
-python generar_desde_json.py ejemplos/ejemplo_base_datos.json salidas/ensayo.xlsm
+python generar_desde_json.py ejemplos/ejemplo_tecnologias_ordenadas.json salidas/ensayo.xlsm
 python generar_desde_json.py respuestas.json salidas/ensayo_actualizado.xlsm --base-datos base_actualizada.xlsx
 python -m unittest discover -s tests -v
 ```

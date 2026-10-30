@@ -10,7 +10,7 @@ import zipfile
 
 from lxml import etree as E
 
-BASE_PREDETERMINADA = Path(__file__).parent / 'datos/Base_de_datos_bandas_canales_frecuencias_v2.xlsx'
+BASE_PREDETERMINADA = Path(__file__).parent / 'datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx'
 NS = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
 RNS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 
@@ -74,6 +74,9 @@ class Catalogo:
         snapshot = self.path.read_bytes()
         self.sha256 = hashlib.sha256(snapshot).hexdigest()
         self.avisos = []
+        # Metadatos de presentación independientes de los registros que usa
+        # el generador SAR: no cambian su selección ni sus cálculos.
+        self.campos_fuente = {}
         try:
             raw = self._leer(snapshot)
         except (KeyError, E.XMLSyntaxError, zipfile.BadZipFile) as exc:
@@ -88,10 +91,14 @@ class Catalogo:
         # Las tablas resumen no duplican combinaciones que ya están detalladas.
         detailed = {(r.tech, r.band, r.channel, r.frequency) for r in raw if r.params}
         unique = {}
+        variants = {}
         for r in raw:
             if not r.params and (r.tech, r.band, r.channel, r.frequency) in detailed:
                 continue
-            unique.setdefault(r.identity(), r)
+            identity = r.identity()
+            variants.setdefault(identity, []).append(r.source)
+            unique.setdefault(identity, r)
+        self.variantes_fuente = {source: sources for sources in variants.values() for source in sources}
         self.records = list(unique.values())
         if not self.records:
             raise ValueError('La base no contiene registros de tecnologías, bandas, canales y frecuencias.')
@@ -121,9 +128,11 @@ class Catalogo:
                 target = rels[sheet.get('{' + RNS + '}id')]
                 part = target.lstrip('/') if target.startswith('/') else 'xl/' + target
                 columns = None
+                labels = {}
                 with z.open(part) as f:
                     for _, row in E.iterparse(f, tag='{' + NS['s'] + '}row'):
                         values = {}
+                        typed = {}
                         for c in row:
                             col = re.sub(r'\d+', '', c.get('r'))
                             v = c.findtext('s:v', namespaces=NS)
@@ -135,7 +144,16 @@ class Catalogo:
                                 raise ValueError(f'{name}!{c.get("r")}: fórmula sin resultado guardado. Calcula y guarda la base en Excel.')
                             if v is not None:
                                 values[col] = v
+                                if c.get('t') in (None, 'n'):
+                                    try:
+                                        number = float(v)
+                                        typed[col] = int(number) if number.is_integer() else number
+                                    except ValueError:
+                                        typed[col] = v
+                                else:
+                                    typed[col] = v
                         if columns is None:
+                            labels = dict(values)
                             columns = {col: HEADERS[normalizar(v)] for col, v in values.items()
                                        if normalizar(v) in HEADERS}
                             if not REQUIRED <= set(columns.values()):
@@ -158,6 +176,9 @@ class Catalogo:
                             records.append(Registro(tecnologia(data['tech']), band,
                                 numero(data['channel'], where + '/Canal'), numero(data['frequency'], where + '/Frecuencia'),
                                 params, str(data.get('notes') or ''), f'{name}!{row.get("r")}'))
+                            self.campos_fuente[records[-1].source] = [
+                                (HEADERS.get(normalizar(label)), label, typed.get(col))
+                                for col, label in labels.items()]
                         row.clear()
                         while row.getprevious() is not None:
                             del row.getparent()[0]

@@ -13,9 +13,9 @@ Requiere Python 3.10 o posterior, con tkinter.
 5. Marca regiones, exposiciones, tecnologías y bandas. Las bandas proceden de la base cargada. GPRS y EGPRS conservan los slots acumulativos.
 6. Pulsa **Generar toma de datos**. Guarda los tres archivos que se crean juntos.
 
-Cada tecnología muestra sus opciones como texto: **Bandas disponibles: (1, 2, 3, …)**. Debajo puedes escribir los números que elijas, separados por comas, y pulsar **Aceptar bandas**. En 2G, las opciones y el campo de GPRS y EGPRS aparecen justo debajo de sus respectivos slots; GSM tiene los suyos. Los slots siguen siendo acumulativos. Las opciones habituales de 3G, variantes 5G y modos WiFi se conservan. BT y Custom quedan en **Mostrar otras tecnologías**.
+En **2G** solo se marcan GSM, GPRS y EGPRS y sus slots TX. Todas sus bandas, canales y frecuencias se toman de la base elegida; no hay entrada de bandas 2G. Los slots siguen siendo acumulativos. En las demás tecnologías se conservan las listas de bandas como texto y la entrada por números separados por comas. BT y Custom quedan en **Mostrar otras tecnologías**.
 
-Si una tecnología solo tiene una banda posible en la base, se utiliza automáticamente y no muestra opciones ni campo de bandas. En LTE, LTE CAT M1 y LTE NB-IoT se muestran los números también al cargar respuestas y confirmar la selección: `1, 2, 3` en lugar de `FDD1, FDD2, FDD3`. Los identificadores completos se conservan internamente para generar el Excel.
+Si una tecnología solo tiene una banda posible, se utiliza automáticamente. La entrada admite números, pero **Seleccionadas** muestra las etiquetas completas: `FDDI` para la banda 1 de HSDPA, `FDD1` para LTE o `n77` para 5G.
 
 HSPA, HSPA+, HSDPA y DC-HSDPA usan el catálogo de bandas, canales y frecuencias WCDMA de la base cuando no tienen una tabla propia. Se ha contrastado en el Excel original que comparten las 12 bandas de 3G. Si añades registros específicos para una de estas tecnologías a la base, pasan a tener prioridad. Los parámetros propios que falten quedan vacíos.
 
@@ -32,7 +32,7 @@ Para repetir un ensayo: elige la base actualizada, pulsa **Cargar respuestas (.j
 | Overview | Copia guardada, con proyecto, baterías y accesorios del formulario |
 | Validations, Test Campaign y Pretesting-Others | Hojas originales guardadas en el programa |
 | SAR EN y SAR FCC-ISED | Formatos, posiciones y cálculos guardados; datos RF enlazados con las tecnologías generadas desde la base |
-| Nombre de pestañas de tecnologías | `Conducted …` si hay conducidos; nombre sin prefijo si no |
+| Nombre de pestañas de tecnologías | `2G`, `3G` o `2G-3G` según la selección; el resto conserva `Conducted …` cuando se eligen conducidos |
 
 EN solicita SAR EN; FCC e ISED comparten SAR FCC-ISED. Antes de guardar se comprueba que las hojas solicitadas existen, están visibles y contienen filas.
 
@@ -40,7 +40,9 @@ SAR EN conserva Mode combinado por tecnología/banda y Exposure Conditions por b
 
 ## Editar la base
 
-La entrega incluye `datos/Base_de_datos_bandas_canales_frecuencias_v2.xlsx`. Puedes modificar esa copia o elegir otra desde el formulario. Sus columnas mínimas son **Tecnología, Banda, Canal y Frecuencia (MHz)**. Las columnas opcionales incluyen Bandwidth (MHz), Modulation, UL RB Allocation, UL RB Start, Narrowband Index, SCS (kHz), Mode, MPR y Notas.
+La base inicial es `datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx`, una copia sin modificar del último archivo recibido. Puedes elegir otra desde el formulario. Las columnas mínimas son **Tecnología, Banda, Canal y Frecuencia (MHz)**. Los demás campos de la base se muestran cuando contienen datos; Región ocupa la primera columna.
+
+Las tablas de 2G/3G muestran solo **Región, Tecnología, Banda, Canal y Frecuencia (MHz)**. Las demás familias muestran los campos con datos en la base elegida, sin añadir columnas de medidas ni columnas compuestas solo por guiones. Se conservan colores y capturas del original y se añaden estilos legibles con texto negro. La presentación verifica que las siete hojas protegidas, sus fórmulas y las definiciones originales de sus estilos permanecen idénticas, manteniendo ocultas las coordenadas de apoyo que necesitan.
 
 Los parámetros que no estén informados quedan vacíos. **La excepción es Tune-Up, que se conserva completa del original.** No se inventan parámetros 5G, MPR, modos ni certificados. Si conoces un modo para el ensayo, puedes indicarlo en el formulario o añadir la columna Mode a la base.
 
@@ -49,7 +51,7 @@ Se admiten bandas nuevas de las familias con formato guardado. El procedimiento 
 ## Generación sin pantalla
 
 ```sh
-python generar_desde_json.py ejemplos/ejemplo_base_datos.json salidas/ensayo.xlsm
+python generar_desde_json.py ejemplos/ejemplo_tecnologias_ordenadas.json salidas/ensayo.xlsm
 python generar_desde_json.py respuestas.json salidas/repeticion.xlsm --base-datos mi_base_actualizada.xlsx
 ```
 
@@ -57,12 +59,12 @@ El segundo comando permite reutilizar respuestas con otra versión de la base. L
 
 ## Ejemplo y comprobaciones
 
-`ejemplos/Ensayo_desde_base_datos.xlsm` demuestra todas las familias disponibles, EN/FCC/ISED, dos baterías y un accesorio; sus respuestas son ficticias y están en `ejemplo_base_datos.json`. Los demás Excel de ejemplos y los informes anteriores documentan versiones históricas.
+`ejemplos/Ensayo_tecnologias_ordenadas.xlsm` muestra las tablas actuales con todas las familias, EN/FCC/ISED, dos baterías y un accesorio. Sus respuestas ficticias están en `ejemplo_tecnologias_ordenadas.json`. Los demás Excel de ejemplos y los informes anteriores documentan versiones históricas.
 
 ```sh
 python -m unittest discover -s tests -v
 ```
 
-Las pruebas de producción están en `tests/test_base_datos.py`: edición de datos, bandas nuevas, falta de parámetros, conservación de Tune-Up, todas las familias, regiones y CLI. Las otras pruebas conservan la auditoría histórica de formatos mediante `generar_heredado`; esa ruta no se utiliza desde el formulario ni la CLI actuales.
+Las pruebas de producción están en `tests/test_base_datos.py`, `tests/test_tecnologias_visibles.py` y `tests/test_interfaz_bandas.py`: tablas visibles, edición de datos, conservación de las siete hojas protegidas, nombres 2G/3G, regiones, CLI y widgets reales. Las auditorías históricas usan `generar_heredado`, que no se utiliza desde el formulario ni la CLI.
 
 El paquete conserva VBA y la macro MyTimestamp. La validación Open XML comprueba estructura, sin ejecutar Microsoft Excel, cálculos ni macros. La interfaz se importa y se comprueban sus métodos de selección; la revisión visual y la apertura en Excel deben hacerse en un ordenador con pantalla. El proyecto VBA original puede mostrar su antiguo formulario de hojas: ciérralo para conservar las hojas ya generadas por el cuestionario.

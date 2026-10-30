@@ -13,6 +13,7 @@ from lxml import etree as E
 from base_datos import Catalogo
 from generador_excel import generar, DIR_PLANTILLA
 from nucleo import Hoja
+from tablas_helpers import table as visible_table
 
 M = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
 R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
@@ -84,21 +85,20 @@ class BaseDatosTests(unittest.TestCase):
                 result = generar(dict(DATA, base_datos=str(db)), output, log=lambda *_: None)
                 self.assertEqual(result['filas']['Conducted LTE'], 3)
                 self.assertEqual(result['base_datos']['archivo'], 'datos.xlsx')
-                data = sheet(output, 4).findall('s:sheetData/s:row', NS)[2:]
-                self.assertEqual({value(cells(r)['T']) for r in data}, {'123456', '123457', '123458'})
-                self.assertEqual({float(value(cells(r)['U'])) for r in data}, {9001.25 + offset, 9010.5 + offset, 9020.75 + offset})
+                _, data = visible_table(output, 4)
+                self.assertEqual({r['Canal'] for r in data}, {123456, 123457, 123458})
+                self.assertEqual({r['Frecuencia (MHz)'] for r in data}, {9001.25 + offset, 9010.5 + offset, 9020.75 + offset})
                 for row in data:
-                    c = cells(row)
-                    self.assertEqual(value(c['K']), 'FDD101')
-                    self.assertEqual(float(value(c['M'])), bw)
-                    self.assertEqual(value(c['N']), 'QAM_NUEVA')
-                    self.assertEqual(value(c['Q']), '3')
-                    self.assertEqual(value(c['L']), '12.5')
-                    self.assertEqual(value(c['AH']), '')  # Sin medidas antiguas.
-                # Los desplegables no RF siguen formando parte del formato.
+                    self.assertEqual(row['Banda'], 'FDD101')
+                    self.assertEqual(row['Bandwidth (MHz)'], bw)
+                    self.assertEqual(row['Modulation'], 'QAM_NUEVA')
+                    self.assertEqual(row['UL RB Allocation'], 3)
+                    self.assertEqual(row['SCS (kHz)'], 12.5)
+                    self.assertFalse(any('Power' in name for name in row))
+                # Las tablas visibles ya no incluyen campos de medida ajenos
+                # a la base ni sus antiguos desplegables.
                 validations = sheet(output, 4).find('s:dataValidations', NS)
-                self.assertIsNotNone(validations)
-                self.assertTrue(any(v.get('sqref') == 'AG3:AG5' for v in validations))
+                self.assertIsNone(validations)
                 for number in (11, 12):
                     sar = sheet(output, number)
                     for row in sar.findall('s:sheetData/s:row', NS)[2:]:
@@ -133,13 +133,11 @@ class BaseDatosTests(unittest.TestCase):
             database(db, [['5G', 'n301', 654321, 6789.5]])
             output = Path(tmp) / '5g.xlsm'
             result = generar(dict(DATA, base_datos=str(db), tecnologias={'5G': ['n301']}), output, log=lambda *_: None)
-            row = cells(sheet(output, 7).findall('s:sheetData/s:row', NS)[2])
-            for col in ('L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'V', 'W'):
-                self.assertEqual(value(row[col]), '', col)
-                self.assertIsNone(row[col].find('s:f', NS), col)
-            self.assertEqual(value(row['K']), 'n301')
-            self.assertEqual(value(row['U']), '6789.5')
-            self.assertTrue(any('ausentes quedan vacíos' in w for w in result['avisos']))
+            fields, rows = visible_table(output, 7)
+            self.assertEqual(fields, ['Región', 'Tecnología', 'Banda', 'Canal', 'Frecuencia (MHz)'])
+            self.assertEqual(rows[0]['Banda'], 'n301')
+            self.assertEqual(rows[0]['Frecuencia (MHz)'], 6789.5)
+            self.assertFalse(any(w.startswith('La base no informa todos los campos') for w in result['avisos']))
 
     def test_banda_eliminada_registro_invalido_y_no_sobrescritura(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -171,7 +169,7 @@ class BaseDatosTests(unittest.TestCase):
                                      '--base-datos', str(db)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn('actualizada.xlsx', output.with_suffix('.txt').read_text(encoding='utf-8'))
-            self.assertEqual(value(cells(sheet(output, 4).findall('s:sheetData/s:row', NS)[2])['U']), '5678.25')
+            self.assertEqual(visible_table(output, 4)[1][0]['Frecuencia (MHz)'], 5678.25)
 
     def test_panel_2g_acumula_slots_y_conserva_bandas_y_carga(self):
         from formulario_bd import Panel2GCatalogo, PanelCatalogo
@@ -192,7 +190,7 @@ class BaseDatosTests(unittest.TestCase):
         Panel2GCatalogo._cambiar(p, 'GPRS', 'TX3')
         data = Panel2GCatalogo.seleccion(p)
         self.assertEqual(data['GPRS'], ['TX1', 'TX2', 'TX3'])
-        self.assertEqual(data['bandas_por_modo'], {'GPRS': ['900']})
+        self.assertEqual(set(data), {'GSM', 'GPRS', 'EGPRS'})
         Panel2GCatalogo.cargar(p, dict(data, GSM=True, bandas=['900']))
         self.assertTrue(p.sel['GSM'].get())
         generic = SimpleNamespace(entrada=B([]), modos_guardados=[],
@@ -222,11 +220,11 @@ class BaseDatosTests(unittest.TestCase):
             generar(dict(DATA, tecnologias={'3G': {'WCDMA': ['FDDI'], 'HSPA': ['FDDI'],
                 'HSPA+': ['FDDI'], 'HSDPA': ['FDDII'], 'DC-HSDPA': ['FDDIII']}}),
                 output, catalogo=cat, log=lambda *_: None)
-            rows = sheet(output, 3).findall('s:sheetData/s:row', NS)[2:]
-            records = {value(cells(row)['J']): cells(row) for row in rows}
+            rows = visible_table(output, 3)[1]
+            records = {row['Tecnología']: row for row in rows}
             self.assertEqual(set(records), {'WCDMA', 'HSPA', 'HSPA+', 'HSDPA', 'DC-HSDPA'})
-            self.assertEqual(float(value(records['HSPA']['U'])), 1930.6)
-            self.assertEqual(float(value(records['HSDPA']['U'])), 1852.4)
+            self.assertEqual(records['HSPA']['Frecuencia (MHz)'], 1930.6)
+            self.assertEqual(records['HSDPA']['Frecuencia (MHz)'], 1852.4)
 
     def test_todas_las_familias_se_llenan_desde_la_base_recibida(self):
         data = dict(DATA, tecnologias={'2G': {'GSM': True, 'GPRS': 'TX3', 'bandas': ['900']},
@@ -239,25 +237,23 @@ class BaseDatosTests(unittest.TestCase):
             result = generar(data, output, log=lambda *_: None)
             self.assertEqual(result['sin_resolver'], {})
             self.assertEqual(set(result['hojas']), {'Overview', 'Tune-Up', 'Validations', 'SAR EN', 'SAR FCC-ISED',
-                'Test Campaign', 'Pretesting-Others', 'Conducted 2G-3G', 'Conducted LTE', 'Conducted LTE CATM1',
+                'Test Campaign', 'Pretesting-Others', '2G-3G', 'Conducted LTE', 'Conducted LTE CATM1',
                 'Conducted LTE NB-IoT', 'Conducted 5G', 'Conducted WiFi', 'Conducted BT-Custom'})
             from hojas_base_datos import hoja_tecnologia
             numbers = {'Conducted 2G-3G': 3, 'Conducted LTE': 4, 'Conducted LTE CATM1': 5,
                        'Conducted LTE NB-IoT': 6, 'Conducted 5G': 7, 'Conducted WiFi': 8, 'Conducted BT-Custom': 9}
             for name, number in numbers.items():
                 expected = [r for r in selected if hoja_tecnologia(r.tech) == name]
-                rows = sheet(output, number).findall('s:sheetData/s:row', NS)[2:]
+                rows = visible_table(output, number)[1]
                 self.assertEqual(len(rows), len(expected))
-                self.assertEqual({(value(cells(r)['K']), float(value(cells(r)['T'])), float(value(cells(r)['U']))) for r in rows},
+                self.assertEqual({(r['Banda'], r['Canal'], r['Frecuencia (MHz)']) for r in rows},
                                  {(r.band, r.channel, r.frequency) for r in expected})
-            gprs_slots = {value(cells(r)['X']) for r in sheet(output, 3).findall('s:sheetData/s:row', NS)[2:]
-                          if value(cells(r)['J']) == 'GPRS'}
-            self.assertEqual(gprs_slots, {'1', '2', '3'})
+            gprs_slots = {r['Tecnología'] for r in visible_table(output, 3)[1] if r['Tecnología'].startswith('GPRS ')}
+            self.assertEqual(gprs_slots, {'GPRS 1TX', 'GPRS 2TX', 'GPRS 3TX'})
             bt_validations = sheet(output, 9).find('s:dataValidations', NS)
-            self.assertIsNotNone(bt_validations)
-            self.assertTrue(any('AG' in v.get('sqref', '') for v in bt_validations))
+            self.assertIsNone(bt_validations)
             bt_formats = sheet(output, 9).xpath('//s:conditionalFormatting/@sqref', namespaces=NS)
-            self.assertTrue(any('CB' in ref for ref in bt_formats))
+            self.assertEqual(bt_formats, [])
 
     def test_las_regiones_respetan_la_seleccion_con_la_fuente_nueva(self):
         with tempfile.TemporaryDirectory() as tmp:

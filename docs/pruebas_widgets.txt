@@ -5,6 +5,6 @@ test_catm1_numeros_y_tecnologias_con_banda_fija (test_interfaz_bandas.InterfazRe
 test_subpaneles_2g_colocacion_y_carga_antigua (test_interfaz_bandas.InterfazRealTests.test_subpaneles_2g_colocacion_y_carga_antigua) ... ok
 
 ----------------------------------------------------------------------
-Ran 5 tests in 7.495s
+Ran 5 tests in 9.464s
 
 OK

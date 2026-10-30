@@ -1,0 +1,124 @@
+{
+  "ejemplo": "Ensayo_tecnologias_ordenadas.xlsm",
+  "sha256_ejemplo": "fc3f93ed20dc2fea9eb776fd139bc9c5e1b1fec937e0ecfc60f507a95c7b03d6",
+  "protegidas": {
+    "Overview": {
+      "identica": true,
+      "sha256": "2f2f6d987b81bf97e45b3a726572e085b847620fc4e90fc0ce4b2181d524013e"
+    },
+    "Tune-Up": {
+      "identica": true,
+      "sha256": "c92fcd4250794d21fd49946eacd66b2ccb429deae485d8b3d9655164abd33059"
+    },
+    "Validations": {
+      "identica": true,
+      "sha256": "7a263e0076b8b6f2f7175adc92de33d13bf6fa5f47dcf53893bf833ba4fef3e0"
+    },
+    "SAR EN": {
+      "identica": true,
+      "sha256": "f86713555a9900f44808350a4621d26fb6a0a07c80d81311771129ca21b41427"
+    },
+    "SAR FCC-ISED": {
+      "identica": true,
+      "sha256": "5c90a0a6ac5358f888d1b1a06185e87c269980915acaabfa5350113b044143db"
+    },
+    "Test Campaign": {
+      "identica": true,
+      "sha256": "6a3d5ca5a866d4876b26559871d1dad72a69d2f66d28abcc31ef952e67c50e2b"
+    },
+    "Pretesting-Others": {
+      "identica": true,
+      "sha256": "303243467bda33731f5f225ec39885d0b97686b7520a72b775a9e5019f7b1c08"
+    }
+  },
+  "tablas": {
+    "2G-3G": {
+      "columnas": [
+        "Región",
+        "Tecnología",
+        "Banda",
+        "Canal",
+        "Frecuencia (MHz)"
+      ],
+      "filas": 78
+    },
+    "Conducted LTE": {
+      "columnas": [
+        "Región",
+        "Tecnología",
+        "Banda",
+        "Canal",
+        "Frecuencia (MHz)",
+        "Bandwidth (MHz)",
+        "Modulation",
+        "UL RB Allocation",
+        "UL RB Start"
+      ],
+      "filas": 168
+    },
+    "Conducted LTE CATM1": {
+      "columnas": [
+        "Región",
+        "Tecnología",
+        "Banda",
+        "Canal",
+        "Frecuencia (MHz)",
+        "Bandwidth (MHz)",
+        "Modulation",
+        "UL RB Allocation",
+        "UL RB Start",
+        "Narrowband Index",
+        "Notas"
+      ],
+      "filas": 263
+    },
+    "Conducted LTE NB-IoT": {
+      "columnas": [
+        "Región",
+        "Tecnología",
+        "Banda",
+        "Canal",
+        "Frecuencia (MHz)",
+        "Modulation",
+        "UL RB Allocation",
+        "UL RB Start",
+        "SCS (kHz)"
+      ],
+      "filas": 21
+    },
+    "Conducted 5G": {
+      "columnas": [
+        "Región",
+        "Tecnología",
+        "Banda",
+        "Canal",
+        "Frecuencia (MHz)"
+      ],
+      "filas": 29
+    },
+    "Conducted WiFi": {
+      "columnas": [
+        "Región",
+        "Tecnología",
+        "Banda",
+        "Canal",
+        "Frecuencia (MHz)"
+      ],
+      "filas": 15
+    },
+    "Conducted BT-Custom": {
+      "columnas": [
+        "Región",
+        "Tecnología",
+        "Banda",
+        "Canal",
+        "Frecuencia (MHz)",
+        "Notas"
+      ],
+      "filas": 5
+    }
+  },
+  "estilos_anteriores_inalterados": true,
+  "capturas_inalteradas": true,
+  "base_incluida_sin_modificar": "e3eadb68532af6a80d6eb6eb868b61c36d058cb2e642473a0937f15871233588"
+}

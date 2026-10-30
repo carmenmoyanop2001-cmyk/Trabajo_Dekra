@@ -64,6 +64,9 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
             if names:
                 renombrar_tecnologias(candidate, names)
                 renombrar_resumen(resumen, names)
+        if catalogo is not None:
+            from presentacion_tecnologias import aplicar
+            aplicar(candidate, datos, catalogo, resumen)
         errors = validar(str(candidate), verbose=False)
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))

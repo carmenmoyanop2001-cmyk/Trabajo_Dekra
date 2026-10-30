@@ -61,7 +61,7 @@ class SelectorBandas(ttk.Frame):
             return False
         shown = opciones_bandas(self.aceptadas, self.disponibles)
         self.texto.set(', '.join(shown))
-        self.estado.configure(text='Seleccionadas: ' + ', '.join(shown), foreground='#1F5FA8')
+        self.estado.configure(text='Seleccionadas: ' + ', '.join(self.aceptadas), foreground='#1F5FA8')
         if len(self.disponibles) == 1:
             self.controles.pack_forget()
             self.estado.pack_forget()
@@ -180,10 +180,10 @@ class Panel5GCatalogo(PanelCatalogo):
 
 
 class Panel2GCatalogo(ttk.Frame):
+    """Modos y slots 2G; las bandas se toman completas de la base elegida."""
     def __init__(self, master, nombre, catalogo):
         super().__init__(master, padding=(24, 4))
-        self.catalogo = catalogo
-        self.sel, self.slots, self.detalles, self.bandas_modo = {}, {}, {}, {}
+        self.sel, self.slots, self.detalles = {}, {}, {}
         for mode in OPCIONES_2G:
             block = ttk.Frame(self)
             block.pack(fill='x', pady=(2, 4))
@@ -193,24 +193,13 @@ class Panel2GCatalogo(ttk.Frame):
             detail = self.detalles[mode] = ttk.Frame(block, padding=(20, 3, 0, 0))
             if mode != 'GSM':
                 self.slots[mode] = {f'TX{n}': tk.BooleanVar() for n in range(1, 5)}
-                row = ttk.Frame(detail)
-                row.pack(anchor='w')
                 for slot, variable in self.slots[mode].items():
-                    ttk.Checkbutton(row, text=slot, variable=variable,
+                    ttk.Checkbutton(detail, text=slot, variable=variable,
                         command=lambda m=mode, s=slot: self._cambiar(m, s)).pack(side='left', padx=(0, 10))
-            self.bandas_modo[mode] = SelectorBandas(detail, mode, self._disponibles(mode))
-            self.bandas_modo[mode].pack(fill='x')
-
-    def _disponibles(self, mode):
-        if mode == 'GSM':
-            return self.catalogo.bandas('GSM')
-        slots = [s for s, v in self.slots[mode].items() if v.get()] or [f'TX{n}' for n in range(1, 5)]
-        lists = [self.catalogo.bandas(f'{mode} {s[2:]}TX') for s in slots]
-        return [b for b in lists[0] if all(b in other for other in lists[1:])]
 
     def _mostrar(self, mode):
-        if self.sel[mode].get():
-            self.detalles[mode].pack(fill='x')
+        if self.sel[mode].get() and mode != 'GSM':
+            self.detalles[mode].pack(anchor='w')
         else:
             self.detalles[mode].pack_forget()
 
@@ -222,29 +211,20 @@ class Panel2GCatalogo(ttk.Frame):
             elif not checked and int(s[2:]) >= n:
                 variable.set(False)
         self.sel[mode].set(any(v.get() for v in self.slots[mode].values()))
-        if hasattr(self, 'bandas_modo'):
-            self.bandas_modo[mode].actualizar(self._disponibles(mode))
-            self._mostrar(mode)
+        self._mostrar(mode)
 
     def seleccion(self):
-        data = {'GSM': self.sel['GSM'].get(), 'bandas_por_modo': {}}
-        for mode in OPCIONES_2G:
-            if self.sel[mode].get():
-                data['bandas_por_modo'][mode] = self.bandas_modo[mode].seleccion()
-            if mode != 'GSM':
-                data[mode] = [s for s, v in self.slots[mode].items() if v.get()] if self.sel[mode].get() else None
-        return data
+        return {'GSM': self.sel['GSM'].get(), **{
+            mode: [s for s, v in self.slots[mode].items() if v.get()] if self.sel[mode].get() else None
+            for mode in ('GPRS', 'EGPRS')}}
 
     def validar(self):
         errors = []
         if not any(v.get() for v in self.sel.values()):
             errors.append('2G: selecciona al menos una tecnología.')
-        for mode in OPCIONES_2G:
-            if not self.sel[mode].get():
-                continue
-            if mode != 'GSM' and not any(v.get() for v in self.slots[mode].values()):
+        for mode in ('GPRS', 'EGPRS'):
+            if self.sel[mode].get() and not any(v.get() for v in self.slots[mode].values()):
                 errors.append(f'{mode}: selecciona los slots TX.')
-            errors.extend(self.bandas_modo[mode].validar())
         return errors
 
     def cargar(self, data):
@@ -254,11 +234,7 @@ class Panel2GCatalogo(ttk.Frame):
             active = slots_incluidos(data.get(mode))
             for slot, variable in variables.items():
                 variable.set(slot in active)
-            self.bandas_modo[mode].actualizar(self._disponibles(mode))
         for mode in OPCIONES_2G:
-            if self.sel[mode].get():
-                bands = data.get('bandas_por_modo', {}).get(mode, data.get('bandas'))
-                self.bandas_modo[mode].cargar(bands if bands is not None else self._disponibles(mode))
             self._mostrar(mode)
 
     def lineas(self):
@@ -267,8 +243,6 @@ class Panel2GCatalogo(ttk.Frame):
             if self.sel[mode].get():
                 slots = ', '.join(s for s, v in self.slots.get(mode, {}).items() if v.get())
                 lines.append(mode + (': ' + slots if slots else ''))
-                entrada = self.bandas_modo[mode]
-                lines.append('  Bandas: ' + ', '.join(opciones_bandas(entrada.seleccion(), entrada.disponibles)))
         return lines
 
 

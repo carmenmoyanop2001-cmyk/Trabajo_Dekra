@@ -10,6 +10,7 @@ from lxml import etree as E
 from entradas_bandas import resolver_bandas, opciones_bandas
 from base_datos import Catalogo
 from validacion_datos import validar_datos
+from tablas_helpers import table
 
 
 class BandasTextoTests(unittest.TestCase):
@@ -44,18 +45,12 @@ class BandasTextoTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'bandas.xlsm'
             generar(data, path, log=lambda *_: None, catalogo=cat)
-            with zipfile.ZipFile(path) as z:
-                root = E.fromstring(z.read('xl/worksheets/sheet3.xml'))
-        ns = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
-        records = []
-        for row in root.findall('s:sheetData/s:row', ns)[2:]:
-            records.append({''.join(c for c in cell.get('r') if c.isalpha()):
-                ''.join(cell.xpath('.//s:t/text() | s:v/text()', namespaces=ns)) for cell in row})
-        self.assertEqual({r['K'] for r in records if r['J'] == 'GSM'}, {'1800'})
-        self.assertEqual({r['K'] for r in records if r['J'] == 'GPRS'}, {'900'})
-        self.assertEqual({r['K'] for r in records if r['J'] == 'EGPRS'}, {'850'})
-        self.assertEqual({r['X'] for r in records if r['J'] == 'GPRS'}, {'1', '2', '3'})
-        self.assertEqual({r['X'] for r in records if r['J'] == 'EGPRS'}, {'1', '2'})
+            _, records = table(path, 3)
+        self.assertEqual({r['Banda'] for r in records if r['Tecnología'] == 'GSM'}, {'1800'})
+        self.assertEqual({r['Banda'] for r in records if r['Tecnología'].startswith('GPRS ')}, {'900'})
+        self.assertEqual({r['Banda'] for r in records if r['Tecnología'].startswith('EGPRS ')}, {'850'})
+        self.assertEqual({r['Tecnología'] for r in records if r['Tecnología'].startswith('GPRS ')}, {'GPRS 1TX', 'GPRS 2TX', 'GPRS 3TX'})
+        self.assertEqual({r['Tecnología'] for r in records if r['Tecnología'].startswith('EGPRS ')}, {'EGPRS 1TX', 'EGPRS 2TX'})
 
 
 @unittest.skipUnless(os.environ.get('DISPLAY'), 'Requiere una pantalla X11 para los widgets reales.')
@@ -76,27 +71,23 @@ class InterfazRealTests(unittest.TestCase):
         p.pack(fill='x')
         try:
             self.assertEqual(list(p.sel), ['GPRS', 'EGPRS', 'GSM'])
-            for mode, slot, band in [('GPRS', 'TX3', '900'), ('EGPRS', 'TX2', '850')]:
+            for mode, slot in [('GPRS', 'TX3'), ('EGPRS', 'TX2')]:
                 p.sel[mode].set(True)
                 p._mostrar(mode)
                 p.slots[mode][slot].set(True)
                 p._cambiar(mode, slot)
-                p.bandas_modo[mode].texto.set(band)
-                self.assertTrue(p.bandas_modo[mode].aceptar())
             self.root.update()
             self.assertFalse(p.detalles['GSM'].winfo_ismapped())
             self.assertTrue(p.detalles['GPRS'].winfo_ismapped())
             self.assertTrue(p.detalles['EGPRS'].winfo_ismapped())
-            for mode in ('GPRS', 'EGPRS'):
-                frame = p.detalles[mode]
-                slots, bands = frame.winfo_children()
-                self.assertIs(bands, p.bandas_modo[mode])
-                self.assertGreaterEqual(bands.winfo_rooty(), slots.winfo_rooty() + slots.winfo_height())
+            self.assertFalse(hasattr(p, 'bandas_modo'))
+            for frame in p.detalles.values():
+                self.assertTrue(all(isinstance(w, tk.ttk.Checkbutton) for w in frame.winfo_children()))
             selected = p.seleccion()
-            self.assertEqual(selected['bandas_por_modo'], {'GPRS': ['900'], 'EGPRS': ['850']})
+            self.assertEqual(selected, {'GSM': False, 'GPRS': ['TX1', 'TX2', 'TX3'], 'EGPRS': ['TX1', 'TX2']})
             self.assertEqual(p.validar(), [])
             p.cargar({'GSM': True, 'GPRS': 'TX2', 'EGPRS': None, 'bandas': ['900']})
-            self.assertEqual(p.seleccion()['bandas_por_modo'], {'GSM': ['900'], 'GPRS': ['900']})
+            self.assertEqual(p.seleccion(), {'GSM': True, 'GPRS': ['TX1', 'TX2'], 'EGPRS': None})
             self.assertFalse(p.detalles['EGPRS'].winfo_manager())
         finally:
             p.destroy()
@@ -134,6 +125,7 @@ class InterfazRealTests(unittest.TestCase):
                 self.assertEqual(panel.entrada.disponibles, self.catalogo.bandas('WCDMA'))
                 panel.entrada.texto.set('1, 3')
                 self.assertTrue(panel.entrada.aceptar(), tech)
+                self.assertEqual(panel.entrada.estado.cget('text'), 'Seleccionadas: FDDI, FDDIII')
         finally:
             lte.destroy(); five.destroy(); three.destroy()
 
@@ -166,7 +158,7 @@ class InterfazRealTests(unittest.TestCase):
             catm.cargar(['FDD1', 'FDD3'])
             self.root.update()
             self.assertEqual(catm.entrada.texto.get(), '1, 3')
-            self.assertEqual(catm.entrada.estado.cget('text'), 'Seleccionadas: 1, 3')
+            self.assertEqual(catm.entrada.estado.cget('text'), 'Seleccionadas: FDD1, FDD3')
             self.assertEqual(catm.lineas(), ['Bandas: 1, 3'])
             self.assertEqual(catm.seleccion(), ['FDD1', 'FDD3'])
             for panel, bands in [(bt, ['2.4 GHz']), (custom, ['?'])]:

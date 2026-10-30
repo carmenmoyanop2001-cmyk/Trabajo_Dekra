@@ -694,7 +694,7 @@ class App(tk.Tk):
         self._pregunta_multiple(cont, "Regiones (puedes elegir varias)", self.var_region, REGION_AYUDA)
         self._pregunta_multiple(cont, "Exposure conditions (puedes elegir varias)", self.var_expo)
         self._pregunta(cont, "¿Aplica ensayos conducidos?", self.var_conducida, [SI, NO])
-        ttk.Label(cont, text="Las tecnologías se incluyen siempre; sus pestañas llevan «Conducted» si eliges Sí.",
+        ttk.Label(cont, text="Las tecnologías se incluyen siempre; salvo 2G/3G, sus pestañas llevan «Conducted» si eliges Sí.",
                   foreground="#555555", wraplength=650).pack(anchor="w", padx=10)
 
         # Baterías, accesorios y spotchecking: siempre visibles

@@ -1,0 +1,66 @@
+{
+  "proyecto": "Referencia de pestañas protegidas",
+  "region": [
+    "EN",
+    "FCC",
+    "ISED"
+  ],
+  "exposure": [
+    "Close to ear",
+    "Body"
+  ],
+  "conducida": true,
+  "baterias": [
+    "B1",
+    "B2"
+  ],
+  "accesorios": [
+    "Funda"
+  ],
+  "spotchecking": [],
+  "base_datos": "../datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx",
+  "tecnologias": {
+    "2G": {
+      "GSM": true,
+      "GPRS": "TX3",
+      "EGPRS": "TX2"
+    },
+    "3G": {
+      "WCDMA": [
+        "FDDI"
+      ],
+      "HSDPA": [
+        "FDDI"
+      ]
+    },
+    "LTE": [
+      "FDD1"
+    ],
+    "LTE CAT M1": [
+      "FDD1"
+    ],
+    "LTE NB-IoT": [
+      "FDD1"
+    ],
+    "5G": [
+      "n77"
+    ],
+    "WLAN": {
+      "2,4 GHz": [
+        "n20"
+      ],
+      "5 GHz": {
+        "bandas": [
+          "U-NII-1"
+        ],
+        "modos": [
+          "a",
+          "ac80"
+        ]
+      }
+    },
+    "BT": [
+      "2.4 GHz"
+    ]
+  }
+}
