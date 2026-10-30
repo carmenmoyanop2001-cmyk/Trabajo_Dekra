@@ -4,6 +4,20 @@ El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para
 
 ## App Streamlit: todo desde el navegador
 
+### Publicar con una URL directa al formulario
+
+Para usarlo sin instalar Python en cada ordenador, publica el repositorio en **Streamlit Community Cloud**:
+
+1. Abre [Streamlit Community Cloud](https://share.streamlit.io/) e inicia sesión con GitHub.
+2. Pulsa **Create app** / **New app** y elige **Deploy a public app from GitHub**.
+3. Indica repositorio `carmenmoyanop2001-cmyk/Trabajo_Dekra`, rama `main` y archivo principal **`web/app.py`**.
+4. En **Advanced settings**, elige **Python 3.12**, la versión con la que se ha probado la app.
+5. Pulsa **Deploy**. Cuando termine, la dirección que muestra Streamlit abre directamente el formulario. Puedes guardarla como favorito y compartirla.
+
+El punto de entrada `web/app.py` usa la misma interfaz y el mismo generador. Su `requirements.txt` carga las dependencias de la app, sin exigir tkinter, Excel instalado ni el datasheet original. Las plantillas y la base inicial ya están en el repositorio. Los archivos que se carguen o generen desde la app no se escriben en GitHub. Guarda las descargas que quieras conservar: el alojamiento puede reiniciar las sesiones.
+
+### Ejecutar en tu ordenador
+
 Requiere **Python 3.11 o posterior**. Extrae la carpeta completa del proyecto y abre una terminal en esa carpeta. La primera vez instala las dependencias de la app:
 
 ```sh
