@@ -2,6 +2,32 @@
 
 El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para repetir el ensayo. **Los datos RF se leen de la base XLSX elegida; no se recuperan del datasheet antiguo.** El programa ya lleva guardados los formatos y las hojas de referencia. No hace falta aportar el Excel original para generar otro ensayo.
 
+## App Streamlit: todo desde el navegador
+
+Requiere **Python 3.11 o posterior**. Extrae la carpeta completa del proyecto y abre una terminal en esa carpeta. La primera vez instala las dependencias de la app:
+
+```sh
+python -m pip install -r requirements_streamlit.txt
+```
+
+Para abrirla:
+
+```sh
+python -m streamlit run app_streamlit.py
+```
+
+En Windows también puedes hacer doble clic en **INICIAR_STREAMLIT.bat** después de instalar las dependencias. Se abrirá el navegador en `http://localhost:8501`. Mantén la terminal abierta mientras uses la app; `Ctrl+C` la detiene.
+
+1. Carga la base XLSX desde la barra lateral, o utiliza la base incluida.
+2. Completa proyecto, regiones, exposure conditions, baterías, accesorios y tecnologías. Las bandas se escriben por números; debajo aparecen las etiquetas completas. En 2G solo se eligen las tecnologías y los slots acumulativos.
+3. Pulsa **Generar Excel** y después **Descargar Excel** o **Descargar todo en ZIP**.
+
+El ZIP del ensayo incluye `.xlsm`, `.json`, `.txt` y la base utilizada. Para repetirlo, carga esa base y el JSON en la barra lateral y pulsa **Cargar respuestas**. La app siempre utiliza la base que esté activa en pantalla, sin seguir rutas de archivos guardadas en un JSON de otro ordenador. Si cambias las opciones después de generar, las descargas anteriores se ocultan hasta regenerar el Excel.
+
+Esta versión funciona en tu ordenador y reutiliza el generador del cuestionario. No cambia las plantillas ni la lógica de SAR EN, SAR FCC-ISED, Overview, Tune-Up, Validations, Test Campaign y Pretesting-Others. El cuestionario de escritorio sigue disponible. Para compartir la app mediante una dirección web permanente se necesitaría alojarla en un servidor; ejecutar este comando no publica el proyecto en Internet.
+
+[Vista del cuestionario web](docs/streamlit_cuestionario.png) · [Vista de las descargas](docs/streamlit_descargas.png)
+
 ## Uso en Windows
 
 Requiere Python 3.10 o posterior, con tkinter.
@@ -66,5 +92,7 @@ python -m unittest discover -s tests -v
 ```
 
 Las pruebas de producción están en `tests/test_base_datos.py`, `tests/test_tecnologias_visibles.py` y `tests/test_interfaz_bandas.py`: tablas visibles, edición de datos, conservación de las siete hojas protegidas, nombres 2G/3G, regiones, CLI y widgets reales. Las auditorías históricas usan `generar_heredado`, que no se utiliza desde el formulario ni la CLI.
+
+Con las dependencias de Streamlit instaladas, `python -m unittest discover -s tests -p test_streamlit_app.py -v` comprueba el formulario web, los slots, la importación de respuestas, las descargas, la lectura de una base editada y la igualdad de las siete hojas protegidas frente al generador de escritorio.
 
 El paquete conserva VBA y la macro MyTimestamp. La validación Open XML comprueba estructura, sin ejecutar Microsoft Excel, cálculos ni macros. La interfaz se importa y se comprueban sus métodos de selección; la revisión visual y la apertura en Excel deben hacerse en un ordenador con pantalla. El proyecto VBA original puede mostrar su antiguo formulario de hojas: ciérralo para conservar las hojas ya generadas por el cuestionario.
