@@ -1,0 +1,246 @@
+{
+  "base": "Base_de_datos_bandas_canales_frecuencias_v2_3G_regiones.xlsx",
+  "sha256_antes": "b2170dabdee54e31650c789a11060066c561816a6f25e0a984ea80a04547e05d",
+  "sha256_despues": "4804ea12d37ceefa4dd32bd51c4b6c0651f0c44cafd25ebdab4f9500be25ac41",
+  "fuente": {
+    "archivo_aportado": "toma_datos_sar.zip",
+    "componente": "toma_datos_sar/plantilla/cond_5g.xz",
+    "sha256_componente": "8f42618f73510d0406b420cf7d79c3940013a213b3a8e9413f6bbbd332ab7012",
+    "nota": "El XLSM 5G dividido aportado posteriormente solo contiene n1. Para n77 y siguientes se contrasta el original completo conservado en el ZIP inicial."
+  },
+  "filas_antes": 553,
+  "filas_despues": 550,
+  "correcciones": [
+    {
+      "fila_base_anterior": 376,
+      "banda": "n77 part O",
+      "antes": {
+        "canal": 620800.0,
+        "frecuencia": 3312.5,
+        "nota": "Revisar: la frecuencia no corresponde al NR-ARFCN (esperada 3312 MHz)"
+      },
+      "despues": {
+        "canal": 620833.333333,
+        "frecuencia": 3312.5
+      },
+      "referencia_original": {
+        "hoja": "Conducted 5G",
+        "fila": 113643,
+        "banda": "n77",
+        "celda_canal": "T113643",
+        "celda_frecuencia": "U113643",
+        "canal": 620833.333333,
+        "frecuencia": 3312.5,
+        "formula_canal": "600000+((U113643-3000)/0.015)"
+      },
+      "accion": "corregir_canal_y_retirar_aviso_obsoleto"
+    },
+    {
+      "fila_base_anterior": 377,
+      "banda": "n77 part O",
+      "antes": {
+        "canal": 679133.0,
+        "frecuencia": 4187.5,
+        "nota": "Revisar: la frecuencia no corresponde al NR-ARFCN (esperada 4186.99 MHz)"
+      },
+      "despues": {
+        "canal": 679166.666667,
+        "frecuencia": 4187.5
+      },
+      "referencia_original": {
+        "hoja": "Conducted 5G",
+        "fila": 113883,
+        "banda": "n77",
+        "celda_canal": "T113883",
+        "celda_frecuencia": "U113883",
+        "canal": 679166.666667,
+        "frecuencia": 4187.5,
+        "formula_canal": "600000+((U113883-3000)/0.015)"
+      },
+      "accion": "corregir_canal_y_retirar_aviso_obsoleto"
+    },
+    {
+      "fila_base_anterior": 380,
+      "banda": "n77 part O",
+      "antes": {
+        "canal": 620466.0,
+        "frecuencia": 3307.5,
+        "nota": "Revisar: la frecuencia no corresponde al NR-ARFCN (esperada 3306.99 MHz)"
+      },
+      "despues": {
+        "canal": 620500,
+        "frecuencia": 3307.5
+      },
+      "referencia_original": {
+        "hoja": "Conducted 5G",
+        "fila": 114203,
+        "banda": "n77",
+        "celda_canal": "T114203",
+        "celda_frecuencia": "U114203",
+        "canal": 620500,
+        "frecuencia": 3307.5,
+        "formula_canal": "600000+((U114203-3000)/0.015)"
+      },
+      "accion": "corregir_canal_y_retirar_aviso_obsoleto"
+    },
+    {
+      "fila_base_anterior": 381,
+      "banda": "n77 part O",
+      "antes": {
+        "canal": 679466.0,
+        "frecuencia": 4192.5,
+        "nota": "Revisar: la frecuencia no corresponde al NR-ARFCN (esperada 4191.99 MHz)"
+      },
+      "despues": {
+        "canal": 679500,
+        "frecuencia": 4192.5
+      },
+      "referencia_original": {
+        "hoja": "Conducted 5G",
+        "fila": 114443,
+        "banda": "n77",
+        "celda_canal": "T114443",
+        "celda_frecuencia": "U114443",
+        "canal": 679500,
+        "frecuencia": 4192.5,
+        "formula_canal": "600000+((U114443-3000)/0.015)"
+      },
+      "accion": "corregir_canal_y_retirar_aviso_obsoleto"
+    },
+    {
+      "fila_base_anterior": 396,
+      "banda": "n77 part O",
+      "antes": {
+        "canal": 667332.0,
+        "frecuencia": 4160.0,
+        "nota": "Revisar: la frecuencia no corresponde al NR-ARFCN (esperada 4009.98 MHz)"
+      },
+      "despues": {
+        "canal": 677333,
+        "frecuencia": 4160
+      },
+      "referencia_original": {
+        "hoja": "Conducted 5G",
+        "fila": 153483,
+        "banda": "n77 part O",
+        "celda_canal": "T153483",
+        "celda_frecuencia": "U153483",
+        "canal": 677333,
+        "frecuencia": 4160,
+        "formula_canal": null
+      },
+      "accion": "eliminar_duplicado_tras_corregir",
+      "fila_correcta_anterior": 389
+    },
+    {
+      "fila_base_anterior": 400,
+      "banda": "n77 part O",
+      "antes": {
+        "canal": 620062.0,
+        "frecuencia": 3320.0,
+        "nota": "Revisar: la frecuencia no corresponde al NR-ARFCN (esperada 3300.93 MHz)"
+      },
+      "despues": {
+        "canal": 621333,
+        "frecuencia": 3320
+      },
+      "referencia_original": {
+        "hoja": "Conducted 5G",
+        "fila": 152443,
+        "banda": "n77 part O",
+        "celda_canal": "T152443",
+        "celda_frecuencia": "U152443",
+        "canal": 621333,
+        "frecuencia": 3320,
+        "formula_canal": null
+      },
+      "accion": "eliminar_duplicado_tras_corregir",
+      "fila_correcta_anterior": 373
+    },
+    {
+      "fila_base_anterior": 529,
+      "banda": "n77 RSS-192",
+      "antes": {
+        "canal": 2982999.666667,
+        "frecuencia": 38744.995,
+        "nota": "Revisar: canal fuera del rango NR-ARFCN"
+      },
+      "despues": {
+        "canal": 658333,
+        "frecuencia": 3874.995
+      },
+      "referencia_original": {
+        "hoja": "Conducted 5G",
+        "fila": 212723,
+        "banda": "n77 RSS-192",
+        "celda_canal": "T212723",
+        "celda_frecuencia": "U212723",
+        "canal": 658333,
+        "frecuencia": 3874.995,
+        "formula_canal": "600000+(U212723-3000)/0.015"
+      },
+      "accion": "eliminar_duplicado_tras_corregir",
+      "fila_correcta_anterior": 552
+    }
+  ],
+  "diferencias_pequenas_conservadas": [
+    {
+      "banda": "n77 part O",
+      "frecuencia_mhz": 3325,
+      "canales": [
+        621666,
+        621668
+      ]
+    },
+    {
+      "banda": "n77 part O",
+      "frecuencia_mhz": 4175,
+      "canales": [
+        678333,
+        678332
+      ]
+    },
+    {
+      "banda": "n77 part O",
+      "frecuencia_mhz": 3310,
+      "canales": [
+        620666,
+        620668
+      ]
+    },
+    {
+      "banda": "n77 part O",
+      "frecuencia_mhz": 4190,
+      "canales": [
+        679333,
+        679332
+      ]
+    },
+    {
+      "banda": "n77 part O",
+      "frecuencia_mhz": 3350,
+      "canales": [
+        623333,
+        623334
+      ]
+    },
+    {
+      "banda": "n77 part O",
+      "frecuencia_mhz": 3340,
+      "canales": [
+        622666,
+        622668
+      ]
+    },
+    {
+      "banda": "n77 part O",
+      "frecuencia_mhz": 3335,
+      "canales": [
+        622333,
+        622334
+      ]
+    }
+  ],
+  "criterio_diferencias_pequenas": "También aparecen en el original. Se conservan sus canales en lugar de elegir arbitrariamente un valor; el original contiene variaciones de SCS y redondeos.",
+  "validacion": "Solo cambia la hoja 5G. Las filas no afectadas conservan todos sus valores y estilos. Desde n77, las frecuencias están dentro de sus bandas y la diferencia respecto a la fórmula original es como máximo 0,05 MHz, manteniendo el criterio de precisión de la base existente."
+}

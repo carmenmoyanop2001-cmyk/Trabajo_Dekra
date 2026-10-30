@@ -2,7 +2,7 @@
   "base": "Base_de_datos_bandas_canales_frecuencias_v2_3G.xlsx",
   "sha256_base": "6bc2cac508e78ab77db663a25a86d9103f0f31218763d8f9614772ed8b2c62f4",
   "salida": "Base_de_datos_bandas_canales_frecuencias_v2_3G_regiones.xlsx",
-  "sha256_salida": "b2170dabdee54e31650c789a11060066c561816a6f25e0a984ea80a04547e05d",
+  "sha256_salida": "4804ea12d37ceefa4dd32bd51c4b6c0651f0c44cafd25ebdab4f9500be25ac41",
   "fuentes": [
     {
       "archivo": "FAN22_09 - SAR Datasheet_Original_LTE.xlsm",
@@ -50,15 +50,16 @@
   ],
   "hojas_actualizadas": {
     "5G": {
-      "filas": 553,
+      "filas": 550,
       "columna_region": "A",
       "valores_region": {
         "EN": 106,
         "FCC/ISED": 83,
-        "EN/FCC/ISED": 364
+        "EN/FCC/ISED": 361
       },
       "metodo": {
-        "coincidencia_banda_canal_frecuencia": 553
+        "coincidencia_banda_canal_frecuencia": 546,
+        "region_conservada_tras_correccion_rf": 4
       }
     },
     "BT": {
@@ -469,13 +470,13 @@
       "frecuencia": "5855"
     }
   ],
-  "conservacion": "Región ocupa la columna A y el resto de las columnas se desplaza una posición a la derecha. Los valores, tipos de celda, estilos y anchos anteriores se conservan; la hoja Notas y todos los demás componentes permanecen idénticos.",
+  "conservacion": "Región ocupa la columna A y el resto de las columnas se desplaza una posición a la derecha. Los valores, tipos de celda, estilos y anchos anteriores se conservan; la hoja Notas y todos los demás componentes permanecen idénticos. Posteriormente se corrigieron exclusivamente siete registros RF de 5G, según correccion_5g_n77.json.",
   "regiones_multiples": "Los distintos valores encontrados en el original para una misma combinación se separan con punto y coma.",
   "regiones_desconocidas": "Se conservan los signos ? del original. Si una fórmula contiene un error pero otras filas originales de la misma combinación tienen una región válida, se utilizan los valores válidos. Las combinaciones sin coincidencia verificable se marcan con ?.",
   "comprobacion_5g": "El original completo conserva regiones válidas para las 553 combinaciones RF; 177 también tienen filas con #REF!, que no representan una región adicional y no se trasladan a la base.",
   "validacion": {
     "lectura_independiente_openpyxl": "Correcta; todas las regiones verificadas contra los índices del original.",
-    "celdas_anteriores": "Idénticas, comprobado tras retirar las columnas añadidas.",
+    "celdas_anteriores": "Conservadas, salvo los siete registros RF de 5G documentados en correccion_5g_n77.json; las verificaciones iniciales de regiones se mantienen como referencia.",
     "errores_openxml_heredados": 5,
     "errores_openxml_nuevos": 0,
     "observacion": "Se conserva styles.xml de la base recibida, con sus cinco avisos previos de esquema de fuentes."
@@ -515,5 +516,6 @@
     ],
     "verificacion_xml_inversa": "Correcta en las 28 hojas.",
     "lectura_independiente": "Todos los valores, estilos y tipos coinciden tras rotar las columnas."
-  }
+  },
+  "correccion_rf_posterior": "Ver correccion_5g_n77.json: siete registros corregidos, tres redundantes retirados; ninguna otra tecnología cambia."
 }
