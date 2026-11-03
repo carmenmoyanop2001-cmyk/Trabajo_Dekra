@@ -7,6 +7,7 @@ la estructura de filas extraídas del datasheet FAN22_09.
 import os, re, json, zipfile, sys
 from pathlib import Path
 import tempfile
+import gc
 from xml.sax.saxutils import escape
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -57,8 +58,13 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
         raise ValueError('La salida debe tener extensión .xlsm.')
     with tempfile.TemporaryDirectory(dir=target.parent) as tmp:
         candidate = Path(tmp) / 'datos.xlsm'
-        resumen = (_generar(datos, str(candidate), dir_plantilla, log, catalogo) if catalogo is not None else
+        presentacion = {}
+        resumen = (_generar(datos, str(candidate), dir_plantilla, log, catalogo, contexto_presentacion=presentacion) if catalogo is not None else
                    _generar(datos, str(candidate), dir_plantilla, log))
+        # El contexto de fórmulas contiene cierres circulares que retienen las
+        # hojas SAR. Liberarlos antes de cargar las vistas completas evita
+        # acumular ambas matrices en memoria, especialmente en Streamlit.
+        gc.collect()
         if not datos['conducida']:
             names = {s: s.removeprefix('Conducted ') for s in resumen['hojas'] if s.startswith('Conducted ')}
             if names:
@@ -66,7 +72,8 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
                 renombrar_resumen(resumen, names)
         if catalogo is not None:
             from presentacion_tecnologias import aplicar
-            aplicar(candidate, datos, catalogo, resumen)
+            aplicar(candidate, datos, catalogo, resumen, overview=presentacion.get('overview'))
+            gc.collect()
         errors = validar(str(candidate), verbose=False)
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))
@@ -115,7 +122,7 @@ def _validar_hojas_sar(path, regiones):
                 raise ValueError(f'La hoja solicitada {name} ha quedado sin filas de ensayo.')
 
 
-def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None):
+def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None, contexto_presentacion=None):
     """datos: dict (ver README). Escribe el .xlsm en `salida` y devuelve un resumen (dict)."""
     dirp = dir_plantilla or DIR_PLANTILLA
     base = zipfile.ZipFile(os.path.join(dirp, 'plantilla_base.zip'))
@@ -177,6 +184,8 @@ def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None):
     ov_xml, drawing, vml, ctx.ov_map = editar_overview(
         ov_xml, base.read(d_part).decode('utf8') if d_part else None,
         base.read(v_part).decode('utf8', 'ignore') if v_part else None, datos)
+    if contexto_presentacion is not None:
+        contexto_presentacion['overview'] = ctx.ov_map
     modificadas = {}
     if d_part: modificadas[d_part] = drawing.encode('utf8') if isinstance(drawing, str) else drawing
     if v_part: modificadas[v_part] = vml.encode('utf8') if isinstance(vml, str) else vml

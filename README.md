@@ -1,6 +1,8 @@
-# Toma de datos SAR desde una base editable
+# Toma de datos SAR con el original completo guardado en el programa
 
-El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para repetir el ensayo. **Los datos RF se leen de la base XLSX elegida; no se recuperan del datasheet antiguo.** El programa ya lleva guardados los formatos y las hojas de referencia. No hace falta aportar el Excel original para generar otro ensayo.
+El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para repetir el ensayo. **La base XLSX determina qué registros existen y sus valores tienen prioridad; el cuestionario selecciona cuáles se incluyen.** Las tecnologías recuperan sus pestañas completas del original: columnas, datos de las filas coincidentes, fórmulas, colores, combinaciones, desplegables, comentarios e imágenes. No hace falta aportar el Excel original al generar otro ensayo.
+
+`plantilla/originales/` conserva las 16 pestañas recibidas, junto con todas las partes de los archivos originales. El inventario identifica el origen y el SHA-256 de cada parte. Incluye también la copia íntegra de 5G con sus 220.322 filas y 25 bandas/variantes, que complementa el adjunto dividido que solo contenía n1. Su índice permite leer únicamente las bandas elegidas. SAR EN y SAR FCC-ISED siguen usando el generador que ya estaba validado: se verifica que el contenido de esas hojas y de las otras cinco hojas protegidas permanezca idéntico para las mismas respuestas.
 
 ## App Streamlit: todo desde el navegador
 
@@ -38,7 +40,9 @@ En Windows también puedes hacer doble clic en **INICIAR_STREAMLIT.bat** despué
 
 El ZIP del ensayo incluye `.xlsm`, `.json`, `.txt` y la base utilizada. Para repetirlo, carga esa base y el JSON en la barra lateral y pulsa **Cargar respuestas**. La app siempre utiliza la base que esté activa en pantalla, sin seguir rutas de archivos guardadas en un JSON de otro ordenador. Si cambias las opciones después de generar, las descargas anteriores se ocultan hasta regenerar el Excel.
 
-Esta versión funciona en tu ordenador y reutiliza el generador del cuestionario. No cambia las plantillas ni la lógica de SAR EN, SAR FCC-ISED, Overview, Tune-Up, Validations, Test Campaign y Pretesting-Others. El cuestionario de escritorio sigue disponible. Para compartir la app mediante una dirección web permanente se necesitaría alojarla en un servidor; ejecutar este comando no publica el proyecto en Internet.
+Las selecciones amplias, especialmente de 5G, pueden tardar varios minutos al conservar la matriz completa de ensayos del original.
+
+Esta versión funciona en tu ordenador y reutiliza el generador del cuestionario. Conserva SAR EN, SAR FCC-ISED, Overview, Tune-Up, Validations, Test Campaign y Pretesting-Others. El cuestionario de escritorio sigue disponible. Para compartir la app mediante una dirección web permanente se necesita alojarla como se explica arriba; ejecutar este comando no publica el proyecto en Internet.
 
 [Vista del cuestionario web](docs/streamlit_cuestionario.png) · [Vista de las descargas](docs/streamlit_descargas.png)
 
@@ -67,12 +71,13 @@ Para repetir un ensayo: elige la base actualizada, pulsa **Cargar respuestas (.j
 
 | Elemento | Fuente |
 | --- | --- |
-| Bandas, canales, frecuencias y parámetros RF de tecnologías | Base de datos XLSX seleccionada y opciones explícitas del formulario |
+| Registros RF que pueden aparecer y campos proporcionados | Base de datos XLSX seleccionada y opciones del formulario, con prioridad sobre los valores originales |
+| Columnas completas, datos complementarios, fórmulas, estilos, comentarios e imágenes de tecnologías | Copia completa del original guardada en el programa, filtrada para los registros de la base y la selección |
 | Tune-Up completa: datos, fórmulas y presentación | Copia del Excel original guardada en el programa; no se vacía ni se reconstruye desde la base |
 | Overview | Copia guardada, con proyecto, baterías y accesorios del formulario |
 | Validations, Test Campaign y Pretesting-Others | Hojas originales guardadas en el programa |
 | SAR EN y SAR FCC-ISED | Formatos, posiciones y cálculos guardados; datos RF enlazados con las tecnologías generadas desde la base |
-| Nombre de pestañas de tecnologías | `2G`, `3G` o `2G-3G` según la selección; el resto conserva `Conducted …` cuando se eligen conducidos |
+| Nombre de pestañas de tecnologías | `Conducted 2G`, `Conducted 3G` o `Conducted 2G-3G` con Conducida; sin esa opción se omite el prefijo, igual que en el resto de tecnologías |
 
 EN solicita SAR EN; FCC e ISED comparten SAR FCC-ISED. Antes de guardar se comprueba que las hojas solicitadas existen, están visibles y contienen filas.
 
@@ -82,11 +87,11 @@ SAR EN conserva Mode combinado por tecnología/banda y Exposure Conditions por b
 
 ## Editar la base
 
-La base inicial es `datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx`, una copia sin modificar del último archivo recibido. Puedes elegir otra desde el formulario. Las columnas mínimas son **Tecnología, Banda, Canal y Frecuencia (MHz)**. Los demás campos de la base se muestran cuando contienen datos; Región ocupa la primera columna.
+La base inicial es `datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx`, una copia sin modificar del último archivo recibido. Puedes elegir otra desde el formulario. Las columnas mínimas son **Tecnología, Banda, Canal y Frecuencia (MHz)**. Sus parámetros y campos adicionales se aplican a las filas seleccionadas, manteniendo las columnas del original. Los campos nuevos que no tienen columna equivalente se añaden al final.
 
-Las tablas de 2G/3G muestran solo **Región, Tecnología, Banda, Canal y Frecuencia (MHz)**. Las demás familias muestran los campos con datos en la base elegida, sin añadir columnas de medidas ni columnas compuestas solo por guiones. Se conservan colores y capturas del original y se añaden estilos legibles con texto negro. La presentación verifica que las siete hojas protegidas, sus fórmulas y las definiciones originales de sus estilos permanecen idénticas, manteniendo ocultas las coordenadas de apoyo que necesitan.
+Las tecnologías muestran sus tablas completas del original, incluidas las columnas para introducir medidas. Las filas descartadas se compactan, ajustando fórmulas, combinaciones, comentarios y dibujos. Se conservan columnas, colores y presentación. Las coordenadas que necesitan los cálculos SAR quedan en filas ocultas de apoyo; las medidas visibles alimentan esas entradas sin reescribir ninguna fórmula de las hojas SAR. Las pestañas auxiliares Liquids-DRAFT y Pendiente también se conservan con su estado de visibilidad original.
 
-Los parámetros que no estén informados quedan vacíos. **La excepción es Tune-Up, que se conserva completa del original.** No se inventan parámetros 5G, MPR, modos ni certificados. Si conoces un modo para el ensayo, puedes indicarlo en el formulario o añadir la columna Mode a la base.
+Cuando existe una fila coincidente, se conserva su información original y se aplican los campos de la base. Para registros nuevos sin coincidencia exacta se reutiliza el formato de su tecnología y se completan exclusivamente sus valores RF proporcionados: no se copian parámetros ni medidas de otra combinación. **Tune-Up se conserva completa del original.**
 
 Se admiten bandas nuevas de las familias con formato guardado. El procedimiento usa el formato de esa familia; no hace falta actualizar el Excel original. Una banda nueva puede no tener entrada en la Tune-Up guardada: su potencia objetivo queda pendiente hasta completar esa referencia. Las familias sin procedimiento SAR propio no reciben posiciones inventadas. Consulta [USO_AUTOMATICO.md](USO_AUTOMATICO.md) para las limitaciones y el esquema.
 
@@ -101,13 +106,15 @@ El segundo comando permite reutilizar respuestas con otra versión de la base. L
 
 ## Ejemplo y comprobaciones
 
-`ejemplos/Ensayo_tecnologias_ordenadas.xlsm` muestra las tablas actuales con todas las familias, EN/FCC/ISED, dos baterías y un accesorio. Sus respuestas ficticias están en `ejemplo_tecnologias_ordenadas.json`. Los demás Excel de ejemplos y los informes anteriores documentan versiones históricas.
+El ejemplo de la presentación completa está en `ejemplos/Ensayo_original_completo_filtrado.xlsm`, con sus respuestas ficticias en `ejemplo_original_completo.json`. Los demás Excel e informes, incluidas las antiguas tablas reducidas, documentan versiones históricas.
+
+[Revisión de la presentación completa](docs/original_completo.md) · [Vista de las primeras filas](docs/vista_original_completo.png) · [Conservación de las hojas protegidas](docs/conservacion_original_completo.json)
 
 ```sh
 python -m unittest discover -s tests -v
 ```
 
-Las pruebas de producción están en `tests/test_base_datos.py`, `tests/test_tecnologias_visibles.py` y `tests/test_interfaz_bandas.py`: tablas visibles, edición de datos, conservación de las siete hojas protegidas, nombres 2G/3G, regiones, CLI y widgets reales. Las auditorías históricas usan `generar_heredado`, que no se utiliza desde el formulario ni la CLI.
+Las pruebas de producción están en `tests/test_originales_completos.py`, `tests/test_base_datos.py`, `tests/test_tecnologias_visibles.py`, `tests/test_comentarios.py` y `tests/test_interfaz_bandas.py`: archivos originales íntegros, edición de datos, prioridad de la base, medidas visibles, conservación de las siete hojas protegidas, nombres 2G/3G, regiones, CLI y widgets. Las auditorías históricas usan `generar_heredado`, que no se utiliza desde el formulario ni la CLI.
 
 Con las dependencias de Streamlit instaladas, `python -m unittest discover -s tests -p test_streamlit_app.py -v` comprueba el formulario web, los slots, la importación de respuestas, las descargas, la lectura de una base editada y la igualdad de las siete hojas protegidas frente al generador de escritorio.
 

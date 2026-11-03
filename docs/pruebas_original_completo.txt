@@ -1,0 +1,85 @@
+pruebas_originales_completos_final.txt
+test_archivo_original_completo_guardado_y_hashes (test_originales_completos.OriginalesCompletosTests.test_archivo_original_completo_guardado_y_hashes) ... ok
+test_bandas_nuevas_y_campos_nuevos_prioridad_base (test_originales_completos.OriginalesCompletosTests.test_bandas_nuevas_y_campos_nuevos_prioridad_base) ... ok
+test_columnas_contenido_y_seleccion_de_base (test_originales_completos.OriginalesCompletosTests.test_columnas_contenido_y_seleccion_de_base) ... ok
+test_conducidos_y_sin_conducidos_nombres_y_sar (test_originales_completos.OriginalesCompletosTests.test_conducidos_y_sin_conducidos_nombres_y_sar) ... ok
+test_medidas_visibles_alimentan_sar_sin_cambiarlo (test_originales_completos.OriginalesCompletosTests.test_medidas_visibles_alimentan_sar_sin_cambiarlo) ... ok
+test_mpr_catm1_no_pierde_valores_originales (test_originales_completos.OriginalesCompletosTests.test_mpr_catm1_no_pierde_valores_originales) ... ok
+test_sar_y_hojas_fijas_identicas (test_originales_completos.OriginalesCompletosTests.test_sar_y_hojas_fijas_identicas) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 311.728s
+
+OK
+
+
+pruebas_originales_verificacion_final.txt
+test_sar_y_hojas_fijas_identicas (test_originales_completos.OriginalesCompletosTests.test_sar_y_hojas_fijas_identicas) ... ok
+test_medidas_visibles_alimentan_sar_sin_cambiarlo (test_originales_completos.OriginalesCompletosTests.test_medidas_visibles_alimentan_sar_sin_cambiarlo) ... ok
+test_mpr_catm1_no_pierde_valores_originales (test_originales_completos.OriginalesCompletosTests.test_mpr_catm1_no_pierde_valores_originales) ... ok
+test_bandas_nuevas_y_campos_nuevos_prioridad_base (test_originales_completos.OriginalesCompletosTests.test_bandas_nuevas_y_campos_nuevos_prioridad_base) ... ok
+test_rangos_no_incluyen_otra_banda_nueva (test_originales_completos.ReferenciasOriginalesTests.test_rangos_no_incluyen_otra_banda_nueva) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 341.425s
+
+OK
+
+
+pruebas_base_original_completo_final.txt
+test_banda_eliminada_registro_invalido_y_no_sobrescritura (test_base_datos.BaseDatosTests.test_banda_eliminada_registro_invalido_y_no_sobrescritura) ... ok
+test_base_recibida_detalles_lte_alias_y_narrowband_scs (test_base_datos.BaseDatosTests.test_base_recibida_detalles_lte_alias_y_narrowband_scs) ... ok
+test_catalogo_3g_comun_editable_y_tablas_especificas (test_base_datos.BaseDatosTests.test_catalogo_3g_comun_editable_y_tablas_especificas) ... ok
+test_cli_base_nueva_y_respuestas_portables (test_base_datos.BaseDatosTests.test_cli_base_nueva_y_respuestas_portables) ... ok
+test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta (test_base_datos.BaseDatosTests.test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta) ... ok
+test_formato_completo_sin_inventar_rf_para_banda_nueva (test_base_datos.BaseDatosTests.test_formato_completo_sin_inventar_rf_para_banda_nueva) ... ok
+test_funciona_sin_plantillas_de_datos_heredados_ni_excel_original (test_base_datos.BaseDatosTests.test_funciona_sin_plantillas_de_datos_heredados_ni_excel_original) ... ok
+test_las_regiones_respetan_la_seleccion_con_la_fuente_nueva (test_base_datos.BaseDatosTests.test_las_regiones_respetan_la_seleccion_con_la_fuente_nueva) ... ok
+test_panel_2g_acumula_slots_y_conserva_bandas_y_carga (test_base_datos.BaseDatosTests.test_panel_2g_acumula_slots_y_conserva_bandas_y_carga) ... ok
+test_seleccion_vacia_no_expande_todas_las_bandas (test_base_datos.BaseDatosTests.test_seleccion_vacia_no_expande_todas_las_bandas) ... ok
+test_todas_las_familias_se_llenan_desde_la_base_recibida (test_base_datos.BaseDatosTests.test_todas_las_familias_se_llenan_desde_la_base_recibida) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 443.150s
+
+OK
+
+
+pruebas_comentarios_original_completo.txt
+test_comentarios_y_hojas_protegidas_se_conservan (test_comentarios.ComentariosTests.test_comentarios_y_hojas_protegidas_se_conservan) ... ok
+test_detecta_el_fallo_del_registro_de_excel (test_comentarios.ComentariosTests.test_detecta_el_fallo_del_registro_de_excel) ... ok
+test_detecta_enlace_a_relacion_incorrecta (test_comentarios.ComentariosTests.test_detecta_enlace_a_relacion_incorrecta) ... ok
+test_detecta_formas_desplazadas (test_comentarios.ComentariosTests.test_detecta_formas_desplazadas) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 245.810s
+
+OK
+
+
+prueba_campos_original_corregida.txt
+test_lte_y_otras_tablas_solo_informacion_de_base (test_tecnologias_visibles.TecnologiasVisiblesTests.test_lte_y_otras_tablas_solo_informacion_de_base) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 200.061s
+
+OK
+
+
+prueba_streamlit_nombre_final.txt
+test_base_cargada_y_json_portable (test_streamlit_app.StreamlitTests.test_base_cargada_y_json_portable) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 12.962s
+
+OK
+
+
+test_mpr_catm1_no_pierde_valores_originales (test_originales_completos.OriginalesCompletosTests.test_mpr_catm1_no_pierde_valores_originales) ... ok
+test_no_recupera_frecuencias_fuera_de_la_base (test_originales_completos.ReferenciasOriginalesTests.test_no_recupera_frecuencias_fuera_de_la_base) ... ok
+test_rangos_no_incluyen_otra_banda_nueva (test_originales_completos.ReferenciasOriginalesTests.test_rangos_no_incluyen_otra_banda_nueva) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 288.930s
+
+OK

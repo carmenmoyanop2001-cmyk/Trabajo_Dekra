@@ -1,6 +1,6 @@
 # Fuente de datos y formatos guardados
 
-El programa usa dos elementos independientes: una base XLSX editable con los datos RF, y un paquete de formatos y hojas originales que viaja con el código. Las respuestas del formulario indican qué registros y condiciones utilizar. No hace falta conservar el Excel original junto al programa.
+El programa usa una base XLSX editable para delimitar los registros RF y aplicar sus valores, y una copia completa del original que viaja con el código en `plantilla/originales/`. Las respuestas del formulario indican qué registros y condiciones utilizar. No hace falta aportar el Excel original junto al ensayo. Se guardan las 16 pestañas recibidas, todos sus archivos relacionados y la 5G completa conservada previamente en el proyecto.
 
 ## Flujo habitual
 
@@ -18,7 +18,7 @@ Los JSON nuevos guardan únicamente modos y slots en `tecnologias.2G`. El formul
 
 Las tecnologías con una única banda posible la usan automáticamente. Esto incluye BT y Custom en la base incluida. Si se añaden más bandas, aparece la entrada. En ella se pueden escribir números; la confirmación y las respuestas JSON conservan las etiquetas de la base.
 
-En el original, WCDMA, HSPA, HSPA+, HSDPA y DC-HSDPA tienen las mismas 12 bandas. Cuando la base solo aporta WCDMA, sus bandas, canales y frecuencias sirven también para las otras opciones 3G, conservando la tecnología elegida. Los parámetros específicos ausentes no se recuperan del Excel original. Una tabla específica en la base tiene prioridad sobre este catálogo común. La comprobación del original está en `docs/bandas_3g_original.json`.
+En el original, WCDMA, HSPA, HSPA+, HSDPA y DC-HSDPA tienen las mismas 12 bandas. Cuando la base solo aporta WCDMA, sus bandas, canales y frecuencias sirven también para las otras opciones 3G, conservando la tecnología elegida. Una tabla específica en la base tiene prioridad sobre este catálogo común. La presentación completa filtra las filas originales correspondientes y conserva su información complementaria. La comprobación de bandas está en `docs/bandas_3g_original.json`.
 
 El JSON guarda la ruta y el identificador de la base usada. Al cargarlo desde el formulario se utiliza la base que tengas elegida en ese momento; así puedes repetir una configuración con otra versión. Si mueves archivos a otro ordenador, elige primero su base allí. La CLI permite sustituir la referencia con `--base-datos`.
 
@@ -29,11 +29,11 @@ El JSON guarda la ruta y el identificador de la base usada. Al cargarlo desde el
 - **Validations, Test Campaign y Pretesting-Others:** se guardan con el programa y se incluyen en la salida.
 - **SAR EN y SAR FCC-ISED:** se guardan los procedimientos, posiciones, formatos y cálculos. Los datos RF se enlazan con las hojas de tecnologías construidas desde la base actual.
 
-La pestaña compartida se llama **2G**, **3G** o **2G-3G** según las familias marcadas. El resto conserva el prefijo Conducted cuando se elige Sí y lo omite cuando se elige No. EN genera SAR EN; FCC e ISED comparten SAR FCC-ISED sin duplicarla. El archivo terminado se verifica antes de sustituir la salida anterior.
+La pestaña compartida se llama **Conducted 2G**, **Conducted 3G** o **Conducted 2G-3G** según las familias marcadas cuando se elige Conducida. Al elegir No se omite el prefijo, igual que en el resto de tecnologías. EN genera SAR EN; FCC e ISED comparten SAR FCC-ISED sin duplicarla. El archivo terminado se verifica antes de sustituir la salida anterior.
 
-La presentación de tecnologías se aplica después del motor aprobado. Se comprueba que las siete hojas protegidas, las definiciones de estilos existentes y las imágenes permanecen idénticas. Se añaden estilos propios con texto negro para las tablas. Las coordenadas de apoyo de las fórmulas se conservan ocultas. Si cambia el nombre de 2G-3G, una copia de apoyo oculta conserva el nombre anterior para que las fórmulas SAR no se reescriban.
+La presentación de tecnologías se aplica después del motor aprobado. Se comprueba que las siete hojas protegidas y sus definiciones de estilos existentes permanecen idénticas. Los estilos de las vistas completas se incorporan sin modificar los anteriores. Las coordenadas de apoyo se conservan en filas ocultas y se enlazan a las medidas visibles. Si cambia el nombre de 2G-3G, una copia de apoyo oculta conserva el nombre anterior para que las fórmulas SAR no se reescriban.
 
-Las tablas visibles tienen filtro, cabecera inmovilizada y orden por tecnología, banda y parámetros. Región ocupa la primera columna. 2G/3G solo muestra los cinco campos pedidos. Las otras familias muestran las columnas de la base que tienen datos, incluidas columnas adicionales. No se inventan modos ni se repiten filas por modos del formulario ausentes en la base. Las capturas de 2G-3G conservan sus archivos y anclajes.
+Las tablas visibles recuperan las columnas, datos complementarios, medidas, fórmulas, celdas combinadas, filtros, colores, validaciones, comentarios y dibujos del original. Se compactan las filas descartadas y se ajustan las referencias. Los valores de la base tienen prioridad; los campos nuevos sin columna equivalente se añaden al final. Las capturas se conservan y sus anclajes se ajustan a la selección. Liquids-DRAFT y Pendiente también se guardan e incluyen con la visibilidad original.
 
 En SAR EN, BY se combina por tecnología/banda y BX por exposición. Las baterías usan fórmulas como `CONCATENATE(CA9," - Battery check 1")`, adaptando la referencia del procedimiento FCC equivalente. Se mantienen sus valores iniciales TBD junto a las fórmulas. En Body se añaden Front Face y accesorios. No se añaden filas Variability. FCC mantiene sus filas de posiciones, baterías y Variability guardadas, sin insertar las opciones adicionales del formulario.
 
@@ -48,11 +48,11 @@ Cada tabla de datos tiene una fila de cabecera y estas columnas mínimas:
 | Canal | Número, incluido 0 cuando el registro lo requiera |
 | Frecuencia (MHz) | Número, con punto o coma decimal |
 
-Columnas opcionales: Bandwidth (MHz), Modulation, UL RB Allocation, UL RB Start, Narrowband Index, SCS (kHz), MPR, Mode, Data Rate, Duty Cycle, Cert y Notas. Un guion o N/A en los parámetros opcionales significa no informado. Los campos ausentes quedan vacíos y no recuperan valores RF del datasheet. Tune-Up es una referencia fija independiente y se conserva del original.
+Columnas opcionales: Bandwidth (MHz), Modulation, UL RB Allocation, UL RB Start, Narrowband Index, SCS (kHz), MPR, Mode, Data Rate, Duty Cycle, Cert y Notas. Un guion o N/A en los parámetros opcionales significa no informado. Las filas que coinciden conservan el resto de su información original; en registros nuevos sin coincidencia no se toman parámetros RF ni medidas de otras combinaciones. Tune-Up es una referencia fija independiente y se conserva del original.
 
-LTE, CAT M1 y NB-IoT pueden convivir en la hoja LTE: se distinguen por la columna Tecnología. Narrowband Index y SCS aparecen con sus cabeceras cuando tienen datos. Se conservan las combinaciones distintas de valores de la base, sin añadir las del Excel antiguo.
+LTE, CAT M1 y NB-IoT pueden convivir en la base: se distinguen por Tecnología. Se incluyen únicamente las combinaciones RF permitidas por esa base y por el formulario, conservando las filas y detalles originales que correspondan a ellas.
 
-La entrega trae WLAN y Wifi duplicadas: se utiliza WLAN cuando está presente; si difieren, se informa. Si no existe WLAN se admite Wifi como alias. Los resúmenes sin parámetros no duplican combinaciones detalladas. Las hojas Notas se consideran documentación y no se ejecuta su contenido. Las notas de registros aparecen en Notas y en los avisos de generación; 2G/3G mantiene la tabla limitada a los cinco campos pedidos.
+La entrega trae WLAN y Wifi duplicadas: se utiliza WLAN cuando está presente; si difieren, se informa. Si no existe WLAN se admite Wifi como alias. Los resúmenes sin parámetros no duplican combinaciones detalladas. Las hojas Notas se consideran documentación y no se ejecuta su contenido. Las notas proporcionadas se conservan en la columna de comentarios y en los avisos de generación.
 
 Las fórmulas del XLSX de datos deben tener su resultado guardado: si lo calculas con Excel, guarda el archivo antes de cargarlo. El programa no ejecuta macros ni calcula fórmulas de la base.
 
@@ -60,7 +60,7 @@ Las fórmulas del XLSX de datos deben tener su resultado guardado: si lo calcula
 
 Las familias con formato guardado admiten bandas nuevas desde la base, sin consultar el Excel original. La presentación usa un bloque de esa familia, pero los valores RF proceden de los registros nuevos. Una familia de tecnología completamente nueva necesita definir su formato y procedimiento; no basta con inventarle posiciones SAR.
 
-La base recibida no informa todos los modos, anchos de banda y otros parámetros de 5G, WiFi y BT. Se dejan vacíos o se usa el modo indicado explícitamente en el formulario. No se deducen parámetros técnicos a partir de valores antiguos.
+Si la base no restringe modos o anchos de banda, la vista completa conserva las variantes originales que coincidan con sus registros y la selección. Para una combinación nueva sin coincidencia, solo se completan sus campos RF proporcionados; el resto queda pendiente. Se informa de esas filas al generar.
 
 GPRS/EGPRS conservan la selección acumulativa TX1–TXn. SAR no tiene procedimientos propios guardados para EGPRS, GPRS TX1–TX3, HSPA/HSDPA/DC-HSDPA o NB-IoT; estas selecciones tienen su hoja de tecnología. Si toda la selección carece de procedimiento SAR para una región solicitada, se avisa y no se guarda una hoja SAR vacía. CAT M1 EN reutiliza la presentación de posiciones LTE, con los datos RF de CAT M1.
 
@@ -78,6 +78,6 @@ La CLI rechaza sobrescribir salidas existentes. El formulario permite sustituirl
 
 `tests/test_base_datos.py` comprueba la ruta de producción: cambios de canales/frecuencias/parámetros, bandas nuevas, datos incompletos, tablas exactas de tecnologías, fuente independiente del Excel original, Tune-Up intacta, regiones, carga de respuestas y CLI. Las auditorías históricas usan explícitamente `generar_heredado`, que no está conectada a la interfaz ni a la CLI de producción.
 
-Los formatos reducidos de `plantilla/formatos/` evitan cargar los millones de filas antiguas para construir una tabla desde la base. Los scripts de `herramientas/` permiten preparar esos formatos y conservar las hojas estáticas; no se ejecutan al generar un ensayo.
+Los formatos reducidos de `plantilla/formatos/` mantienen estable el motor SAR. La vista de tecnologías se obtiene de las copias completas de `plantilla/originales/`; 5G está indexada por bandas para evitar leerlas todas al generar. Los scripts de preparación de `herramientas/` no se ejecutan durante un ensayo. `guardar_originales_completos.py` admite tanto los adjuntos divididos como un original completo XLSX/XLSM para una actualización futura del formato.
 
 La validación estructural se complementa con el SDK oficial Open XML. No ejecuta Microsoft Excel, VBA ni cálculos. Se conserva MyTimestamp. La revisión visual de la interfaz y de los libros queda pendiente en un equipo con Excel. Los informes de originales de versiones anteriores están en docs/ como auditoría histórica, no como fuente RF de la generación actual.

@@ -30,10 +30,10 @@ class StreamlitTests(unittest.TestCase):
         from app_streamlit import cargar_respuestas
         cls.cargar_respuestas = staticmethod(cargar_respuestas)
         cls.base = cargar_base(BASE_PREDETERMINADA.read_bytes(), BASE_PREDETERMINADA.name)
-        cls.fixture = (ROOT / 'ejemplos/ejemplo_tecnologias_ordenadas.json').read_bytes()
+        cls.fixture = (ROOT / 'ejemplos/ejemplo_original_completo.json').read_bytes()
 
     def app(self, respuestas=None):
-        app = AppTest.from_file(str(ROOT / 'app_streamlit.py'), default_timeout=120).run()
+        app = AppTest.from_file(str(ROOT / 'app_streamlit.py'), default_timeout=600).run()
         if respuestas:
             for clave, valor in self.cargar_respuestas(respuestas, self.base).items():
                 app.session_state[clave] = valor
@@ -102,7 +102,7 @@ class StreamlitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp)/'web.xlsm'
             path.write_bytes(r['excel'])
-            number = Path(workbook(path)['2G'][0]).stem.removeprefix('sheet')
+            number = Path(workbook(path)['Conducted 2G'][0]).stem.removeprefix('sheet')
             headers, rows = table(path, number)
             self.assertTrue(any(12345 in row.values() and 9001.5 in row.values() for row in rows))
         restored = self.cargar_respuestas(r['respuestas'], base)

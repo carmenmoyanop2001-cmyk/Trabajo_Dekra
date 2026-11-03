@@ -98,7 +98,8 @@ class EstilosVisibles:
 def nombre_visible(original, datos):
     if original == 'Conducted 2G-3G':
         two, three = bool(datos['tecnologias'].get('2G')), bool(datos['tecnologias'].get('3G'))
-        return '2G-3G' if two and three else '2G' if two else '3G'
+        nombre = '2G-3G' if two and three else '2G' if two else '3G'
+        return ('Conducted ' if datos['conducida'] else '') + nombre
     return original if datos['conducida'] else original.removeprefix('Conducted ')
 
 

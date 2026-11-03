@@ -296,7 +296,7 @@ def _barra_lateral():
                 st.session_state.update(estado)
                 st.success('Respuestas cargadas con la base activa.')
         st.divider()
-        st.caption('No hace falta cargar el datasheet original. El programa conserva las plantillas y usa el generador existente.')
+        st.caption('El programa lleva guardadas las pestañas completas del original. Solo necesitas la base y las opciones del ensayo.')
     return base
 
 

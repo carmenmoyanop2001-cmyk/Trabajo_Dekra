@@ -1,0 +1,103 @@
+{
+  "ejemplo": "ejemplos/Ensayo_original_completo_filtrado.xlsm",
+  "sha256": "5a420322fa792aa0bc2f2a5c0097a7f07dd7c4f505fd1eb43aab1c0437a91f40",
+  "pestanas_guardadas": 16,
+  "presentacion": {
+    "Conducted 2G-3G": {
+      "cabecera": 86,
+      "inicio": 87,
+      "ultima": 434,
+      "registros_base": 87,
+      "filas_originales": 348
+    },
+    "Conducted LTE": {
+      "cabecera": 176,
+      "inicio": 177,
+      "ultima": 848,
+      "registros_base": 168,
+      "filas_originales": 672
+    },
+    "Conducted LTE CATM1": {
+      "cabecera": 271,
+      "inicio": 272,
+      "ultima": 1255,
+      "registros_base": 263,
+      "filas_originales": 984
+    },
+    "Conducted LTE NB-IoT": {
+      "cabecera": 29,
+      "inicio": 30,
+      "ultima": 365,
+      "registros_base": 21,
+      "filas_originales": 336
+    },
+    "Conducted 5G": {
+      "cabecera": 37,
+      "inicio": 38,
+      "ultima": 2193,
+      "registros_base": 29,
+      "filas_originales": 2156
+    },
+    "Conducted WiFi": {
+      "cabecera": 31,
+      "inicio": 32,
+      "ultima": 172,
+      "registros_base": 23,
+      "filas_originales": 141
+    },
+    "Conducted BT-Custom": {
+      "cabecera": 13,
+      "inicio": 14,
+      "ultima": 61,
+      "registros_base": 5,
+      "filas_originales": 48
+    }
+  },
+  "protegidas": {
+    "Overview": {
+      "identica": true,
+      "sha256": "a3e5fa0e2409b9fb5ab30090291b13234c06279eeae8fd29fcc4988d7f6935c6"
+    },
+    "Pretesting-Others": {
+      "identica": true,
+      "sha256": "303243467bda33731f5f225ec39885d0b97686b7520a72b775a9e5019f7b1c08"
+    },
+    "SAR EN": {
+      "identica": true,
+      "sha256": "c29c8751f8e9239f95204843d42e7c6bf2c8ca0e046c2fb93376060f24ca4944"
+    },
+    "SAR FCC-ISED": {
+      "identica": true,
+      "sha256": "4bb8bcef3d0688dba130e305e9263dc92e4de00f98631f348cfc20fa20ab2f1e"
+    },
+    "Test Campaign": {
+      "identica": true,
+      "sha256": "6a3d5ca5a866d4876b26559871d1dad72a69d2f66d28abcc31ef952e67c50e2b"
+    },
+    "Tune-Up": {
+      "identica": true,
+      "sha256": "c92fcd4250794d21fd49946eacd66b2ccb429deae485d8b3d9655164abd33059"
+    },
+    "Validations": {
+      "identica": true,
+      "sha256": "7a263e0076b8b6f2f7175adc92de33d13bf6fa5f47dcf53893bf833ba4fef3e0"
+    }
+  },
+  "coordenadas_de_apoyo": "Se conservan; solo las entradas de medidas se enlazan a las filas visibles.",
+  "xml_paquete": [],
+  "sdk_openxml": {
+    "File": "ejemplos/Ensayo_original_completo_filtrado.xlsm",
+    "Count": 0,
+    "Errors": []
+  },
+  "recalculo_temporal": {
+    "motor": "LibreOffice Calc",
+    "entrada": "Conducted 2G-3G!AH87 = 13",
+    "entrada_de_apoyo": "AH3 = 13",
+    "otro_canal": "AH4 vacío"
+  },
+  "macro": "VBA conservado sin cambios; no verificado en Microsoft Excel.",
+  "vba_identico": true,
+  "imagenes_anteriores_identicas": true,
+  "estilos_existentes_identicos": true
+}

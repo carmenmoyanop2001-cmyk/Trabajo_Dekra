@@ -27,6 +27,7 @@ class ComentariosTests(unittest.TestCase):
         cls.path = cls.folder / 'ensayo.xlsm'
         cls.before = cls.folder / 'antes.xlsm'
         cls.data = json.loads((ROOT / 'ejemplos/ejemplo_tecnologias_ordenadas.json').read_text())
+        cls.data['tecnologias']['5G']={'bandas':['n77'],'modos':['Inner 1RB Left']}
         cls.catalogo = Catalogo()
         _generar(cls.data, str(cls.before), catalogo=cls.catalogo, log=lambda *_: None)
         generar(cls.data, cls.path, catalogo=cls.catalogo, log=lambda *_: None)
@@ -58,7 +59,7 @@ class ComentariosTests(unittest.TestCase):
                     self.assertEqual(old.read(part), new.read(part), part)
             self.assertEqual(old.read('xl/drawings/drawing2.xml'), new.read('xl/drawings/drawing2.xml'))
             # Renombrar 2G-3G no debe dejar la nota en una copia de apoyo sin relaciones.
-            part = after['2G-3G'][0]
+            part = after['Conducted 2G-3G'][0]
             hoja = E.fromstring(new.read(part))
             self.assertEqual(hoja.find('s:legacyDrawing', NS).get('{' + R + '}id'), 'rId3')
 
@@ -78,7 +79,12 @@ class ComentariosTests(unittest.TestCase):
     def test_detecta_formas_desplazadas(self):
         def mover(root):
             root.find('.//{urn:schemas-microsoft-com:office:excel}Row').text = '999'
-        corrupto = self.mutar('xl/drawings/vmlDrawing2.vml', mover, 'forma_desplazada.xlsm')
+        with zipfile.ZipFile(self.path) as z:
+            rels=E.fromstring(z.read('xl/worksheets/_rels/sheet3.xml.rels'))
+            from posixpath import normpath
+            target=next(r.get('Target') for r in rels if r.get('Type','').endswith('/vmlDrawing'))
+            part=normpath('xl/worksheets/'+target)
+        corrupto = self.mutar(part, mover, 'forma_desplazada.xlsm')
         self.assertTrue(any('celdas de los comentarios y sus formas VML no coinciden' in e
                             for e in validar(corrupto, verbose=False)))
 

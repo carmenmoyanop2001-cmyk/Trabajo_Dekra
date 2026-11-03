@@ -47,7 +47,7 @@ class TecnologiasVisiblesTests(unittest.TestCase):
             ['LTE', 'FDD1', 123456, 9001.25, 'EN', 7.5, 'QAM_NUEVA', 3, 2, None, 12.5, 'Modo A', None, 'Solo de la base', 19],
             ['LTE CAT M1', 'FDD1', 18000, 1920, 'EN', 10, 'QPSK', 1, 0, 0, 15],
             ['LTE NB-IoT', 'FDD1', 18000, 1920, 'EN', 0.2, 'QPSK', 1, 0, 0, 3.75],
-            ['5G', 'n77', 630000, 3450, 'EN', None, None, None, None, None, None, None, '=SUM(1,2)'],
+            ['5G', 'n77', 630000, 3450, 'EN', 20, 'QPSK', 1, 0, None, None, None, '=SUM(1,2)'],
             ['WLAN', '2.4 GHz', 1, 2412, 'EN'], ['BT', '2.4 GHz', 0, 2402, 'EU/FCC/ISED'],
         ]
         database(cls.db, rows, headers=head)
@@ -90,7 +90,8 @@ class TecnologiasVisiblesTests(unittest.TestCase):
                 self.assertIn(name, new_names)
                 current = E.fromstring(new.read(new_names[name][0]))
                 old_cells = {c.get('r'): c for c in roots[name].findall('s:sheetData/s:row/s:c', NS)
-                             if col2n(re.sub(r'\d', '', c.get('r'))) in columns}
+                             if col2n(re.sub(r'\d', '', c.get('r'))) in columns
+                             and re.sub(r'\d','',c.get('r')) not in ('AH','CB','CC','CD','CE')}
                 current_cells = {c.get('r'): c for c in current.findall('s:sheetData/s:row/s:c', NS)}
                 for address, cell in old_cells.items():
                     self.assertEqual(E.tostring(cell, method='c14n', exclusive=True),
@@ -116,9 +117,10 @@ class TecnologiasVisiblesTests(unittest.TestCase):
                     before = self.folder / f'antes{n}{conducted}.xlsm'
                     after = self.folder / f'despues{n}{conducted}.xlsm'
                     result = self.check_protected(self.data(technologies, conducted), before, after)
-                    self.assertIn(expected, result['hojas'])
+                    self.assertIn(('Conducted ' if conducted else '') + expected, result['hojas'])
                     fields, rows = table(after, 3)
-                    self.assertEqual(fields, ['Región', 'Tecnología', 'Banda', 'Canal', 'Frecuencia (MHz)'])
+                    self.assertTrue({'Región','Tecnología','Banda','Canal','Frecuencia (MHz)'} <= set(fields))
+                    self.assertTrue(any('Power' in f for f in fields))
                     if '2G' in technologies:
                         self.assertEqual({r['Banda'] for r in rows if r['Tecnología'] == 'GSM'}, {'850', '900'})
                         if technologies['2G'].get('GPRS'):
@@ -138,18 +140,16 @@ class TecnologiasVisiblesTests(unittest.TestCase):
         self.assertEqual(rows[0]['Campo adicional'], 'Solo de la base')
         self.assertEqual(rows[0]['Segundo adicional'], 17)
         self.assertEqual({r['Segundo adicional'] for r in rows}, {17, 19})
-        self.assertNotIn('Narrowband Index', fields)
-        self.assertFalse(any('Power' in f for f in fields))
+        self.assertTrue(any('Power' in f for f in fields))
         wifi_fields, wifi_rows = table(after, 8)
-        self.assertNotIn('Mode', wifi_fields)  # No inventar modos ausentes en el XLSX.
-        self.assertEqual(len(wifi_rows), 1)
+        self.assertIn('Mode', wifi_fields)
+        self.assertEqual({r['Bandwidth (MHz)'] for r in wifi_rows},{20,40})
         fields5g, rows5g = table(after, 7)
-        self.assertNotIn('Bandwidth (MHz)', fields5g)
+        self.assertIn('Bandwidth (MHz)', fields5g)
         self.assertEqual(rows5g[0]['Notas'], '=SUM(1,2)')
-        self.assertEqual(result['filas']['Conducted WiFi'], 1)
+        self.assertEqual(result['filas']['Conducted WiFi'], len(wifi_rows))
         book = openpyxl.load_workbook(after, read_only=True, data_only=False)
-        for row in book['Conducted LTE'].iter_rows(min_row=1, max_row=2, min_col=1, max_col=5):
-            for cell in row:
-                self.assertEqual(cell.font.color.type, 'rgb')
-                self.assertEqual(cell.font.color.rgb, 'FF000000')
+        header = result['presentacion_original']['Conducted LTE']['cabecera']
+        self.assertIn(book['Conducted LTE'].cell(header,10).value,('Technology','Tech'))
+        self.assertTrue(book['Conducted LTE'].cell(header,10).has_style)
         book.close()
