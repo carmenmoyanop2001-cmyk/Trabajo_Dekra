@@ -58,8 +58,7 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
         raise ValueError('La salida debe tener extensión .xlsm.')
     with tempfile.TemporaryDirectory(dir=target.parent) as tmp:
         candidate = Path(tmp) / 'datos.xlsm'
-        presentacion = {}
-        resumen = (_generar(datos, str(candidate), dir_plantilla, log, catalogo, contexto_presentacion=presentacion) if catalogo is not None else
+        resumen = (_generar(datos, str(candidate), dir_plantilla, log, catalogo) if catalogo is not None else
                    _generar(datos, str(candidate), dir_plantilla, log))
         # El contexto de fórmulas contiene cierres circulares que retienen las
         # hojas SAR. Liberarlos antes de cargar las vistas completas evita
@@ -72,7 +71,12 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
                 renombrar_resumen(resumen, names)
         if catalogo is not None:
             from presentacion_tecnologias import aplicar
-            aplicar(candidate, datos, catalogo, resumen, overview=presentacion.get('overview'))
+            # Solo la presentación de tecnologías necesita el mapa de Overview.
+            # El motor SAR se conserva literalmente de Trabajo_Dekra-main11.
+            from overview import BAT_LIBRES, FILA_CORTE
+            extras = max(0, len(datos['baterias']) - BAT_LIBRES)
+            overview = lambda row: row + extras if row >= FILA_CORTE else row
+            aplicar(candidate, datos, catalogo, resumen, overview=overview)
             gc.collect()
         errors = validar(str(candidate), verbose=False)
         if errors:
@@ -122,7 +126,7 @@ def _validar_hojas_sar(path, regiones):
                 raise ValueError(f'La hoja solicitada {name} ha quedado sin filas de ensayo.')
 
 
-def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None, contexto_presentacion=None):
+def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None):
     """datos: dict (ver README). Escribe el .xlsm en `salida` y devuelve un resumen (dict)."""
     dirp = dir_plantilla or DIR_PLANTILLA
     base = zipfile.ZipFile(os.path.join(dirp, 'plantilla_base.zip'))
@@ -184,8 +188,6 @@ def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None, contex
     ov_xml, drawing, vml, ctx.ov_map = editar_overview(
         ov_xml, base.read(d_part).decode('utf8') if d_part else None,
         base.read(v_part).decode('utf8', 'ignore') if v_part else None, datos)
-    if contexto_presentacion is not None:
-        contexto_presentacion['overview'] = ctx.ov_map
     modificadas = {}
     if d_part: modificadas[d_part] = drawing.encode('utf8') if isinstance(drawing, str) else drawing
     if v_part: modificadas[v_part] = vml.encode('utf8') if isinstance(vml, str) else vml

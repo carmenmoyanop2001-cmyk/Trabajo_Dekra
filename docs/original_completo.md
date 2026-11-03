@@ -1,5 +1,7 @@
 # Original completo integrado — 3 de noviembre de 2026
 
+**Informe de la primera integración.** La revisión posterior restaura también las celdas de apoyo SAR de Trabajo_Dekra-main11 y corrige los anclajes de las capturas. Consulta [restauracion_sar_main11.md](restauracion_sar_main11.md); la prueba de enlace de medidas descrita abajo queda sustituida por la conservación íntegra de esas entradas.
+
 Las tecnologías dejaban de mostrar las columnas y los bloques completos del datasheet al publicarse como tablas resumidas. Ahora se recuperan sus pestañas originales completas y se filtran por el catálogo XLSX y el cuestionario. Los campos proporcionados por la base tienen prioridad; se conservan el resto del contenido y la presentación de las filas coincidentes.
 
 ## Qué queda guardado en el programa

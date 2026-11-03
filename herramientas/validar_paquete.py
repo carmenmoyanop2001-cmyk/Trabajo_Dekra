@@ -65,6 +65,29 @@ def _comentarios(z, names, dibujos_por_hoja):
     return errors
 
 
+def _dibujos(z, names):
+    """Excel repara anclajes invertidos aunque el XML cumpla su esquema."""
+    d = 'http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing'
+    errors = []
+    for part in sorted(names):
+        if not part.endswith('.xml') or '/drawings/' not in part:
+            continue
+        try:
+            root = etree.fromstring(z.read(part))
+            for anchor in root.findall('{' + d + '}twoCellAnchor'):
+                def coordenadas(tag, eje):
+                    marker = anchor.find('{' + d + '}' + tag)
+                    return (int(marker.findtext('{' + d + '}' + eje)),
+                            int(marker.findtext('{' + d + '}' + eje + 'Off')))
+                for eje in ('row', 'col'):
+                    start, end = coordenadas('from', eje), coordenadas('to', eje)
+                    if min(start + end) < 0 or end <= start:
+                        errors.append(f'{part}: anclaje de dibujo invertido o sin tamaño ({eje}).')
+        except (etree.XMLSyntaxError, ValueError, TypeError, AttributeError):
+            errors.append(f'{part}: anclaje de dibujo no válido.')
+    return errors
+
+
 def validar(path, verbose=True):
     z = zipfile.ZipFile(path); names = set(z.namelist()); err = []
     # 1) XML bien formado
@@ -129,6 +152,7 @@ def validar(path, verbose=True):
         if bad: err.append(f'{n}: {bad} filas/celdas fuera de orden o con referencia incoherente')
         if verbose: print(f'  {n}: {nrow} filas')
     err.extend(_comentarios(z, names, dibujos_por_hoja))
+    err.extend(_dibujos(z, names))
     z.close()
     return err
 

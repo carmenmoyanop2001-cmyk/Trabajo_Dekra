@@ -4,6 +4,8 @@ El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para
 
 `plantilla/originales/` conserva las 16 pestañas recibidas, junto con todas las partes de los archivos originales. El inventario identifica el origen y el SHA-256 de cada parte. Incluye también la copia íntegra de 5G con sus 220.322 filas y 25 bandas/variantes, que complementa el adjunto dividido que solo contenía n1. Su índice permite leer únicamente las bandas elegidas. SAR EN y SAR FCC-ISED siguen usando el generador que ya estaba validado: se verifica que el contenido de esas hojas y de las otras cinco hojas protegidas permanezca idéntico para las mismas respuestas.
 
+La generación de SAR EN y SAR FCC-ISED y sus celdas de apoyo se han restaurado de **Trabajo_Dekra-main11.zip**, proporcionado como versión aprobada. Las tecnologías conservan la presentación completa de esta versión. [Comprobación contra el proyecto aprobado](docs/restauracion_sar_main11.md).
+
 ## App Streamlit: todo desde el navegador
 
 ### Publicar con una URL directa al formulario
@@ -89,7 +91,7 @@ SAR EN conserva Mode combinado por tecnología/banda y Exposure Conditions por b
 
 La base inicial es `datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx`, una copia sin modificar del último archivo recibido. Puedes elegir otra desde el formulario. Las columnas mínimas son **Tecnología, Banda, Canal y Frecuencia (MHz)**. Sus parámetros y campos adicionales se aplican a las filas seleccionadas, manteniendo las columnas del original. Los campos nuevos que no tienen columna equivalente se añaden al final.
 
-Las tecnologías muestran sus tablas completas del original, incluidas las columnas para introducir medidas. Las filas descartadas se compactan, ajustando fórmulas, combinaciones, comentarios y dibujos. Se conservan columnas, colores y presentación. Las coordenadas que necesitan los cálculos SAR quedan en filas ocultas de apoyo; las medidas visibles alimentan esas entradas sin reescribir ninguna fórmula de las hojas SAR. Las pestañas auxiliares Liquids-DRAFT y Pendiente también se conservan con su estado de visibilidad original.
+Las tecnologías muestran sus tablas completas del original, incluidas las columnas para introducir medidas. Las filas descartadas se compactan, ajustando fórmulas, combinaciones, comentarios y dibujos. Se conservan columnas, colores y presentación. Las coordenadas que necesitan los cálculos SAR quedan en filas ocultas de apoyo; esas entradas mantienen sus valores y fórmulas de la versión aprobada, sin añadir enlaces nuevos desde la vista completa. Las pestañas auxiliares Liquids-DRAFT y Pendiente también se conservan con su estado de visibilidad original.
 
 Cuando existe una fila coincidente, se conserva su información original y se aplican los campos de la base. Para registros nuevos sin coincidencia exacta se reutiliza el formato de su tecnología y se completan exclusivamente sus valores RF proporcionados: no se copian parámetros ni medidas de otra combinación. **Tune-Up se conserva completa del original.**
 
@@ -106,15 +108,15 @@ El segundo comando permite reutilizar respuestas con otra versión de la base. L
 
 ## Ejemplo y comprobaciones
 
-El ejemplo de la presentación completa está en `ejemplos/Ensayo_original_completo_filtrado.xlsm`, con sus respuestas ficticias en `ejemplo_original_completo.json`. Los demás Excel e informes, incluidas las antiguas tablas reducidas, documentan versiones históricas.
+El ejemplo actual está en `ejemplos/Proyecto_SAR_restaurados.xlsm`, con sus respuestas en `ejemplo_sar_restaurado.json`: combina las tecnologías completas con los dos SAR comprobados contra el Proyecto aprobado de Trabajo_Dekra-main11. Los demás Excel e informes documentan versiones históricas, incluida la primera integración del original completo.
 
-[Revisión de la presentación completa](docs/original_completo.md) · [Vista de las primeras filas](docs/vista_original_completo.png) · [Conservación de las hojas protegidas](docs/conservacion_original_completo.json)
+[Revisión de la presentación completa](docs/original_completo.md) · [Vista de las primeras filas](docs/vista_original_completo.png) · [Conservación de las hojas protegidas](docs/verificacion_sar_restaurado.json)
 
 ```sh
 python -m unittest discover -s tests -v
 ```
 
-Las pruebas de producción están en `tests/test_originales_completos.py`, `tests/test_base_datos.py`, `tests/test_tecnologias_visibles.py`, `tests/test_comentarios.py` y `tests/test_interfaz_bandas.py`: archivos originales íntegros, edición de datos, prioridad de la base, medidas visibles, conservación de las siete hojas protegidas, nombres 2G/3G, regiones, CLI y widgets. Las auditorías históricas usan `generar_heredado`, que no se utiliza desde el formulario ni la CLI.
+Las pruebas de producción están en `tests/test_restauracion_sar.py`, `tests/test_originales_completos.py`, `tests/test_base_datos.py`, `tests/test_tecnologias_visibles.py`, `tests/test_comentarios.py` y `tests/test_interfaz_bandas.py`: archivos originales íntegros, edición de datos, prioridad de la base, conservación íntegra de las celdas de apoyo y de las siete hojas protegidas, nombres 2G/3G, regiones, CLI y widgets. Las auditorías históricas usan `generar_heredado`, que no se utiliza desde el formulario ni la CLI.
 
 Con las dependencias de Streamlit instaladas, `python -m unittest discover -s tests -p test_streamlit_app.py -v` comprueba el formulario web, los slots, la importación de respuestas, las descargas, la lectura de una base editada y la igualdad de las siete hojas protegidas frente al generador de escritorio.
 

@@ -317,7 +317,6 @@ class PlanOriginal:
     segmentos: dict = field(default_factory=dict)
     view_rows: dict = field(default_factory=dict)
     registros: list = field(default_factory=list)
-    backend_enlazado: bytes | None = None
     mostrar: set = field(default_factory=set)
     referencias_rotas: int = 0
     grupos: dict = field(default_factory=dict)
@@ -721,46 +720,6 @@ def _literal(value):
     return '"' + str(value).replace('"', '""') + '"'
 
 
-def enlazar_medidas(plan, columnas, defined):
-    """Conectar los cálculos SAR existentes con las medidas de la vista completa."""
-    def clave(tech,band,channel,frequency,params):
-        return (tech,_norm(band),_norm(channel),_norm(frequency),
-                tuple((key,_norm(params.get(key))) for key in sorted(PARAM_COL)))
-    rows_by_key=defaultdict(set)
-    for index,view in enumerate(plan.registros):
-        record=view.record
-        rows_by_key[clave(record.tech,record.band,record.channel,record.frequency,record.params)].update(plan.view_rows.get(index,[]))
-    root=E.fromstring(plan.backend)
-    for row in root.findall('s:sheetData/s:row',NS):
-        if int(row.get('r'))<=2:continue
-        values={_col(c):_value(c,[]) for c in row}
-        tech=_tecnologia(plan.familia,values)
-        key=clave(tech,values.get('K'),values.get('T'),values.get('U'),{k:values.get(c) for k,c in PARAM_COL.items()})
-        positions=sorted(rows_by_key.get(key,[]))
-        if not positions:continue
-        runs=[]
-        for number in positions:
-            if runs and runs[-1][1]+1==number:runs[-1][1]=number
-            else:runs.append([number,number])
-        for col in columnas:
-            refs=[f'{_fmt_sheet(plan.nombre)}${col}${a}' + (f':${col}${b}' if b!=a else '') for a,b in runs]
-            joined=','.join(refs)
-            if len(joined)>3000 or len(refs)>200:
-                names=[]
-                for at in range(0,len(refs),75):
-                    name=f'_SAR_MEDIDA_{Path(FAMILIAS[plan.familia]).stem}_{col}_{row.get("r")}_{at}'
-                    E.SubElement(defined,_q('definedName'),name=name).text=','.join(refs[at:at+75])
-                    names.append(name)
-                joined=','.join(names)
-            cell=_celda(row,col)
-            if cell is None:continue
-            for child in list(cell):cell.remove(child)
-            cell.attrib.pop('t',None)
-            E.SubElement(cell,_q('f')).text=f'IF(COUNT({joined})=0,"",MAX({joined}))'
-            E.SubElement(cell,_q('v'))
-    plan.backend_enlazado=_xml(root)
-
-
 def formula(text, plan, old, new, planes, overview=None):
     """Reubicar también referencias absolutas; no alterar textos entre comillas."""
     def indirecta(m):
@@ -916,7 +875,7 @@ def escribir(plan, output, planes, overview=None):
             if extra in plan.extras.values():attributes.update(width='25',customWidth='1')
             E.SubElement(cols,_q('col'),**attributes)
         cols[:] = sorted(cols,key=lambda c:int(c.get('min')))
-    backend = E.fromstring(plan.backend_enlazado or plan.backend).find('s:sheetData', NS)
+    backend = E.fromstring(plan.backend).find('s:sheetData', NS)
     merge_starts = defaultdict(list)
     for merge in plan.merge_ranges:
         merge_starts[merge[1]].append(merge)
@@ -982,6 +941,45 @@ def escribir(plan, output, planes, overview=None):
     return root
 
 
+def verificar_apoyo(plan, rendered):
+    """Impedir que la vista nueva cambie las entradas del SAR aprobado."""
+    original = E.fromstring(plan.backend).find('s:sheetData', NS)
+    expected = {c.get('r'): E.tostring(c, method='c14n', exclusive=True)
+                for row in original for c in row}
+    found = {}
+    with Path(rendered).open('rb') as stream:
+        for _, row in E.iterparse(stream, tag=_q('row')):
+            if int(row.get('r')) > plan.offset:
+                break
+            for cell in row:
+                found[cell.get('r')] = E.tostring(cell, method='c14n', exclusive=True)
+            row.clear()
+            while row.getprevious() is not None:
+                del row.getparent()[0]
+    if expected != found:
+        raise ValueError(f'{plan.nombre}: la presentación ha cambiado las celdas de apoyo de SAR.')
+
+
+def reubicar_dibujo(root, plan):
+    """Trasladar cada captura entera: sus dos extremos conservan la distancia.
+
+    Reubicar por separado los extremos podía invertir un dibujo cuando uno
+    caía en una fila descartada y el otro en una fila seleccionada.
+    """
+    d = 'http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing'
+    for anchor in root:
+        markers = [anchor.find('{' + d + '}' + tag) for tag in ('from', 'to')]
+        rows = [marker.find('{' + d + '}row') for marker in markers if marker is not None]
+        rows = [row for row in rows if row is not None]
+        if not rows:
+            continue
+        old = int(rows[0].text) + 1
+        new = plan.mapped(old, 'start') or plan.mapped(old, 'end') or plan.offset + old
+        delta = new - old
+        for row in rows:
+            row.text = str(int(row.text) + delta)
+
+
 def copiar_relacionados(plan, destino_parte, changed, added, ct):
     """Copiar los dibujos, comentarios, controles e imágenes propios del original."""
     prefix = 'xl/original_vista/' + Path(FAMILIAS.get(plan.familia,normalizar(plan.familia)+'.zip')).stem + '/'
@@ -1037,9 +1035,7 @@ def copiar_relacionados(plan, destino_parte, changed, added, ct):
                     content = _xml(root)
                 elif rel.get('Type', '').endswith('/drawing'):
                     root = E.fromstring(content)
-                    d = 'http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing'
-                    for row in root.findall('.//{' + d + '}row'):
-                        row.text = str((plan.mapped(int(row.text)+1) or plan.offset+int(row.text)+1)-1)
+                    reubicar_dibujo(root, plan)
                     content = _xml(root)
                 added[newtarget] = content
                 if target in overrides:

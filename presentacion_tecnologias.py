@@ -278,7 +278,7 @@ def aplicar_minima(path, datos, catalogo, resumen):
 def aplicar(path, datos, catalogo, resumen, overview=None):
     """Mostrar el original completo filtrado, sin alterar las siete hojas protegidas."""
     from tecnologias_originales import (EstilosOriginales, registros_vista, preparar,
-        completar_cache, escribir, copiar_relacionados, enlazar_medidas, copiar_estatica, FAMILIAS)
+        completar_cache, escribir, copiar_relacionados, copiar_estatica, verificar_apoyo, FAMILIAS)
     dir_originales = Path(__file__).parent / 'plantilla/originales'
     registros = registros_vista(catalogo, datos)
     destination = Path(path).with_name('original_filtrado.xlsm')
@@ -302,8 +302,6 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
         changed, added, public_names, support, plans = {}, {}, {}, {}, []
         extra_visibles=[]
         parts_by_name = {}
-        old_roots={s.get('name'):E.fromstring(source.read(targets[s.get('{' + R + '}id')])) for s in sheets}
-        necesarias=columnas_necesarias(old_roots,technical)
         avisos = resumen.setdefault('avisos', [])
         for sheet in old_order:
             current = sheet.get('name')
@@ -339,12 +337,11 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
         for plan in plans:
             part = parts_by_name[plan.nombre]
             current=next(old for old,new in public_names.items() if new==plan.nombre)
-            medidas={n2col(c) for c in necesarias.get(current,set())} & {'AH','CB','CC','CD','CE'}
-            enlazar_medidas(plan,medidas,defined)
             if current in support:
-                added[support[current]]=E.tostring(_auxiliar(E.fromstring(plan.backend_enlazado)),encoding='UTF-8',xml_declaration=True,standalone=True)
+                added[support[current]]=E.tostring(_auxiliar(E.fromstring(plan.backend)),encoding='UTF-8',xml_declaration=True,standalone=True)
             rendered = folder / Path(part).name
             root = escribir(plan, rendered, plan_by_name, overview)
+            verificar_apoyo(plan, rendered)
             if plan.referencias_rotas:
                 avisos.append(f'{plan.nombre}: {plan.referencias_rotas} referencias rotas del original se han dirigido a una celda vacía; revisa esos cálculos antes de usar resultados.')
             changed[part] = rendered

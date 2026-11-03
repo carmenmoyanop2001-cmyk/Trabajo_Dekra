@@ -1,0 +1,92 @@
+{
+  "proyecto": "Proyecto",
+  "region": [
+    "EN",
+    "FCC"
+  ],
+  "exposure": [
+    "Close to ear",
+    "Body"
+  ],
+  "conducida": true,
+  "baterias": [
+    "Bat1",
+    "Bat2"
+  ],
+  "accesorios": [
+    "Acc1",
+    "Acc2"
+  ],
+  "spotchecking": [
+    "Va1",
+    "Va2",
+    "Va3"
+  ],
+  "tecnologias": {
+    "2G": {
+      "GSM": false,
+      "GPRS": null,
+      "EGPRS": [
+        "TX1",
+        "TX2",
+        "TX3"
+      ]
+    },
+    "3G": {
+      "HSDPA": [
+        "FDDI",
+        "FDDII",
+        "FDDIII"
+      ],
+      "WCDMA": [
+        "FDDI",
+        "FDDII",
+        "FDDIV",
+        "FDDV",
+        "FDDVI"
+      ]
+    },
+    "LTE": [
+      "FDD1",
+      "FDD2",
+      "FDD3",
+      "FDD6",
+      "FDD8"
+    ],
+    "LTE CAT M1": [
+      "FDD1",
+      "FDD2",
+      "FDD20",
+      "TDD38",
+      "TDD39"
+    ],
+    "LTE NB-IoT": [
+      "FDD1",
+      "FDD2",
+      "FDD3",
+      "FDD4"
+    ],
+    "5G": [
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "WLAN": {
+      "2,4 GHz": [
+        "ac20"
+      ],
+      "5 GHz": {
+        "bandas": [
+          "U-NII-3"
+        ],
+        "modos": [
+          "a",
+          "ac20",
+          "ac40"
+        ]
+      }
+    }
+  },
+  "base_datos": "../datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx",
+  "base_datos_sha256": "e3eadb68532af6a80d6eb6eb868b61c36d058cb2e642473a0937f15871233588"
+}

@@ -1,0 +1,24 @@
+{
+  "adjunto": "Trabajo_Dekra-main11.zip",
+  "sha256_adjunto": "2e7b69156d7053b0cdf1fbf47c9331b1e7aeeedde7ccc746eb1ad0f5707fceae",
+  "fuentes": {
+    "base_datos.py": "9addf89f98540cd10d5ae3c8a95470267fc026a40c279ebf84794811f7371e05",
+    "hojas_base_datos.py": "f4a30c1c1147e7ee0e2056fcea8d2e673214a6d7c544827e68e35e4deaa6c1bb",
+    "nucleo.py": "01db251598bac8e41e0b618c8a5da804a89d900bd6d4fdfceca1a0c31116cafc",
+    "seleccion.py": "e1a80a9ba697e37f7e16e400c32f01bd9ec8d902b7d4f80b4841493d2a933908",
+    "sarlib.py": "3e5ca7c7a2662a6f214752c293928996a9858d27a83b5e444ce9b8b5ac984e6c",
+    "overview.py": "3eb972a6ffc21ddef610df38cfee51a2a64ce71ac64679504191dbc73be6b079",
+    "sar_en_formulas.py": "fc37b0b0569b4c6665554f72224b8a954331571eeacde59a6f4c615c72f81748",
+    "presentacion_sar_en.py": "0903b88020fa46926640ff02a35889899e84dc9e4ff245afa5fb43728dc6e0ee",
+    "plantilla/sar_en.xz": "2c767f5548b133ef30008fa1e306aa00888ac856104d138ac7a44e38ccda5d1e",
+    "plantilla/sar_fcc.xz": "11b1947bc1005c27ae14a72513db18b786f89d834ab5269adde7a5b1afa7ec8c",
+    "plantilla/plantilla_base.zip": "54b1e27cee3038003c49cc4298198c5843788d484873bae2710d85448234085a"
+  },
+  "funciones_generador": {
+    "_generar": "df53081e7d11bbff653d342ac0bd1a7c48befe81531366de36eeeedc9b7d947c",
+    "_hacer_inline": "31ba10ad3390d7b8b54a064d434b2d8b1541f143e34cf875fd4f7ef3b1c5e5d4",
+    "_sheet_id": "baa7dd96af829ddfef048328190239c2a3dfbaf521c77de005fcc834e1ac1718",
+    "_hojas_sar": "332afac811dbc13bf0602f94f5b1584d2a8775d061ac6a3ce5b74c5c8294f4e8",
+    "_numero_hoja": "4ddbcd34c01133db9a94040b48af8b96749671e78e1ad56ba7ade8e5eeaa98bb"
+  }
+}

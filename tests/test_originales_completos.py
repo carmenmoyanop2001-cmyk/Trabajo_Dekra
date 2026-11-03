@@ -83,8 +83,6 @@ class OriginalesCompletosTests(unittest.TestCase):
                 newroot = E.fromstring(new.read(new_names[nombre][0]))
                 lookup = {c.get('r'):c for c in newroot.findall('s:sheetData/s:row/s:c',NS)}
                 for cell in oldroot.findall('s:sheetData/s:row/s:c',NS):
-                    if _col(cell) in ('AH','CB','CC','CD','CE') and int(''.join(c for c in cell.get('r') if c.isdigit()))>2:
-                        continue  # Estas entradas se enlazan a las medidas visibles.
                     self.assertEqual(E.tostring(cell,method='c14n',exclusive=True),
                                      E.tostring(lookup[cell.get('r')],method='c14n',exclusive=True))
 
@@ -125,26 +123,17 @@ class OriginalesCompletosTests(unittest.TestCase):
         self.assertEqual({_value(c,[]) for c in mpr},{0})
         self.assertTrue(all(v['J']=='Cat M1' for v in values[2:]))
 
-    def test_medidas_visibles_alimentan_sar_sin_cambiarlo(self):
-        root,values,rows=vista(self.after,'Conducted LTE')
-        by_number={int(r.get('r')):v for r,v in zip(rows,values)}
-        all_rows=root.findall('s:sheetData/s:row',NS)
-        checked=0
-        for row in all_rows:
-            if row.get('hidden')!='1' or int(row.get('r'))<=2:continue
-            data={_col(c):_value(c,[]) for c in row}
-            if data.get('K') not in ('FDD1','FDD101'):continue
-            f=row.find('s:c[@r="AH'+row.get('r')+'"]/s:f',NS)
-            self.assertIsNotNone(f)
-            self.assertIn('IF(COUNT(',f.text)
-            self.assertIn('MAX(',f.text)
-            import re
-            for a,b in re.findall(r'\$AH\$(\d+)(?::\$AH\$(\d+))?',f.text):
-                for number in range(int(a),int(b or a)+1):
-                    self.assertEqual(by_number[number]['K'],data['K'])
-                    self.assertEqual(by_number[number]['T'],data['T'])
-            checked+=1
-        self.assertEqual(checked,2)
+    def test_apoyo_sar_conserva_tambien_las_celdas_de_medidas(self):
+        before, after = workbook(self.before), workbook(self.after)
+        with zipfile.ZipFile(self.before) as old, zipfile.ZipFile(self.after) as new:
+            for name in self.resumen['presentacion_original']:
+                a = E.fromstring(old.read(before[name][0]))
+                b = E.fromstring(new.read(after[name][0]))
+                actual = {c.get('r'): c for c in b.findall('s:sheetData/s:row/s:c', NS)}
+                for cell in a.findall('s:sheetData/s:row/s:c', NS):
+                    if _col(cell) in ('AH', 'CB', 'CC', 'CD', 'CE'):
+                        self.assertEqual(E.tostring(cell, method='c14n', exclusive=True),
+                                         E.tostring(actual[cell.get('r')], method='c14n', exclusive=True))
 
     def test_archivo_original_completo_guardado_y_hashes(self):
         inv=json.loads((ROOT/'plantilla/originales/inventario.json').read_text())

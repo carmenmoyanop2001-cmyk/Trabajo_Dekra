@@ -1,0 +1,20 @@
+test_dibujo_no_invierte_extremos_al_descartar_filas (test_restauracion_sar.FuentesAprobadasTests.test_dibujo_no_invierte_extremos_al_descartar_filas) ... ok
+test_motor_y_plantillas_del_adjunto (test_restauracion_sar.FuentesAprobadasTests.test_motor_y_plantillas_del_adjunto) ... ok
+test_no_permite_reescribir_apoyo_sar (test_restauracion_sar.FuentesAprobadasTests.test_no_permite_reescribir_apoyo_sar) ... ok
+Ejemplo y respuestas guardados
+test_sar_identicos_al_proyecto_aprobado_del_usuario (test_restauracion_sar.SarAdjuntoTests.test_sar_identicos_al_proyecto_aprobado_del_usuario) ... ok
+test_tecnologias_completas_y_dibujos_validos (test_restauracion_sar.SarAdjuntoTests.test_tecnologias_completas_y_dibujos_validos) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 374.268s
+
+OK
+SEGUNDOS 374.27 RSS_MAX_MIB 790
+
+test_no_recupera_frecuencias_fuera_de_la_base (test_originales_completos.ReferenciasOriginalesTests.test_no_recupera_frecuencias_fuera_de_la_base) ... ok
+test_rangos_no_incluyen_otra_banda_nueva (test_originales_completos.ReferenciasOriginalesTests.test_rangos_no_incluyen_otra_banda_nueva) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+OK
