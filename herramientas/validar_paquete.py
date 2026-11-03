@@ -1,7 +1,69 @@
 # -*- coding: utf-8 -*-
 """Comprobaciones estructurales de un .xlsm generado (sin necesidad de Excel)."""
 import re, sys, zipfile, posixpath
+from collections import Counter
 from lxml import etree
+
+
+def _comentarios(z, names, dibujos_por_hoja):
+    """La validez XML no detecta comentarios sin enlace a sus formas VML."""
+    ns = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
+    x = 'urn:schemas-microsoft-com:office:excel'
+    errors = []
+    for part in sorted(names):
+        if not re.fullmatch(r'xl/worksheets/_rels/sheet\d+\.xml\.rels', part):
+            continue
+        try:
+            relaciones = list(etree.fromstring(z.read(part)))
+        except etree.XMLSyntaxError:
+            continue  # Ya informado como XML mal formado.
+        comentarios = [r for r in relaciones if r.get('Type', '').endswith('/comments')]
+        if not comentarios:
+            continue
+        hoja = posixpath.dirname(posixpath.dirname(part)) + '/' + posixpath.basename(part)[:-5]
+        def destino(rel):
+            target = rel.get('Target', '')
+            return target.lstrip('/') if target.startswith('/') else posixpath.normpath(posixpath.dirname(hoja) + '/' + target)
+        refs = []
+        for rel in comentarios:
+            target = destino(rel)
+            if target not in names:
+                continue  # Ya informado como relación rota.
+            try:
+                root = etree.fromstring(z.read(target))
+            except etree.XMLSyntaxError:
+                continue
+            refs.extend(c.get('ref') for c in root.findall('{' + ns + '}commentList/{' + ns + '}comment'))
+        if not refs:
+            continue
+        ids = dibujos_por_hoja.get(hoja, [])
+        dibujos = [r for r in relaciones if r.get('Type', '').endswith('/vmlDrawing') and r.get('Id') in ids]
+        if len(dibujos) != 1:
+            errors.append(f'{hoja}: comentarios sin enlace legacyDrawing a su dibujo VML.')
+            continue
+        target = destino(dibujos[0])
+        if target not in names:
+            continue
+        try:
+            root = etree.fromstring(z.read(target))
+            posiciones = []
+            for data in root.findall('.//{' + x + '}ClientData'):
+                if data.get('ObjectType') != 'Note':
+                    continue
+                row, col = int(data.findtext('{' + x + '}Row')), int(data.findtext('{' + x + '}Column'))
+                if row < 0 or col < 0:
+                    raise ValueError('Coordenada negativa')
+                letters, col = '', col + 1
+                while col:
+                    col, resto = divmod(col - 1, 26)
+                    letters = chr(65 + resto) + letters
+                posiciones.append(letters + str(row + 1))
+            if Counter(refs) != Counter(posiciones) or len(refs) != len(set(refs)):
+                errors.append(f'{hoja}: las celdas de los comentarios y sus formas VML no coinciden.')
+        except (etree.XMLSyntaxError, ValueError, TypeError):
+            errors.append(f'{target}: dibujo VML de comentarios no válido.')
+    return errors
+
 
 def validar(path, verbose=True):
     z = zipfile.ZipFile(path); names = set(z.namelist()); err = []
@@ -42,11 +104,17 @@ def validar(path, verbose=True):
         sh = re.match(r"'([^']+)'!", dn)
         if sh and sh.group(1).replace('&amp;', '&') not in [s[0].replace('&amp;', '&') for s in sheets]: err.append(f'definedName a hoja inexistente: {dn}')
     # 5) orden de filas/celdas y refs en hojas
+    dibujos_por_hoja = {}
+    ns = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
     for n in sorted(names):
         if not re.match(r'xl/worksheets/sheet\d+\.xml$', n): continue
         last_r = 0; bad = 0; nrow = 0; dup = 0
         with z.open(n) as f:
-            for ev, el in etree.iterparse(f, tag='{http://schemas.openxmlformats.org/spreadsheetml/2006/main}row'):
+            for ev, el in etree.iterparse(f, tag=('{' + ns + '}row', '{' + ns + '}legacyDrawing')):
+                if el.tag == '{' + ns + '}legacyDrawing':
+                    dibujos_por_hoja.setdefault(n, []).append(el.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id'))
+                    el.clear()
+                    continue
                 r = int(el.get('r')); nrow += 1
                 if r <= last_r: bad += 1
                 last_r = r; lc = 0
@@ -60,6 +128,8 @@ def validar(path, verbose=True):
                 while el.getprevious() is not None: del el.getparent()[0]
         if bad: err.append(f'{n}: {bad} filas/celdas fuera de orden o con referencia incoherente')
         if verbose: print(f'  {n}: {nrow} filas')
+    err.extend(_comentarios(z, names, dibujos_por_hoja))
+    z.close()
     return err
 
 if __name__ == '__main__':

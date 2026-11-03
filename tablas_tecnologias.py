@@ -254,4 +254,10 @@ def crear_hoja(original_xml, fields, rows, original, estilos=None):
     drawing = old.find('s:drawing', NS)
     if drawing is not None and original == 'Conducted 2G-3G':
         sheet.append(deepcopy(drawing))
+    # Los comentarios y sus formas VML se conservan en el paquete. Excel
+    # necesita también este enlace desde la hoja, aunque las celdas estén
+    # ocultas: sin él elimina los comentarios al reparar el archivo.
+    legacy = old.find('s:legacyDrawing', NS)
+    if legacy is not None:
+        sheet.append(deepcopy(legacy))
     return E.tostring(sheet, encoding='UTF-8', xml_declaration=True, standalone=True)

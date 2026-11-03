@@ -76,6 +76,8 @@ Para repetir un ensayo: elige la base actualizada, pulsa **Cargar respuestas (.j
 
 EN solicita SAR EN; FCC e ISED comparten SAR FCC-ISED. Antes de guardar se comprueba que las hojas solicitadas existen, están visibles y contienen filas.
 
+También se comprueba que los comentarios de las hojas conservan sus enlaces y formas VML, para detectar el fallo que hacía que Excel eliminara comentarios al abrir el libro. La corrección se aplica al generar un archivo nuevo; consulta [la comprobación de comentarios](docs/correccion_comentarios.md).
+
 SAR EN conserva Mode combinado por tecnología/banda y Exposure Conditions por bloque; añade las baterías mediante fórmulas de concatenación, Front Face y accesorios en Body. FCC conserva las posiciones, baterías y Variability de su procedimiento guardado; no recibe las baterías ni accesorios nuevos del formulario.
 
 ## Editar la base
