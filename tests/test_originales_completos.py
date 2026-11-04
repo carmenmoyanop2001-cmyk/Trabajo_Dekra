@@ -1,4 +1,5 @@
 from comparacion_sar import sin_canales
+from corregir_2g3g import normalizar_fechas
 """Presentación íntegra del original, con catálogo editable y SAR sin cambios."""
 from copy import deepcopy
 import hashlib
@@ -82,6 +83,8 @@ class OriginalesCompletosTests(unittest.TestCase):
             # Las fórmulas SAR continúan leyendo las coordenadas anteriores.
             for nombre in self.resumen['presentacion_original']:
                 oldroot = E.fromstring(old.read(old_names[nombre][0]))
+                if nombre == 'Conducted 2G-3G':
+                    normalizar_fechas(oldroot)
                 newroot = E.fromstring(new.read(new_names[nombre][0]))
                 lookup = {c.get('r'):c for c in newroot.findall('s:sheetData/s:row/s:c',NS)}
                 for cell in oldroot.findall('s:sheetData/s:row/s:c',NS):

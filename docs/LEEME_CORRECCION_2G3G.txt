@@ -1,0 +1,23 @@
+CORRECCIÓN DE LA ENTRADA DE POTENCIA EN 2G-3G
+
+1. Para probar el Excel que has enviado:
+   Abre Proyecto_2G_3G_corregido.xlsm y escribe un número en AI, por ejemplo en AI75.
+   El libro conserva sus mismas cinco pestañas y sus datos originales.
+
+2. Para aplicar la corrección a tu programa actual:
+   Haz doble clic en APLICAR_CORRECCION_2G_3G.bat.
+   Selecciona la carpeta de tu programa actual, donde está cuestionario_ensayo.py.
+   Espera al mensaje de instalación completada.
+   Después inicia cuestionario_ensayo.py o INICIAR_STREAMLIT.bat como antes.
+
+El parche adapta solamente las fechas de 2G-3G. Guarda copias .antes_2g3g
+antes de actualizar el código. Si no reconoce la versión, se detiene sin instalar.
+No reemplaza las plantillas ni el código de las otras tecnologías.
+
+En el Excel, las fechas ya no llaman a la función VBA MyTimestamp: usan una
+fórmula nativa con la misma referencia de potencia y presentación de fecha.
+Las potencias, canales, bandas, slots, estilos y fórmulas de AJ permanecen iguales.
+No se modifica el proyecto VBA ni las otras cuatro pestañas del archivo enviado.
+
+La comprobación automática verifica las fórmulas y la estructura. No ejecuta
+Microsoft Excel de Windows: la prueba de escritura en AI debe hacerse allí.

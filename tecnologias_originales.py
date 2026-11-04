@@ -20,6 +20,7 @@ from lxml import etree as E
 from base_datos import normalizar
 from hojas_base_datos import hoja_tecnologia, PARAM_COL
 from seleccion import token_modo
+from corregir_2g3g import normalizar_fechas
 from sarlib import _REF, _STR, _sheetname, col2n, n2col, shift_formula
 
 M = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
@@ -930,6 +931,8 @@ def escribir(plan, output, planes, overview=None):
                 with writer.element(_q('sheetData')):
                     last_backend = 0
                     for row in backend:
+                        if plan.familia == 'Conducted 2G-3G':
+                            normalizar_fechas(row)
                         row.set('hidden', '1')
                         last_backend = int(row.get('r'))
                         writer.write(row)
@@ -977,6 +980,8 @@ def escribir(plan, output, planes, overview=None):
                                     else:
                                         f.attrib.clear()
                         row[:] = sorted(row, key=lambda c: col2n(_col(c)))
+                        if plan.familia == 'Conducted 2G-3G':
+                            normalizar_fechas(row)
                         writer.write(row)
     return root
 
@@ -984,6 +989,8 @@ def escribir(plan, output, planes, overview=None):
 def verificar_apoyo(plan, rendered):
     """Impedir que la vista nueva cambie las entradas del SAR aprobado."""
     original = E.fromstring(plan.backend).find('s:sheetData', NS)
+    if plan.familia == 'Conducted 2G-3G':
+        normalizar_fechas(original)
     expected = {c.get('r'): E.tostring(c, method='c14n', exclusive=True)
                 for row in original for c in row}
     found = {}

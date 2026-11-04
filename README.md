@@ -6,6 +6,10 @@ El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para
 
 La generación de SAR EN y SAR FCC-ISED y sus celdas de apoyo se han restaurado de **Trabajo_Dekra-main11.zip**, proporcionado como versión aprobada. Las tecnologías conservan la presentación completa de esta versión. [Comprobación contra el proyecto aprobado](docs/restauracion_sar_main11.md). La revisión posterior se limita a CATM1, NB-IoT, WiFi y CC/CD de SAR EN: [detalle de las cuatro correcciones](docs/correcciones_04_11.md).
 
+## Corrección aislada de AI en 2G-3G
+
+[Parche pequeño y Excel de prueba](entregas/Correccion_2G_3G.zip): conserva las cinco hojas del archivo recibido y adapta solo las fechas de 2G-3G para que no llamen a VBA al escribir potencias. [Alcance y comprobaciones](docs/frame_average_output_power_2g3g.md). La confirmación del bloqueo requiere probar la entrada en Excel de Windows.
+
 ## App Streamlit: todo desde el navegador
 
 ### Publicar con una URL directa al formulario

@@ -64,6 +64,8 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
         # hojas SAR. Liberarlos antes de cargar las vistas completas evita
         # acumular ambas matrices en memoria, especialmente en Streamlit.
         gc.collect()
+        from corregir_2g3g import corregir_en_sitio
+        corregir_en_sitio(candidate)
         if not datos['conducida']:
             names = {s: s.removeprefix('Conducted ') for s in resumen['hojas'] if s.startswith('Conducted ')}
             if names:

@@ -1,0 +1,24 @@
+{
+  "entrada": "Proyecto_2G_3G.xlsm adjuntado por el usuario",
+  "salida": "entregas/Proyecto_2G_3G_corregido.xlsm",
+  "sha256": "5bf81f3ede3118f5271b7c1a721b67e44b635e8edd027bbdfe644c28e5bbbd70",
+  "partes_cambiadas": [
+    "xl/worksheets/sheet3.xml"
+  ],
+  "prueba_excel_windows": "Pendiente en el equipo del usuario; no se ha ejecutado Excel de Windows.",
+  "causa_confirmada_del_bloqueo": false,
+  "solo_formulas_fecha_2g3g": true,
+  "maestros_compartidos_o_formulas_adaptados": 12,
+  "fechas_sin_vba": 510,
+  "vba_y_otras_cuatro_pestanas_identicas": true,
+  "ai_aj_canales_slots_formatos_intactos": true,
+  "sdk_openxml": {
+    "File": "entregas/Proyecto_2G_3G_corregido.xlsm",
+    "Count": 0,
+    "Errors": []
+  },
+  "sintomas_confirmados_por_usuario": [
+    "Excel se queda bloqueado",
+    "Excel llega a cerrarse"
+  ]
+}
