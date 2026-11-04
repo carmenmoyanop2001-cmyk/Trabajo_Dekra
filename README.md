@@ -8,7 +8,7 @@ La generación de SAR EN y SAR FCC-ISED y sus celdas de apoyo se han restaurado 
 
 ## Corrección aislada de AI en 2G-3G
 
-[Parche pequeño y Excel de prueba](entregas/Correccion_2G_3G.zip): conserva las cinco hojas del archivo recibido y adapta solo las fechas de 2G-3G para que no llamen a VBA al escribir potencias. [Alcance y comprobaciones](docs/frame_average_output_power_2g3g.md). La confirmación del bloqueo requiere probar la entrada en Excel de Windows.
+[Parche pequeño y Excel de prueba](entregas/Correccion_2G_3G.zip): conserva las cinco hojas del archivo recibido y adapta solo las fechas de 2G-3G para que no llamen a VBA al escribir potencias. [Alcance y comprobaciones](docs/frame_average_output_power_2g3g.md). La confirmación del bloqueo requiere probar la entrada en Excel de Windows. El parche incluye además la corrección del permiso denegado al ordenar temporales en carpetas de red; conserva exactamente el contenido de las tablas.
 
 ## App Streamlit: todo desde el navegador
 

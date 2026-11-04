@@ -5,6 +5,7 @@ CORRECCIÓN DE LA ENTRADA DE POTENCIA EN 2G-3G
    El libro conserva sus mismas cinco pestañas y sus datos originales.
 
 2. Para aplicar la corrección a tu programa actual:
+   Cierra primero el cuestionario o Streamlit.
    Haz doble clic en APLICAR_CORRECCION_2G_3G.bat.
    Selecciona la carpeta de tu programa actual, donde está cuestionario_ensayo.py.
    Espera al mensaje de instalación completada.
@@ -21,3 +22,12 @@ No se modifica el proyecto VBA ni las otras cuatro pestañas del archivo enviado
 
 La comprobación automática verifica las fórmulas y la estructura. No ejecuta
 Microsoft Excel de Windows: la prueba de escritura en AI debe hacerse allí.
+
+ACTUALIZACIÓN: ERROR [WinError 5] EN LA CARPETA DE RED
+Este paquete actualiza también la gestión de archivos temporales.
+Los trabajos de ordenación se crean en el temporal del equipo y se leen
+sin reemplazar el archivo anterior. Así se evita la operación rechazada
+sobre wifi.zip.ordenadas -> wifi.zip.filas en la carpeta de red.
+No se cambian los datos, fórmulas o formatos de WiFi ni de otras tecnologías.
+Puedes volver a ejecutar este instalador aunque ya aplicases el parche anterior.
+Genera un archivo nuevo o cierra el Excel anterior antes de guardar con su mismo nombre.

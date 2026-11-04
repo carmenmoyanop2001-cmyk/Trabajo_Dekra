@@ -39,28 +39,33 @@ class FechasNativasTests(unittest.TestCase):
         self.assertIn('IF(AI76<>"",',root.find('.//s:c[@r="BE76"]/s:f',NS).text)
 
     def test_instalador_preserva_otros_metodos_y_es_idempotente(self):
-        for version in ('9bb8aa0','bc7b062','2ba272b'):
+        for version in ('9bb8aa0','bc7b062','2ba272b','94b0830'):
             with self.subTest(version=version),tempfile.TemporaryDirectory() as tmp:
                 folder=Path(tmp)
                 originals={}
-                for file in ['generador_excel.py','tecnologias_originales.py']:
+                for file in ['generador_excel.py','tecnologias_originales.py','presentacion_tecnologias.py']:
                     data=subprocess.check_output(['git','show',version+':'+file],cwd=ROOT)
                     (folder/file).write_bytes(data);originals[file]=data.decode()
                 helper=ROOT/'corregir_2g3g.py'
                 changed=actualizar(folder,helper)
-                self.assertEqual(set(changed),{'generador_excel.py','tecnologias_originales.py','corregir_2g3g.py'})
+                self.assertIn('presentacion_tecnologias.py',changed)
+                self.assertIn('tecnologias_originales.py',changed)
+                self.assertIn('corregir_2g3g.py',changed)
                 self.assertEqual(actualizar(folder,helper),[])
                 for file,src in originals.items():
                     before=ast.parse(src);after=ast.parse((folder/file).read_text())
-                    allowed={'_publicar','escribir','verificar_apoyo'}
+                    allowed={'_publicar','escribir','verificar_apoyo','_ordenar_filas','aplicar'}
                     functions=lambda tree:{n.name:ast.dump(n) for n in tree.body if isinstance(n,(ast.FunctionDef,ast.ClassDef)) and n.name not in allowed}
                     self.assertEqual(functions(before),functions(after),file)
-                    self.assertEqual((folder/(file+'.antes_2g3g')).read_text(),src)
+                    if file in changed:
+                        self.assertEqual((folder/(file+'.antes_2g3g')).read_text(),src)
+                    else:
+                        self.assertEqual((folder/file).read_text(),src)
 
     def test_version_desconocida_no_modifica_archivos(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)
-            for f in ['generador_excel.py','tecnologias_originales.py']:(p/f).write_text('x=1\n')
+            for f in ['generador_excel.py','tecnologias_originales.py','presentacion_tecnologias.py']:(p/f).write_text('x=1\n')
             with self.assertRaises(ValueError):actualizar(p,ROOT/'corregir_2g3g.py')
             self.assertEqual((p/'generador_excel.py').read_text(),'x=1\n')
             self.assertFalse((p/'corregir_2g3g.py').exists())

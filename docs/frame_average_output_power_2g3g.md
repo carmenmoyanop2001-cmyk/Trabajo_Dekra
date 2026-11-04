@@ -13,3 +13,9 @@ El generador aplica la misma corrección únicamente a la familia 2G-3G, incluid
 Cinco pruebas superadas: referencias de potencia, fórmulas compartidas, instalador compatible e idempotente, rechazo de versiones desconocidas y generación 2G/3G. El Excel corregido supera el SDK Open XML sin errores. La comparación y los hashes están en verificacion_frame_2g3g.json.
 
 No se ha ejecutado Microsoft Excel de Windows. La reproducción del bloqueo y la prueba de entrada en AI75 siguen pendientes en ese equipo. El archivo corregido se entrega para realizar esa comprobación antes de aplicar el parche al programa.
+
+## Actualización: permiso denegado en temporales de red
+
+El siguiente error recibido se produce al generar, antes de abrir Excel: WinError 5 al sustituir wifi.zip.ordenadas por wifi.zip.filas dentro de la carpeta de red. Se cambia únicamente la gestión de archivos: el trabajo de las tecnologías usa el directorio temporal del sistema y el ordenador de filas conserva el archivo ordenado con su nombre, actualizando la referencia interna en vez de reemplazar el anterior. Las tablas no cambian.
+
+Se ha simulado la denegación de renombrado, contrastado los bytes y las asignaciones de filas con el ordenador anterior y comparado todas las partes de un Excel generado con 2G y WiFi. El resultado es idéntico. El instalador reconoce también el parche anterior y puede repetirse. No se ha probado contra el servidor de red del usuario; la prueba de bloqueo se simula en el entorno de desarrollo.

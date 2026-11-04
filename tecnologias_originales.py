@@ -671,7 +671,9 @@ def _ordenar_filas(plan):
             changed[previous]=new
             rows.setdefault(old,[]).append(new)
             pickle.dump((old,new,raw),dst,protocol=4)
-    candidate.replace(plan.spool)
+    # En Windows/SMB el archivo anterior puede estar bloqueado para renombrar.
+    # Los consumidores leen plan.spool: basta con apuntar al ordenado.
+    plan.spool=candidate
     plan.rows=rows
     plan.grupos={changed[r]:g for r,g in plan.grupos.items()}
     plan.fallback_rows={changed[r] for r in plan.fallback_rows}

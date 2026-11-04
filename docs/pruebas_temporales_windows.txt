@@ -1,0 +1,13 @@
+test_archivo_anterior_abierto_no_requiere_reemplazarlo (test_temporales_windows.OrdenacionWindowsTests.test_archivo_anterior_abierto_no_requiere_reemplazarlo) ... ok
+test_bytes_y_asignaciones_iguales_a_ordenacion_anterior (test_temporales_windows.OrdenacionWindowsTests.test_bytes_y_asignaciones_iguales_a_ordenacion_anterior) ... ok
+test_generacion_wifi_y_2g_no_cambia_ninguna_parte_del_excel (test_temporales_windows.OrdenacionWindowsTests.test_generacion_wifi_y_2g_no_cambia_ninguna_parte_del_excel) ... ok
+test_cero_negativos_y_referencias_son_entradas_validas (test_frame_2g3g.FechasNativasTests.test_cero_negativos_y_referencias_son_entradas_validas) ... ok
+test_compartidas_conservan_rangos_y_se_desplazan (test_frame_2g3g.FechasNativasTests.test_compartidas_conservan_rangos_y_se_desplazan) ... ok
+test_instalador_preserva_otros_metodos_y_es_idempotente (test_frame_2g3g.FechasNativasTests.test_instalador_preserva_otros_metodos_y_es_idempotente) ... ok
+test_version_desconocida_no_modifica_archivos (test_frame_2g3g.FechasNativasTests.test_version_desconocida_no_modifica_archivos) ... ok
+test_fechas_nativas_2g3g_y_sar_intacto (test_frame_2g3g.Generacion2G3GTests.test_fechas_nativas_2g3g_y_sar_intacto) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 48.991s
+
+OK
