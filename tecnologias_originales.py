@@ -349,6 +349,24 @@ class PlanOriginal:
         return self.ranges_cache[key]
 
 
+def coincidencias_especificas(indices, registros):
+    """Un resumen RF no duplica una fila ya cubierta por su detalle.
+
+    Solo se comparan coincidencias de la MISMA fila original: se conservan
+    las repeticiones del procedimiento original y las variantes diferentes.
+    """
+    def campos(index):
+        view = registros[index]
+        values = {('param', k): _norm(v) for k, v in view.record.params.items() if v is not None}
+        values.update({('extra', k): _norm(v) for k, v in view.campos.items() if v is not None})
+        if view.record.notes:
+            values['notes'] = view.record.notes
+        return values
+    fields = {i: campos(i) for i in indices}
+    return [i for i in indices if not any(
+        i != j and fields[i].items() < fields[j].items() for j in indices)]
+
+
 def preparar(familia, nombre, backend, registros, datos, folder, dir_originales, estilos, avisos):
     inventario = json.loads((dir_originales / 'inventario.json').read_text(encoding='utf-8'))
     original_guardado = inventario['pestanas'].get(familia)
@@ -419,7 +437,7 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
             native_band = _value(_celda(row,'K'), [])
             tech=record.tech
             match=re.fullmatch(r'(E?GPRS) [1-4]TX',tech)
-            label=match[1] if match else {'LTE CAT M1':'Cat M1','BT':'Bluetooth'}.get(tech,tech)
+            label=match[1] if match else {'LTE CAT M1':'LTE','BT':'Bluetooth'}.get(tech,tech)
             values = {'J':label,'K': record.band, 'T': record.channel, 'U': record.frequency}
             values.update({PARAM_COL[k]: v for k, v in record.params.items() if k in PARAM_COL})
             if familia == 'Conducted WiFi' and record.params.get('mode'):
@@ -460,6 +478,10 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
             # Conservar cachés independientes de los datos modificados, como
             # MPR en O = IF(J="Cat M1",1,0). Invalidar solo sus dependientes.
             affected = set(changed_columns)
+            if familia == 'Conducted LTE CATM1':
+                # La etiqueta solicitada cambia respecto a la salida anterior:
+                # conservar las fórmulas y recalcular sus resultados en Excel.
+                affected.add('J')
             while True:
                 more = set()
                 for cell in row:
@@ -556,6 +578,7 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                             _inline(copied, plan.strings, shared)
                             prototypes[pkey] = (old, copied)
                         key = (tech, band, _norm(values.get('T')), _norm(values.get('U')))
+                        coincidencias = []
                         for i in core.get(key, []):
                             view, ok = registros[i], True
                             record = view.record
@@ -578,11 +601,16 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                                         ok = False
                                         break
                             if ok:
-                                copied = deepcopy(row)
-                                _inline(copied, plan.strings, shared)
-                                ajustar(copied, view, False)
-                                guardar(copied, old, out, view_id=i)
-                                plan.covered.add(i)
+                                coincidencias.append(i)
+                        elegidas = coincidencias
+                        if familia == 'Conducted LTE NB-IoT':
+                            elegidas = coincidencias_especificas(coincidencias, registros)
+                        for i in elegidas:
+                            copied = deepcopy(row)
+                            _inline(copied, plan.strings, shared)
+                            ajustar(copied, registros[i], False)
+                            guardar(copied, old, out, view_id=i)
+                        plan.covered.update(coincidencias)
                 row.clear()
                 while row.getprevious() is not None:
                     del row.getparent()[0]
@@ -799,16 +827,28 @@ def escribir(plan, output, planes, overview=None):
         if plan.extras:
             last_col = max([last_col] + list(plan.extras.values()), key=col2n)
         dimension.set('ref', f'A1:{last_col}{last}')
-    for view in root.findall('s:sheetViews/s:sheetView', NS):
-        view.set('topLeftCell', 'A' + str(plan.offset + 1))
-        pane = view.find('s:pane', NS)
-        if pane is not None:
-            pane.set('ySplit', str(plan.offset + 2))
-            pane.set('topLeftCell', 'A' + str(plan.offset + 3))
-            pane.set('state', 'frozen')
-        for selection in view.findall('s:selection', NS):
-            selection.set('activeCell', 'A' + str(plan.offset + 3))
-            selection.set('sqref', 'A' + str(plan.offset + 3))
+    if plan.familia == 'Conducted WiFi':
+        # Reconstruir la vista: ningún panel hereda las filas ocultas de apoyo
+        # como parte inmovilizada de la tabla visible.
+        views = root.find('s:sheetViews', NS)
+        if views is None:
+            views = E.Element(_q('sheetViews'))
+            root.insert(next((i for i,n in enumerate(root) if E.QName(n).localname in ('sheetFormatPr','cols','sheetData')),len(root)),views)
+        views.clear()
+        view = E.SubElement(views, _q('sheetView'), workbookViewId='0', view='normal',
+                            topLeftCell='A'+str(plan.offset+1), zoomScale='100')
+        E.SubElement(view, _q('selection'), activeCell='B'+str(plan.offset+3), sqref='B'+str(plan.offset+3))
+    else:
+        for view in root.findall('s:sheetViews/s:sheetView', NS):
+            view.set('topLeftCell', 'A' + str(plan.offset + 1))
+            pane = view.find('s:pane', NS)
+            if pane is not None:
+                pane.set('ySplit', str(plan.offset + 2))
+                pane.set('topLeftCell', 'A' + str(plan.offset + 3))
+                pane.set('state', 'frozen')
+            for selection in view.findall('s:selection', NS):
+                selection.set('activeCell', 'A' + str(plan.offset + 3))
+                selection.set('sqref', 'A' + str(plan.offset + 3))
     for element in list(root):
         tag = E.QName(element).localname
         if tag == 'mergeCells':

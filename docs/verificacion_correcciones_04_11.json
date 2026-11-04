@@ -1,0 +1,31 @@
+{
+  "referencia": "ejemplos/Proyecto_SAR_restaurados.xlsm",
+  "ejemplo": "ejemplos/Proyecto_correcciones_04_11.xlsm",
+  "sha256": "c50edc3d9ca8c8cebefe2d3511de3501d26b2476f0ffb3637eb1cc9f94b90e2c",
+  "hojas_iguales": [
+    "Overview",
+    "Tune-Up",
+    "Conducted 2G-3G",
+    "Conducted LTE",
+    "Conducted 5G",
+    "Validations",
+    "SAR FCC-ISED",
+    "Test Campaign",
+    "Pretesting-Others",
+    "Liquids-DRAFT",
+    "Pendiente"
+  ],
+  "sdk_openxml": {
+    "File": "ejemplos/Proyecto_correcciones_04_11.xlsm",
+    "Count": 0,
+    "Errors": []
+  },
+  "errores_paquete": [],
+  "microsoft_excel": "No ejecutado; se conserva VBA sin cambios.",
+  "estilos_y_vba_identicos": true,
+  "sar_en_identico_fuera_cc_cd": true,
+  "celdas_cc_cd_corregidas": 992,
+  "referencias_comprobadas_misma_tecnologia_banda_antena": 38616,
+  "wifi_datos_y_formato_identicos_fuera_vista": true,
+  "catm1_identico_fuera_j": true
+}

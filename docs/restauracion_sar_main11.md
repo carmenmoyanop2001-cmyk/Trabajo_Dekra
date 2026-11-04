@@ -1,5 +1,7 @@
 # SAR de la versión aprobada y tecnologías completas
 
+Informe de la entrega del 3 de noviembre. La solicitud posterior del 4 de noviembre autoriza únicamente la adaptación de CC/CD en SAR EN; el resto se conserva. Véase [correcciones_04_11.md](correcciones_04_11.md).
+
 Se toma `Trabajo_Dekra-main11.zip`, adjuntado por el usuario, como referencia de SAR EN y SAR FCC-ISED. El motor `_generar`, sus utilidades y todas las dependencias y plantillas SAR enumeradas en `fuentes_sar_main11.json` coinciden con ese adjunto. Las tecnologías siguen utilizando las copias completas del original incorporadas en la versión anterior, con el filtrado de la base y del formulario.
 
 La integración anterior añadía fórmulas COUNT/MAX a las celdas ocultas de medidas que utilizan los cálculos SAR. Aunque no cambiaba el XML de las hojas SAR, cambiaba sus dependencias. Se retira esa transformación. Todas las celdas de apoyo, incluidas sus fórmulas, constantes y valores guardados, se conservan ahora exactamente. Antes de publicar, el programa comprueba que la presentación nueva no haya modificado ninguna de ellas. Las hojas SAR conservan el comportamiento de la versión aprobada; no se añade una conexión automática nueva entre medidas de la vista completa y esas celdas.

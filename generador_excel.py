@@ -70,6 +70,9 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
                 renombrar_tecnologias(candidate, names)
                 renombrar_resumen(resumen, names)
         if catalogo is not None:
+            from sar_en_canales import aplicar as adaptar_canales_en
+            resumen['formulas_cc_cd_en'] = adaptar_canales_en(candidate, dir_plantilla or DIR_PLANTILLA)
+            gc.collect()
             from presentacion_tecnologias import aplicar
             # Solo la presentación de tecnologías necesita el mapa de Overview.
             # El motor SAR se conserva literalmente de Trabajo_Dekra-main11.

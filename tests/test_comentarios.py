@@ -1,3 +1,4 @@
+from comparacion_sar import sin_canales
 """Comentarios de las tecnologías: relación hoja → VML → celda de la nota."""
 from copy import deepcopy
 import json
@@ -53,7 +54,8 @@ class ComentariosTests(unittest.TestCase):
         before, after = workbook(self.before), workbook(self.path)
         with zipfile.ZipFile(self.before) as old, zipfile.ZipFile(self.path) as new:
             for nombre in PROTEGIDAS:
-                self.assertEqual(old.read(before[nombre][0]), new.read(after[nombre][0]), nombre)
+                a,b=old.read(before[nombre][0]),new.read(after[nombre][0])
+                self.assertEqual(sin_canales(a),sin_canales(b),nombre) if nombre=='SAR EN' else self.assertEqual(a,b,nombre)
             for part in old.namelist():
                 if '/comments' in part or part.endswith('.vml') or part.startswith('xl/media/') or part == 'xl/vbaProject.bin':
                     self.assertEqual(old.read(part), new.read(part), part)

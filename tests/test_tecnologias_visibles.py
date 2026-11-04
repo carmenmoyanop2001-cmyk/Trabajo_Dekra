@@ -1,3 +1,4 @@
+from comparacion_sar import sin_canales
 """Presentación de tecnologías sin modificar las siete pestañas protegidas."""
 from pathlib import Path
 import re
@@ -71,7 +72,8 @@ class TecnologiasVisiblesTests(unittest.TestCase):
         old_names, new_names = workbook(before), workbook(after)
         with zipfile.ZipFile(before) as old, zipfile.ZipFile(after) as new:
             for name in PROTEGIDAS:
-                self.assertEqual(old.read(old_names[name][0]), new.read(new_names[name][0]), name)
+                a,b=old.read(old_names[name][0]),new.read(new_names[name][0])
+                self.assertEqual(sin_canales(a),sin_canales(b),name) if name=='SAR EN' else self.assertEqual(a,b,name)
             for part in old.namelist():
                 if part.startswith('xl/media/') or part in ('xl/vbaProject.bin', 'xl/drawings/drawing2.xml'):
                     self.assertEqual(old.read(part), new.read(part), part)

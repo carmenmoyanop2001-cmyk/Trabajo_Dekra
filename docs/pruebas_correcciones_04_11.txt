@@ -1,0 +1,35 @@
+Ejemplo de las cuatro correcciones generado
+test_baterias_sar_en_buscan_dentro_de_su_bloque (test_correcciones_noviembre.CuatroCambiosTests.test_baterias_sar_en_buscan_dentro_de_su_bloque) ... ok
+test_catm1_no_cambia_otras_columnas (test_correcciones_noviembre.CuatroCambiosTests.test_catm1_no_cambia_otras_columnas) ... ok
+test_catm1_solo_etiqueta_lte (test_correcciones_noviembre.CuatroCambiosTests.test_catm1_solo_etiqueta_lte) ... ok
+test_nbiot_conserva_el_orden_del_procedimiento_original (test_correcciones_noviembre.CuatroCambiosTests.test_nbiot_conserva_el_orden_del_procedimiento_original) ... ok
+test_solo_cambian_las_hojas_autorizadas (test_correcciones_noviembre.CuatroCambiosTests.test_solo_cambian_las_hojas_autorizadas) ... ok
+test_wifi_se_desplaza_sin_paneles_inmovilizados (test_correcciones_noviembre.CuatroCambiosTests.test_wifi_se_desplaza_sin_paneles_inmovilizados) ... ok
+test_exposicion_no_seleccionada_no_toma_otro_bloque (test_correcciones_noviembre.FormulasYDuplicadosTests.test_exposicion_no_seleccionada_no_toma_otro_bloque) ... ok
+test_misma_busqueda_fcc_con_columnas_en_no_contiguas (test_correcciones_noviembre.FormulasYDuplicadosTests.test_misma_busqueda_fcc_con_columnas_en_no_contiguas) ... ok
+test_resumen_no_duplica_el_detalle_de_la_misma_fila (test_correcciones_noviembre.FormulasYDuplicadosTests.test_resumen_no_duplica_el_detalle_de_la_misma_fila) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 496.294s
+
+OK
+SEGUNDOS 496.29 RSS_MAX_MIB 943
+
+test_dibujo_no_invierte_extremos_al_descartar_filas (test_restauracion_sar.FuentesAprobadasTests.test_dibujo_no_invierte_extremos_al_descartar_filas) ... ok
+test_motor_y_plantillas_del_adjunto (test_restauracion_sar.FuentesAprobadasTests.test_motor_y_plantillas_del_adjunto) ... ok
+test_no_permite_reescribir_apoyo_sar (test_restauracion_sar.FuentesAprobadasTests.test_no_permite_reescribir_apoyo_sar) ... ok
+test_exposicion_no_seleccionada_no_toma_otro_bloque (test_correcciones_noviembre.FormulasYDuplicadosTests.test_exposicion_no_seleccionada_no_toma_otro_bloque) ... ok
+test_misma_busqueda_fcc_con_columnas_en_no_contiguas (test_correcciones_noviembre.FormulasYDuplicadosTests.test_misma_busqueda_fcc_con_columnas_en_no_contiguas) ... ok
+test_resumen_no_duplica_el_detalle_de_la_misma_fila (test_correcciones_noviembre.FormulasYDuplicadosTests.test_resumen_no_duplica_el_detalle_de_la_misma_fila) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.030s
+
+OK
+
+test_funciona_sin_plantillas_de_datos_heredados_ni_excel_original (test_base_datos.BaseDatosTests.test_funciona_sin_plantillas_de_datos_heredados_ni_excel_original) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 62.674s
+
+OK

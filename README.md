@@ -2,9 +2,9 @@
 
 El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para repetir el ensayo. **La base XLSX determina qué registros existen y sus valores tienen prioridad; el cuestionario selecciona cuáles se incluyen.** Las tecnologías recuperan sus pestañas completas del original: columnas, datos de las filas coincidentes, fórmulas, colores, combinaciones, desplegables, comentarios e imágenes. No hace falta aportar el Excel original al generar otro ensayo.
 
-`plantilla/originales/` conserva las 16 pestañas recibidas, junto con todas las partes de los archivos originales. El inventario identifica el origen y el SHA-256 de cada parte. Incluye también la copia íntegra de 5G con sus 220.322 filas y 25 bandas/variantes, que complementa el adjunto dividido que solo contenía n1. Su índice permite leer únicamente las bandas elegidas. SAR EN y SAR FCC-ISED siguen usando el generador que ya estaba validado: se verifica que el contenido de esas hojas y de las otras cinco hojas protegidas permanezca idéntico para las mismas respuestas.
+`plantilla/originales/` conserva las 16 pestañas recibidas, junto con todas las partes de los archivos originales. El inventario identifica el origen y el SHA-256 de cada parte. Incluye también la copia íntegra de 5G con sus 220.322 filas y 25 bandas/variantes, que complementa el adjunto dividido que solo contenía n1. Su índice permite leer únicamente las bandas elegidas. SAR FCC-ISED y las otras cinco hojas protegidas conservan su contenido. En SAR EN solo se adaptan las fórmulas y resultados de CC/CD de las filas adicionales, según la petición del 4 de noviembre; se comprueba que el resto permanece idéntico.
 
-La generación de SAR EN y SAR FCC-ISED y sus celdas de apoyo se han restaurado de **Trabajo_Dekra-main11.zip**, proporcionado como versión aprobada. Las tecnologías conservan la presentación completa de esta versión. [Comprobación contra el proyecto aprobado](docs/restauracion_sar_main11.md).
+La generación de SAR EN y SAR FCC-ISED y sus celdas de apoyo se han restaurado de **Trabajo_Dekra-main11.zip**, proporcionado como versión aprobada. Las tecnologías conservan la presentación completa de esta versión. [Comprobación contra el proyecto aprobado](docs/restauracion_sar_main11.md). La revisión posterior se limita a CATM1, NB-IoT, WiFi y CC/CD de SAR EN: [detalle de las cuatro correcciones](docs/correcciones_04_11.md).
 
 ## App Streamlit: todo desde el navegador
 
@@ -108,9 +108,9 @@ El segundo comando permite reutilizar respuestas con otra versión de la base. L
 
 ## Ejemplo y comprobaciones
 
-El ejemplo actual está en `ejemplos/Proyecto_SAR_restaurados.xlsm`, con sus respuestas en `ejemplo_sar_restaurado.json`: combina las tecnologías completas con los dos SAR comprobados contra el Proyecto aprobado de Trabajo_Dekra-main11. Los demás Excel e informes documentan versiones históricas, incluida la primera integración del original completo.
+El ejemplo actual está en `ejemplos/Proyecto_correcciones_04_11.xlsm`, con las mismas respuestas de `ejemplo_sar_restaurado.json`: incorpora las cuatro correcciones del 4 de noviembre. La comparación confirma que solo cambian las hojas solicitadas y que SAR EN conserva todo salvo CC/CD. Los demás Excel e informes documentan versiones históricas, incluida la primera integración del original completo.
 
-[Revisión de la presentación completa](docs/original_completo.md) · [Vista de las primeras filas](docs/vista_original_completo.png) · [Conservación de las hojas protegidas](docs/verificacion_sar_restaurado.json)
+[Revisión de la presentación completa](docs/original_completo.md) · [Vista de las primeras filas](docs/vista_original_completo.png) · [Conservación de las hojas protegidas](docs/verificacion_correcciones_04_11.json)
 
 ```sh
 python -m unittest discover -s tests -v
