@@ -1,5 +1,7 @@
 # SAR de la versión aprobada y tecnologías completas
 
+Nota de actualización: las peticiones posteriores autorizan corregir CC/CD, filtrar las bandas por certificación y corregir la geometría COLUMN. Las adaptaciones quedan identificadas en `fuentes_sar_main11.json`. El informe siguiente describe la restauración inicial; la revisión vigente está en [correccion_wifi_y_regiones.md](correccion_wifi_y_regiones.md).
+
 Informe de la entrega del 3 de noviembre. La solicitud posterior del 4 de noviembre autoriza únicamente la adaptación de CC/CD en SAR EN; el resto se conserva. Véase [correcciones_04_11.md](correcciones_04_11.md).
 
 Se toma `Trabajo_Dekra-main11.zip`, adjuntado por el usuario, como referencia de SAR EN y SAR FCC-ISED. El motor `_generar`, sus utilidades y todas las dependencias y plantillas SAR enumeradas en `fuentes_sar_main11.json` coinciden con ese adjunto. Las tecnologías siguen utilizando las copias completas del original incorporadas en la versión anterior, con el filtrado de la base y del formulario.

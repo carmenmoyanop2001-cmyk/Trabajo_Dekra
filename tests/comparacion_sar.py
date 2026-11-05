@@ -1,5 +1,7 @@
 """Comparar el contenido autorizando CC/CD y visibilidad, según la revisión actual."""
 import hashlib
+from copy import deepcopy
+from functools import lru_cache
 from lxml import etree as E
 
 NS={'s':'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
@@ -30,5 +32,36 @@ def sin_canales(xml):
     return hashlib.sha256(E.tostring(root,method='c14n',exclusive=True)).hexdigest()
 
 
-def contenido_fijo(xml):
-    return E.tostring(sin_visibilidad(xml),method='c14n',exclusive=True)
+def estilos_equivalentes(z):
+    """Comparar estilos efectivos aunque al filtrar bandas cambien sus índices."""
+    root=E.fromstring(z if isinstance(z,bytes) else z.read('xl/styles.xml'))
+    groups={E.QName(g).localname:list(g) for g in root}
+    formats={f.get('numFmtId'):f.get('formatCode') for f in groups.get('numFmts',[])}
+    @lru_cache(maxsize=None)
+    def definition(group,index):
+        node=deepcopy(groups[group][index])
+        for attr,target in [('fontId','fonts'),('fillId','fills'),('borderId','borders')]:
+            if node.get(attr) is not None:
+                node.set(attr,definition(target,int(node.get(attr))))
+        if node.get('numFmtId') is not None:
+            value=node.get('numFmtId')
+            node.set('numFmtId',formats.get(value,'builtin:'+value))
+        if group=='cellXfs' and node.get('xfId') is not None:
+            node.set('xfId',definition('cellStyleXfs',int(node.get('xfId'))))
+        return hashlib.sha256(E.tostring(node,method='c14n',exclusive=True)).hexdigest()
+    return {str(i):definition('cellXfs',i) for i in range(len(groups['cellXfs']))}
+
+
+def normalizar_estilos(root,styles):
+    for node in root.iter():
+        tag=E.QName(node).localname
+        attr='s' if tag in ('c','row') else 'style' if tag=='col' else None
+        if attr and node.get(attr) is not None:
+            node.set(attr,styles[node.get(attr)])
+    return root
+
+
+def contenido_fijo(xml,styles=None):
+    root=sin_visibilidad(xml)
+    if styles is not None:normalizar_estilos(root,styles)
+    return E.tostring(root,method='c14n',exclusive=True)

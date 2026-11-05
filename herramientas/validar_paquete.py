@@ -3,6 +3,9 @@
 import re, sys, zipfile, posixpath
 from collections import Counter
 from lxml import etree
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from referencias_geometricas import errores_referencia
 
 
 def _comentarios(z, names, dibujos_por_hoja):
@@ -132,6 +135,7 @@ def validar(path, verbose=True):
     for n in sorted(names):
         if not re.match(r'xl/worksheets/sheet\d+\.xml$', n): continue
         last_r = 0; bad = 0; nrow = 0; dup = 0
+        geometry_count = 0; geometry_examples = []
         with z.open(n) as f:
             for ev, el in etree.iterparse(f, tag=('{' + ns + '}row', '{' + ns + '}legacyDrawing')):
                 if el.tag == '{' + ns + '}legacyDrawing':
@@ -147,9 +151,18 @@ def validar(path, verbose=True):
                     for ch in m.group(1): cn = cn * 26 + ord(ch) - 64
                     if int(m.group(2)) != r or cn <= lc: bad += 1
                     lc = cn
+                    formula = c.find('{' + ns + '}f')
+                    if formula is not None and formula.text and ('COLUMN' in formula.text.upper() or 'ROW' in formula.text.upper()):
+                        issues = errores_referencia(formula.text)
+                        if issues:
+                            geometry_count += 1
+                            if len(geometry_examples) < 4:
+                                geometry_examples.append(c.get('r') + ': ' + issues[0])
                 el.clear()
                 while el.getprevious() is not None: del el.getparent()[0]
         if bad: err.append(f'{n}: {bad} filas/celdas fuera de orden o con referencia incoherente')
+        if geometry_count:
+            err.append(f'{n}: {geometry_count} fórmulas con argumentos de referencia inválidos. ' + '; '.join(geometry_examples))
         if verbose: print(f'  {n}: {nrow} filas')
     err.extend(_comentarios(z, names, dibujos_por_hoja))
     err.extend(_dibujos(z, names))

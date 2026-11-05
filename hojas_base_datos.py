@@ -246,7 +246,25 @@ def _sar(source, records, datos, ranges, warnings, tune, fcc=None):
                     if f'Battery check {number}"' in pattern:
                         battery_candidates[(fcc.kv(k).get('BX', '').lower(), number)].append(k)
     by_band = defaultdict(list)
+    eligible_regions = {'EN'} if source.name == 'SAR EN' else {'FCC', 'ISED'}
+    regional_bands = {(source.kv(i).get('BT'), source.kv(i).get('BU'))
+                      for i in range(2, len(source.rows))}
+    # La selección global puede contener EN y FCC a la vez. Cada pestaña SAR
+    # recibe solo los registros cuya certificación corresponde a su región.
     for record in records:
+        certification = str(record.params.get('cert') or '').upper()
+        regions = set(re.findall(r'(?<![A-Z])(?:EN|EU|FCC|ISED)(?![A-Z])', certification))
+        if 'EU' in regions:
+            regions.add('EN')
+        if regions and not regions & eligible_regions:
+            continue
+        if certification and not regions:
+            # '?' no equivale a EN/FCC/ISED. Solo se utiliza un procedimiento
+            # regional que exista explícitamente para esa tecnología/banda.
+            family = sar_tech(record.tech)
+            supported = (family, record.band) in regional_bands
+            if not supported:
+                continue
         by_band[(record.tech, record.band)].append(record)
     for (tech, band), rows in by_band.items():
         # La plantilla guarda el procedimiento, no define el catálogo RF.
@@ -351,7 +369,7 @@ def _sar(source, records, datos, ranges, warnings, tune, fcc=None):
                         builder.append(template, extra, mapping, preserve=('F',))
     h, plan = builder.terminar()
     if not plan:
-        raise ValueError(f'{source.name}: la selección no tiene un procedimiento SAR guardado. Las filas RF se leen de la base, pero no se inventan posiciones de ensayo.')
+        raise ValueError(f'{source.name}: no hay un procedimiento SAR compatible con las bandas y regiones seleccionadas. Revisa la certificación de la base y la selección del formulario.')
     return h, plan
 
 

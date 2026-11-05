@@ -7,10 +7,10 @@ import tempfile
 from zipfile import ZipFile
 from lxml import etree as E
 from base_datos import Registro,Catalogo
-from generador_excel import generar
+from generador_excel import generar, _generar
 from tecnologias_originales import coincidencias_especificas,_col,_value
 from sar_en_canales import adaptar_formula
-from comparacion_sar import sin_canales, contenido_fijo
+from comparacion_sar import sin_canales, contenido_fijo, estilos_equivalentes, normalizar_estilos
 from corregir_2g3g import normalizar_fechas
 from test_tecnologias_visibles import workbook
 
@@ -42,7 +42,10 @@ class CuatroCambiosTests(unittest.TestCase):
         cls.tmp=tempfile.TemporaryDirectory()
         cls.after=Path(cls.tmp.name)/'correcciones.xlsm'
         d=json.loads((ROOT/'ejemplos/ejemplo_sar_restaurado.json').read_text())
-        cls.summary=generar(d,cls.after,catalogo=Catalogo(),log=lambda *_:None)
+        cat=Catalogo()
+        cls.raw=Path(cls.tmp.name)/'sar_regiones.xlsm'
+        _generar(d,str(cls.raw),catalogo=cat,log=lambda *_:None)
+        cls.summary=generar(d,cls.after,catalogo=cat,log=lambda *_:None)
         cls.names_before=workbook(cls.before);cls.names_after=workbook(cls.after)
 
     @classmethod
@@ -64,6 +67,7 @@ class CuatroCambiosTests(unittest.TestCase):
     def test_solo_cambian_las_hojas_autorizadas(self):
         allowed={'Conducted LTE CATM1','Conducted LTE NB-IoT','Conducted WiFi','SAR EN','SAR FCC-ISED'}
         with ZipFile(self.before) as a,ZipFile(self.after) as b:
+            sa,sb=estilos_equivalentes(a),estilos_equivalentes(b)
             for name in self.names_before:
                 if name not in allowed:
                     previous = self.xml(a,name,False)
@@ -71,10 +75,18 @@ class CuatroCambiosTests(unittest.TestCase):
                         root = E.fromstring(previous)
                         normalizar_fechas(root)
                         previous = E.tostring(root)
-                    self.assertEqual(contenido_fijo(previous),contenido_fijo(self.xml(b,name)),name)
-            self.assertEqual(a.read('xl/styles.xml'),b.read('xl/styles.xml'))
-            for name in ('SAR EN','SAR FCC-ISED'):
-                self.assertEqual(sin_canales(self.xml(a,name,False)),sin_canales(self.xml(b,name)))
+                    actual=self.xml(b,name)
+                    if name in ('Conducted 2G-3G','Conducted LTE','Conducted 5G'):
+                        def without_view(xml):
+                            root=E.fromstring(xml)
+                            for view in root.findall('s:sheetViews',NS):root.remove(view)
+                            return E.tostring(root)
+                        previous,actual=without_view(previous),without_view(actual)
+                    self.assertEqual(contenido_fijo(previous,sa),contenido_fijo(actual,sb),name)
+            self.assertEqual(a.read('xl/vbaProject.bin'),b.read('xl/vbaProject.bin'))
+            with ZipFile(self.raw) as raw:
+                for name in ('SAR EN','SAR FCC-ISED'):
+                    self.assertEqual(sin_canales(raw.read(self.names_after[name][0])),sin_canales(self.xml(b,name)))
 
     def test_catm1_solo_etiqueta_lte(self):
         with ZipFile(self.after) as z:
@@ -83,10 +95,12 @@ class CuatroCambiosTests(unittest.TestCase):
 
     def test_catm1_no_cambia_otras_columnas(self):
         def rows(z,part):
+            styles=estilos_equivalentes(z)
             with z.open(part) as stream:
                 for _,row in E.iterparse(stream,tag='{' + NS['s'] + '}row'):
                     for cell in list(row):
                         if _col(cell)=='J':row.remove(cell)
+                    normalizar_estilos(row,styles)
                     yield E.tostring(row,method='c14n',exclusive=True)
                     row.clear()
                     while row.getprevious() is not None:del row.getparent()[0]

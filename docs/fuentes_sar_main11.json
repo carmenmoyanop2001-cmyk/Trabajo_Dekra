@@ -20,5 +20,21 @@
     "_sheet_id": "baa7dd96af829ddfef048328190239c2a3dfbaf521c77de005fcc834e1ac1718",
     "_hojas_sar": "332afac811dbc13bf0602f94f5b1584d2a8775d061ac6a3ce5b74c5c8294f4e8",
     "_numero_hoja": "4ddbcd34c01133db9a94040b48af8b96749671e78e1ad56ba7ade8e5eeaa98bb"
+  },
+  "adaptaciones_autorizadas": {
+    "hojas_base_datos.py": {
+      "sha256_actual": "2cbe4f97ed628c9ce87362eeddf78197efcc398ec1e229a1f4e02bdb937ba1dd",
+      "motivo": "Filtrar cada SAR por la certificación regional de la base; petición del usuario de 5 de noviembre."
+    },
+    "sarlib.py": {
+      "sha256_actual": "9a101e8dca1e4c4794f8bf11379f887144f8b226f5d0a09e57e47eac33ebbace",
+      "motivo": "Conservar referencias COLUMN en patrones compactos; evita argumentos literales que Excel elimina."
+    }
+  },
+  "estilos_proyecto_aprobado": {
+    "fixture": "tests/fixtures/estilos_sar_main11.xml.xz",
+    "origen": "Proyecto.xlsm de Trabajo_Dekra-main11.zip",
+    "sha256_xml": "50cbf4cbdab6e2928487ea28b08b61c934e18837d919b9ee80ae5fce02748c53",
+    "coincidencia_sar_xml_con_fixture": true
   }
 }

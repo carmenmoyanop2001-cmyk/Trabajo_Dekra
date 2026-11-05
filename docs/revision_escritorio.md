@@ -1,5 +1,7 @@
 # Revisión del programa de escritorio — 5 de noviembre de 2026
 
+Actualización posterior: la comparación con la copia reparada por Excel identifica la causa del aviso de WiFi. Se corrige junto con las regiones de las bandas SAR y las vistas de tecnologías. Ver [correccion_wifi_y_regiones.md](correccion_wifi_y_regiones.md). Los resultados siguientes documentan la revisión anterior.
+
 Se parte de la última versión guardada, `6f1ca2b`, que el usuario confirma que coincide con su ZIP main12. El ZIP adjunto supera el límite de transferencia de 32 MiB. Sí se ha podido examinar el Proyecto.xlsm nuevo (17.376.710 bytes).
 
 Se conserva `cuestionario_ensayo.py` como entrada. Se retiran la aplicación web, su lanzador, dependencias, configuración, pruebas y documentación específica. El cuestionario mantiene sus opciones y la lectura de la base XLSX.

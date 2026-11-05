@@ -1,7 +1,9 @@
 """Regresión contra los dos SAR aprobados en Trabajo_Dekra-main11.zip."""
 import ast
+from collections import defaultdict
 import hashlib
 import json
+import lzma
 from pathlib import Path
 import tempfile
 import unittest
@@ -14,7 +16,8 @@ from generador_excel import generar
 from herramientas.validar_paquete import validar, _dibujos
 from tecnologias_originales import PlanOriginal, reubicar_dibujo, verificar_apoyo
 from test_tecnologias_visibles import workbook
-from comparacion_sar import sin_canales, contenido_fijo
+from comparacion_sar import sin_canales, contenido_fijo, estilos_equivalentes
+from sar_en_canales import _groups
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'tests/fixtures/sar_main11_aprobado.zip'
@@ -26,6 +29,7 @@ class FuentesAprobadasTests(unittest.TestCase):
     def test_motor_y_plantillas_del_adjunto(self):
         meta = json.loads((ROOT/'docs/fuentes_sar_main11.json').read_text())
         for path, sha in meta['fuentes'].items():
+            sha = meta.get('adaptaciones_autorizadas', {}).get(path, {}).get('sha256_actual', sha)
             self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(), sha, path)
         source = (ROOT/'generador_excel.py').read_text()
         functions = {n.name: ast.get_source_segment(source, n) for n in ast.parse(source).body
@@ -76,12 +80,27 @@ class SarAdjuntoTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):cls.tmp.cleanup()
 
-    def test_sar_identicos_al_proyecto_aprobado_del_usuario(self):
+    def test_posiciones_y_estilos_aprobados_en_bandas_regionales_compatibles(self):
         names=workbook(self.path)
         with ZipFile(FIXTURE) as approved,ZipFile(self.path) as generated:
+            old_styles=estilos_equivalentes(lzma.decompress((ROOT/'tests/fixtures/estilos_sar_main11.xml.xz').read_bytes()))
+            new_styles=estilos_equivalentes(generated)
             for name in ('SAR EN','SAR FCC-ISED'):
                 a,b=generated.read(names[name][0]),approved.read(name+'.xml')
-                self.assertEqual(sin_canales(a),sin_canales(b),name) if name.startswith('SAR ') else self.assertEqual(contenido_fijo(a),contenido_fijo(b),name)
+                old=defaultdict(list)
+                for key,rows in _groups(E.fromstring(b)):old[key].append(rows)
+                occurrences=defaultdict(int)
+                current=_groups(E.fromstring(a))
+                self.assertTrue(current)
+                for key,rows in current:
+                    self.assertIn(key,old,name)
+                    ordinal=occurrences[key];occurrences[key]+=1
+                    self.assertLess(ordinal,len(old[key]),(name,key))
+                    expected=old[key][ordinal]
+                    self.assertEqual([pos for _,pos,_,_ in rows],[pos for _,pos,_,_ in expected],(name,key))
+                    for (_,_,_,cells),(_,_,_,previous) in zip(rows,expected):
+                        self.assertEqual({c:new_styles[v.get('s','0')] for c,v in cells.items()},
+                                         {c:old_styles[v.get('s','0')] for c,v in previous.items()},(name,key))
 
     def test_tecnologias_completas_y_dibujos_validos(self):
         names=workbook(self.path)

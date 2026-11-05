@@ -1,10 +1,12 @@
 # Toma de datos SAR con el original completo guardado en el programa
 
+La actualización actual corrige la causa identificada de la reparación de WiFi, separa las bandas de cada SAR según su certificación y permite desplazarse por 2G-3G, LTE y 5G sin inmovilizar sus filas ocultas. [Detalle de la corrección](docs/correccion_wifi_y_regiones.md). **Extrae esta versión en una carpeta nueva y abre `INICIAR_CUESTIONARIO.bat`.**
+
 El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para repetir el ensayo. **La base XLSX determina qué registros existen y sus valores tienen prioridad; el cuestionario selecciona cuáles se incluyen.** Las tecnologías recuperan sus pestañas completas del original: columnas, datos de las filas coincidentes, fórmulas, colores, combinaciones, desplegables, comentarios e imágenes. No hace falta aportar el Excel original al generar otro ensayo.
 
 `plantilla/originales/` conserva las 16 pestañas recibidas, sus formatos, fórmulas y partes auxiliares. Incluye la copia íntegra de 5G y un índice para leer solo las bandas seleccionadas. No necesitas aportar el datasheet original para generar otro ensayo.
 
-La revisión actual conserva el cuestionario de escritorio y elimina la aplicación web. En SAR EN y SAR FCC-ISED solo se corrigen CC/CD: se restauran los enlaces de canal/frecuencia con los auxiliares originales cuando corresponden a la misma tecnología y banda, y las búsquedas originales para las filas adicionales. El resto de sus celdas, posiciones y combinaciones se conserva. La visibilidad de las columnas de las 16 hojas originales queda guardada en `plantilla/columnas_originales.json` y se aplica al generar. [Detalle y límites de la revisión](docs/revision_escritorio.md).
+La revisión actual conserva el cuestionario de escritorio y elimina la aplicación web. En las filas de SAR EN y SAR FCC-ISED compatibles con la certificación y la selección se corrigen CC/CD: se restauran los enlaces de canal/frecuencia con los auxiliares originales cuando corresponden a la misma tecnología y banda, y las búsquedas originales para las filas adicionales. El resto del contenido de esas filas, sus posiciones y combinaciones se conserva. La visibilidad de las columnas de las 16 hojas originales queda guardada en `plantilla/columnas_originales.json` y se aplica al generar. [Detalle y límites de la revisión](docs/revision_escritorio.md).
 
 ## Uso en Windows
 

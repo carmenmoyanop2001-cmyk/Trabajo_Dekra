@@ -1,0 +1,156 @@
+{
+  "fecha": "2026-11-05",
+  "base_codigo": "f85e8aa674dc39eea36a5005d6bbf198579383a3",
+  "diagnostico": {
+    "hoja": "Conducted WiFi",
+    "parte": "xl/worksheets/sheet8.xml",
+    "formulas_antes": 9710,
+    "formulas_despues_de_reparacion_excel": 8328,
+    "eliminadas_por_excel": 1382,
+    "detectadas_por_validacion_semantica": 1382,
+    "coincidencia_exacta_de_celdas": true,
+    "celdas_por_columna": {
+      "CN": 230,
+      "CO": 230,
+      "CP": 230,
+      "CR": 230,
+      "CS": 231,
+      "CW": 231
+    },
+    "causa": "Se sustituían referencias de COLUMN por texto/números de celdas descartadas."
+  },
+  "archivos_recibidos": {
+    "sin_reparar_sha256": "908a549754032ffe36dfab1bd2f48ecbabc496388d9b13599e81916d06588a56",
+    "reparado_sha256": "403526791dd347e74851048d78e422c4dd489d4f8ed57d5d83bb33780dae5b91"
+  },
+  "copia_diagnostico_corregida": {
+    "formulas": 9710,
+    "corregidas": 1382,
+    "otras_formulas_wifi_identicas": 8328,
+    "otras_partes_del_paquete_identicas": true,
+    "errores_validador_paquete": 0,
+    "errores_sdk_openxml": 0
+  },
+  "regiones_sar": {
+    "WCDMA_FDDI": "EN",
+    "WCDMA_FDDII": "FCC/ISED",
+    "WCDMA_FDDVIII": "EN",
+    "fuente": "Certificación de la base XLSX cargada."
+  },
+  "vistas_corregidas": {
+    "2G_3G_filas_inmovilizadas_antes": 80,
+    "LTE_filas_inmovilizadas_antes": 848,
+    "5G_filas_inmovilizadas_antes": 67,
+    "resultado": "Vista normal sin paneles que incluyan filas ocultas de apoyo."
+  },
+  "reparacion_excel_otras_hojas": {
+    "Overview": {
+      "antes": 172,
+      "despues": 172,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Tune-Up": {
+      "antes": 20,
+      "despues": 20,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Conducted 2G-3G": {
+      "antes": 3813,
+      "despues": 3813,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Conducted LTE": {
+      "antes": 26219,
+      "despues": 26219,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Conducted LTE CATM1": {
+      "antes": 67482,
+      "despues": 67482,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Conducted LTE NB-IoT": {
+      "antes": 3999,
+      "despues": 3999,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Conducted 5G": {
+      "antes": 178380,
+      "despues": 178380,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Conducted WiFi": {
+      "antes": 9710,
+      "despues": 8328,
+      "eliminadas": 1382,
+      "modificadas": 0
+    },
+    "Validations": {
+      "antes": 3885,
+      "despues": 3885,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "SAR EN": {
+      "antes": 119986,
+      "despues": 119986,
+      "eliminadas": 0,
+      "modificadas": 2828,
+      "diferencias_distintas_de_espacios": 0
+    },
+    "SAR FCC-ISED": {
+      "antes": 158401,
+      "despues": 158401,
+      "eliminadas": 0,
+      "modificadas": 2820,
+      "diferencias_distintas_de_espacios": 0
+    },
+    "Test Campaign": {
+      "antes": 0,
+      "despues": 0,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Pretesting-Others": {
+      "antes": 2123,
+      "despues": 2123,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Liquids-DRAFT": {
+      "antes": 0,
+      "despues": 0,
+      "eliminadas": 0,
+      "modificadas": 0
+    },
+    "Pendiente": {
+      "antes": 0,
+      "despues": 0,
+      "eliminadas": 0,
+      "modificadas": 0
+    }
+  },
+  "limitacion": "No se ha ejecutado Microsoft Excel de Windows. La causa del aviso se identifica por comparación con la reparación real aportada.",
+  "pruebas": {
+    "casos_distintos_superados": 34,
+    "regresion_wifi_regiones_columnas_y_fuentes": 23,
+    "conservacion_cuatro_correcciones": 9,
+    "conservacion_sar_aprobados": 2,
+    "nota": "La comparación final de estilos/posiciones SAR reutiliza la misma salida de generación completa; contrasta cada ocurrencia de bloques repetidos y los estilos efectivos del libro aprobado."
+  },
+  "entrega_extraida": {
+    "generacion": "correcta",
+    "formulas_wifi": 7297,
+    "referencias_geometricas_invalidas": 0,
+    "marcadores_internos": 0,
+    "errores_sdk_openxml": 0,
+    "errores_sdk_ensayo_completo": 0
+  }
+}

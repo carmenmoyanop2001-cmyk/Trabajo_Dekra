@@ -1,0 +1,52 @@
+REGRESIÓN FINAL: WIFI, REGIONES, COLUMNAS Y FUENTES
+test_catalogo_y_formulario_no_generan_column_con_valores (test_column_wifi.GeneracionWifiTests.test_catalogo_y_formulario_no_generan_column_con_valores) ... ok
+test_column_conserva_numero_aunque_fila_descartada_tenga_certificacion (test_column_wifi.ReferenciasTests.test_column_conserva_numero_aunque_fila_descartada_tenga_certificacion) ... ok
+test_column_valida_conserva_su_reubicacion_anterior (test_column_wifi.ReferenciasTests.test_column_valida_conserva_su_reubicacion_anterior) ... ok
+test_no_modifica_textos_ni_necesita_una_hoja_eliminada_para_column (test_column_wifi.ReferenciasTests.test_no_modifica_textos_ni_necesita_una_hoja_eliminada_para_column) ... ok
+test_patron_compacto_no_incrusta_valores_en_column (test_column_wifi.ReferenciasTests.test_patron_compacto_no_incrusta_valores_en_column) ... ok
+test_validador_distingue_referencia_de_texto_y_numero (test_column_wifi.ReferenciasTests.test_validador_distingue_referencia_de_texto_y_numero) ... ok
+test_detecta_exactamente_las_1382_celdas_eliminadas_por_excel (test_column_wifi.ReparacionRealTests.test_detecta_exactamente_las_1382_celdas_eliminadas_por_excel) ... ok
+test_repara_las_eliminadas_y_deja_intactas_las_8328_conservadas (test_column_wifi.ReparacionRealTests.test_repara_las_eliminadas_y_deja_intactas_las_8328_conservadas) ... ok
+test_reparacion_vistas_no_modifica_formulas_ni_otros_datos (test_regiones_y_vistas.RegionesTests.test_reparacion_vistas_no_modifica_formulas_ni_otros_datos) ... ok
+test_sar_en_no_incluye_banda_exclusiva_fcc (test_regiones_y_vistas.RegionesTests.test_sar_en_no_incluye_banda_exclusiva_fcc) ... ok
+test_tecnologia_se_desplaza_y_conserva_sus_tres_bandas (test_regiones_y_vistas.RegionesTests.test_tecnologia_se_desplaza_y_conserva_sus_tres_bandas) ... ok
+test_no_hay_panel_inmovilizado_aunque_cabecera_este_en_848 (test_regiones_y_vistas.VistasTests.test_no_hay_panel_inmovilizado_aunque_cabecera_este_en_848) ... ok
+test_base_parcial_no_pierde_canal_por_auxiliares_incompletos (test_revision_escritorio.ConversionTests.test_base_parcial_no_pierde_canal_por_auxiliares_incompletos) ... ok
+test_fcc_conserva_su_tabla_y_sus_condiciones (test_revision_escritorio.ConversionTests.test_fcc_conserva_su_tabla_y_sus_condiciones) ... ok
+test_no_sustituye_referencia_ausente_por_posicion_vecina (test_revision_escritorio.ConversionTests.test_no_sustituye_referencia_ausente_por_posicion_vecina) ... ok
+test_visibilidad_no_toca_medidas_ni_ancho_de_columna (test_revision_escritorio.ConversionTests.test_visibilidad_no_toca_medidas_ni_ancho_de_columna) ... ok
+test_bateria_y_variability_recuperan_busqueda_fcc (test_revision_escritorio.GeneracionEscritorioTests.test_bateria_y_variability_recuperan_busqueda_fcc) ... ok
+test_canales_normales_usan_auxiliares_originales (test_revision_escritorio.GeneracionEscritorioTests.test_canales_normales_usan_auxiliares_originales) ... ok
+test_sar_solo_modifica_cc_cd_y_visibilidad (test_revision_escritorio.GeneracionEscritorioTests.test_sar_solo_modifica_cc_cd_y_visibilidad) ... ok
+test_todas_las_columnas_originales_mantienen_visibilidad (test_revision_escritorio.GeneracionEscritorioTests.test_todas_las_columnas_originales_mantienen_visibilidad) ... ok
+test_dibujo_no_invierte_extremos_al_descartar_filas (test_restauracion_sar.FuentesAprobadasTests.test_dibujo_no_invierte_extremos_al_descartar_filas) ... ok
+test_motor_y_plantillas_del_adjunto (test_restauracion_sar.FuentesAprobadasTests.test_motor_y_plantillas_del_adjunto) ... ok
+test_no_permite_reescribir_apoyo_sar (test_restauracion_sar.FuentesAprobadasTests.test_no_permite_reescribir_apoyo_sar) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 62.616s
+
+OK
+
+
+CONSERVACIÓN DE LAS NUEVE CORRECCIONES ANTERIORES
+test_baterias_sar_en_buscan_dentro_de_su_bloque (test_correcciones_noviembre.CuatroCambiosTests.test_baterias_sar_en_buscan_dentro_de_su_bloque) ... ok
+test_catm1_no_cambia_otras_columnas (test_correcciones_noviembre.CuatroCambiosTests.test_catm1_no_cambia_otras_columnas) ... ok
+test_catm1_solo_etiqueta_lte (test_correcciones_noviembre.CuatroCambiosTests.test_catm1_solo_etiqueta_lte) ... ok
+test_nbiot_conserva_el_orden_del_procedimiento_original (test_correcciones_noviembre.CuatroCambiosTests.test_nbiot_conserva_el_orden_del_procedimiento_original) ... ok
+test_solo_cambian_las_hojas_autorizadas (test_correcciones_noviembre.CuatroCambiosTests.test_solo_cambian_las_hojas_autorizadas) ... ok
+test_wifi_se_desplaza_sin_paneles_inmovilizados (test_correcciones_noviembre.CuatroCambiosTests.test_wifi_se_desplaza_sin_paneles_inmovilizados) ... ok
+test_exposicion_no_seleccionada_no_toma_otro_bloque (test_correcciones_noviembre.FormulasYDuplicadosTests.test_exposicion_no_seleccionada_no_toma_otro_bloque) ... ok
+test_misma_busqueda_fcc_con_columnas_en_no_contiguas (test_correcciones_noviembre.FormulasYDuplicadosTests.test_misma_busqueda_fcc_con_columnas_en_no_contiguas) ... ok
+test_resumen_no_duplica_el_detalle_de_la_misma_fila (test_correcciones_noviembre.FormulasYDuplicadosTests.test_resumen_no_duplica_el_detalle_de_la_misma_fila) ... ok
+
+CONSERVACIÓN DE TECNOLOGÍAS COMPLETAS Y DIBUJOS
+test_tecnologias_completas_y_dibujos_validos (test_restauracion_sar.SarAdjuntoTests.test_tecnologias_completas_y_dibujos_validos) ... ok
+
+COMPARACIÓN FINAL DE POSICIONES Y ESTILOS DEL MISMO ARCHIVO GENERADO
+test_posiciones_y_estilos_aprobados_en_bandas_regionales_compatibles (__main__.ArchivoYaGenerado.test_posiciones_y_estilos_aprobados_en_bandas_regionales_compatibles) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 5.766s
+
+OK

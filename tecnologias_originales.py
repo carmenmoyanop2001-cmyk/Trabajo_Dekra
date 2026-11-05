@@ -21,6 +21,7 @@ from base_datos import normalizar
 from hojas_base_datos import hoja_tecnologia, PARAM_COL
 from seleccion import token_modo
 from corregir_2g3g import normalizar_fechas
+from referencias_geometricas import proteger_columnas
 from sarlib import _REF, _STR, _sheetname, col2n, n2col, shift_formula
 
 M = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
@@ -795,13 +796,17 @@ def formula(text, plan, old, new, planes, overview=None):
                 return '""'
             return _literal(cached)
         return f'{_fmt_sheet(target.nombre) if sh or target is not plan else ""}{match[2]}{col}{match[4]}{dest}'
+    text, geometricas = proteger_columnas(text, lambda ref: _REF.fullmatch(one(ref)) is not None)
     parts = _STR.split(text)
     for i in range(0, len(parts), 2):
         parts[i] = _REF.sub(one, parts[i])
         if '#REF!' in parts[i]:
             plan.referencias_rotas+=1
             parts[i]=parts[i].replace('#REF!',f'{_fmt_sheet(plan.nombre)}$A${max(1,plan.offset-1)}')
-    return ''.join(parts)
+    result = ''.join(parts)
+    for token, reference in geometricas.items():
+        result = result.replace(token, reference)
+    return result
 
 
 def _range(ref, plan):
@@ -813,6 +818,19 @@ def _range(ref, plan):
     if first is None or last is None or first > last:
         return None
     return f'{a}{first}:{b or a}{last}' if b or first != last else f'{a}{first}'
+
+
+def vista_desplazable(root, header):
+    """No inmovilizar las filas ocultas que preceden a la tabla visible."""
+    views = root.find('s:sheetViews', NS)
+    if views is None:
+        views = E.Element(_q('sheetViews'))
+        root.insert(next((i for i,n in enumerate(root) if E.QName(n).localname in
+                         ('sheetFormatPr','cols','sheetData')),len(root)),views)
+    views.clear()
+    view = E.SubElement(views, _q('sheetView'), workbookViewId='0', view='normal',
+                        topLeftCell='A'+str(max(1, header-1)), zoomScale='100')
+    E.SubElement(view, _q('selection'), activeCell='B'+str(header+1), sqref='B'+str(header+1))
 
 
 def escribir(plan, output, planes, overview=None):
@@ -830,17 +848,10 @@ def escribir(plan, output, planes, overview=None):
         if plan.extras:
             last_col = max([last_col] + list(plan.extras.values()), key=col2n)
         dimension.set('ref', f'A1:{last_col}{last}')
-    if plan.familia == 'Conducted WiFi':
+    if plan.familia in ('Conducted WiFi', 'Conducted 2G-3G', 'Conducted LTE', 'Conducted 5G'):
         # Reconstruir la vista: ningún panel hereda las filas ocultas de apoyo
         # como parte inmovilizada de la tabla visible.
-        views = root.find('s:sheetViews', NS)
-        if views is None:
-            views = E.Element(_q('sheetViews'))
-            root.insert(next((i for i,n in enumerate(root) if E.QName(n).localname in ('sheetFormatPr','cols','sheetData')),len(root)),views)
-        views.clear()
-        view = E.SubElement(views, _q('sheetView'), workbookViewId='0', view='normal',
-                            topLeftCell='A'+str(plan.offset+1), zoomScale='100')
-        E.SubElement(view, _q('selection'), activeCell='B'+str(plan.offset+3), sqref='B'+str(plan.offset+3))
+        vista_desplazable(root, plan.offset+2)
     else:
         for view in root.findall('s:sheetViews/s:sheetView', NS):
             view.set('topLeftCell', 'A' + str(plan.offset + 1))

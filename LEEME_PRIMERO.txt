@@ -1,6 +1,6 @@
 PROGRAMA DE TOMA DE DATOS SAR — ESCRITORIO
 
-1. Extrae toda esta carpeta. No ejecutes el programa desde dentro del ZIP.
+1. Extrae toda esta carpeta en una carpeta nueva. No ejecutes desde el ZIP.
 2. Abre INICIAR_CUESTIONARIO.bat con doble clic.
    También puedes ejecutar: python cuestionario_ensayo.py
 3. Elige tu base de datos XLSX y completa el formulario como antes.
@@ -19,6 +19,13 @@ La revisión corrige CC/CD de SAR y conserva la visibilidad de las columnas
 originales. El detalle de las comprobaciones y sus límites está en:
 
     docs/revision_escritorio.md
+
+Esta actualización corrige además las fórmulas COLUMN de WiFi que Excel
+eliminaba al reparar, filtra las bandas de cada SAR por su certificación y
+permite desplazarse por 2G-3G, LTE y 5G sin paneles inmovilizados incorrectos.
+Genera de nuevo el ensayo para aplicar todas esas correcciones.
+
+    docs/correccion_wifi_y_regiones.md
 
 Esta entrega utiliza el cuestionario de escritorio. Incluye todo lo necesario
 para generar; excluye entornos Python, cachés y ejemplos Excel antiguos.
