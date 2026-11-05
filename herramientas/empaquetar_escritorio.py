@@ -11,7 +11,8 @@ def empaquetar(output):
     output.parent.mkdir(parents=True, exist_ok=True)
     files = list(ROOT.glob('*.py'))
     files += [ROOT / name for name in ('INICIAR_CUESTIONARIO.bat', 'LEEME_PRIMERO.txt',
-                                      'requirements.txt', 'README.md', 'USO_AUTOMATICO.md')]
+                                      'requirements.txt', 'README.md', 'USO_AUTOMATICO.md',
+                                      'DIAGNOSTICO_CIERRE_EXCEL.bat')]
     for folder in ('plantilla', 'datos', 'docs'):
         files += [p for p in (ROOT / folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts]
     files += list((ROOT / 'ejemplos').glob('*.json'))

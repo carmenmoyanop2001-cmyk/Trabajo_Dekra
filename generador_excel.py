@@ -275,7 +275,10 @@ def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None):
         wb = re.sub(r'<definedNames>.*?</definedNames>', f'<definedNames>{dn}</definedNames>' if dn else '', wb, flags=re.S)
         wb = re.sub(r'<mc:AlternateContent.*?</mc:AlternateContent>', '', wb, flags=re.S)
         wb = re.sub(r'<xr:revisionPtr[^>]*/>', '', wb)
-        calc = '<calcPr calcId="0" calcMode="auto" fullCalcOnLoad="1" forceFullCalc="1" calcOnSave="1"/>'
+        # Recalcular las cachés al abrir, manteniendo después el cálculo
+        # automático de dependencias. forceFullCalc=1 repetía todo el libro
+        # en cada entrada, incluidas decenas de miles de llamadas VBA ajenas.
+        calc = '<calcPr calcId="0" calcMode="auto" fullCalcOnLoad="1" forceFullCalc="0" calcOnSave="1"/>'
         if re.search(r'<calcPr\b', wb):
             wb = re.sub(r'<calcPr\b[^>]*/>', calc, wb)
         else:

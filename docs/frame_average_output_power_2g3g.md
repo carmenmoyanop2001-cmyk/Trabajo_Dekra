@@ -1,5 +1,7 @@
 # Revisión de AI — Frame Average Output Power, 2G-3G
 
+Actualización: el usuario confirma que el cierre persiste con la entrega reciente. Se corrige el recálculo completo forzado y se solicita el fallo registrado por Windows. El estado vigente está en [cierre_excel_ai_pendiente.md](cierre_excel_ai_pendiente.md); las validaciones descritas abajo no constituyen una confirmación de estabilidad en Excel.
+
 El usuario confirma que Excel se bloquea y también llega a cerrarse al introducir valores en AI. Se revisa el Proyecto_2G_3G.xlsm adjuntado. Tiene cinco hojas: Overview, Tune-Up, Conducted 2G-3G, Validations y Test Campaign. Se conserva esa misma lista, sin generar otras tecnologías ni hojas SAR.
 
 AI es una entrada manual. AJ aplica el factor de slots original, por ejemplo `AI75+$CL$74`. No se han encontrado referencias circulares ni un evento Worksheet_Change activo en la hoja Hoja17. La función MyTimestamp ejecutada desde BE es una UDF VBA de fecha. No contiene un bucle ni escribe celdas; no se ha confirmado que sea la causa del bloqueo de Excel.

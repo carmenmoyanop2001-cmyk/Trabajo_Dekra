@@ -1,0 +1,13 @@
+DIAGNOSTICO DEL CIERRE AL ESCRIBIR EN AI
+
+1. Extrae esta carpeta ZIP completa en una carpeta normal.
+2. Haz doble clic en DIAGNOSTICO_CIERRE_EXCEL.bat.
+3. Se crea Diagnostico_Excel.txt y se abre en el Bloc de notas.
+4. Adjunta aqui Diagnostico_Excel.txt y el Excel recien generado que se cierra.
+
+El diagnostico lee la version de Office y los ultimos errores de Excel
+registrados por Windows. No requiere instalar programas ni abrir Excel.
+El informe indica el modulo que falla y el codigo de excepcion.
+
+Si algun dato de Office o del registro no esta disponible, el mensaje
+queda en el informe. Adjuntalo igualmente.

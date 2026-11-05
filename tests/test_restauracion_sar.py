@@ -35,6 +35,7 @@ class FuentesAprobadasTests(unittest.TestCase):
         functions = {n.name: ast.get_source_segment(source, n) for n in ast.parse(source).body
                      if isinstance(n, ast.FunctionDef)}
         for name, sha in meta['funciones_generador'].items():
+            sha = meta.get('funciones_adaptadas', {}).get(name, {}).get('sha256_actual', sha)
             self.assertEqual(hashlib.sha256(functions[name].encode()).hexdigest(), sha, name)
 
     def test_no_permite_reescribir_apoyo_sar(self):

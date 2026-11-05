@@ -82,6 +82,10 @@ class Generacion2G3GTests(unittest.TestCase):
             self.assertIn('Conducted 2G-3G',result['hojas'])
             self.assertEqual(validar(output,verbose=False),[])
             with ZipFile(output) as z:
+                calc=E.fromstring(z.read('xl/workbook.xml')).find('s:calcPr',NS)
+                self.assertEqual(calc.get('calcMode'),'auto')
+                self.assertEqual(calc.get('fullCalcOnLoad'),'1')
+                self.assertEqual(calc.get('forceFullCalc'),'0')
                 root=E.fromstring(z.read('xl/worksheets/sheet3.xml'))
                 formulas=[f.text or '' for f in root.findall('.//s:f',NS)]
                 self.assertFalse(any('MyTimestamp(' in f for f in formulas))

@@ -27,5 +27,10 @@ Genera de nuevo el ensayo para aplicar todas esas correcciones.
 
     docs/correccion_wifi_y_regiones.md
 
+Si Excel se cierra al editar AI, el fallo sigue en investigacion. Esta revision
+mantiene el calculo automatico sin forzar todos los calculos en cada entrada.
+DIAGNOSTICO_CIERRE_EXCEL.bat guarda el error registrado por Windows en
+Diagnostico_Excel.txt, para identificar el componente que provoca el cierre.
+
 Esta entrega utiliza el cuestionario de escritorio. Incluye todo lo necesario
 para generar; excluye entornos Python, cachés y ejemplos Excel antiguos.

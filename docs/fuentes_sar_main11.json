@@ -36,5 +36,11 @@
     "origen": "Proyecto.xlsm de Trabajo_Dekra-main11.zip",
     "sha256_xml": "50cbf4cbdab6e2928487ea28b08b61c934e18837d919b9ee80ae5fce02748c53",
     "coincidencia_sar_xml_con_fixture": true
+  },
+  "funciones_adaptadas": {
+    "_generar": {
+      "sha256_actual": "d9644ebceae73bca8a2cb9c2bef2d2a8aa1e119b87c9a65205f2e2277a0ab490",
+      "motivo": "Mantener cálculo automático por dependencias y quitar el recálculo completo forzado en cada edición; investigación del cierre al editar AI."
+    }
   }
 }

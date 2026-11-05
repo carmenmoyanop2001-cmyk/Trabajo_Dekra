@@ -149,7 +149,7 @@ class ValoresModeTests(unittest.TestCase):
         calc = self.workbook.find('s:calcPr', NS)
         self.assertEqual(calc.get('calcMode'), 'auto')
         self.assertEqual(calc.get('fullCalcOnLoad'), '1')
-        self.assertEqual(calc.get('forceFullCalc'), '1')
+        self.assertEqual(calc.get('forceFullCalc'), '0')
 
 
 if __name__ == '__main__':
