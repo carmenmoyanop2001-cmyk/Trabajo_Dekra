@@ -10,7 +10,7 @@ Se incluye una referencia de regresión en `tests/fixtures/sar_main11_aprobado.z
 
 También se reproduce un anclaje invertido de una captura de 2G-3G en la última versión: su extremo inferior quedaba por encima del superior al compactar filas. La captura se traslada ahora entera, manteniendo su altura y sus desplazamientos internos. La validación detecta anclajes invertidos o de tamaño nulo, que el esquema XML no señalaba.
 
-Las opciones de los formularios y los datos de la base no se modifican. La corrección se aplica al cuestionario de escritorio y a Streamlit.
+Las opciones de los formularios y los datos de la base no se modifican. La corrección se aplica al cuestionario de escritorio.
 
 ## Verificación de esta entrega
 

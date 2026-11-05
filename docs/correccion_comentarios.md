@@ -13,4 +13,4 @@ Comprobaciones realizadas:
 - Ejemplo regenerado desde las mismas respuestas: solo cambian `xl/worksheets/sheet3.xml`, `sheet7.xml`, `sheet8.xml` y `sheet9.xml`, incorporando el enlace perdido. Todos los demás archivos internos coinciden byte por byte con el ejemplo anterior.
 - SDK Open XML: `Count: 0`, sin errores estructurales. No se ha ejecutado Microsoft Excel en este entorno.
 
-Para aplicar la corrección a un ensayo anterior, vuelve a generarlo con la versión actual del programa. El cambio se aplica tanto al cuestionario de escritorio como a Streamlit, que comparten el generador.
+Para aplicar la corrección a un ensayo anterior, vuelve a generarlo con la versión actual del programa. El cambio se aplica al cuestionario de escritorio.

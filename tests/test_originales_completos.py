@@ -1,4 +1,4 @@
-from comparacion_sar import sin_canales
+from comparacion_sar import sin_canales, contenido_fijo
 from corregir_2g3g import normalizar_fechas
 """Presentación íntegra del original, con catálogo editable y SAR sin cambios."""
 from copy import deepcopy
@@ -73,7 +73,7 @@ class OriginalesCompletosTests(unittest.TestCase):
         with zipfile.ZipFile(self.before) as old, zipfile.ZipFile(self.after) as new:
             for name in PROTEGIDAS:
                 a,b=old.read(old_names[name][0]),new.read(new_names[name][0])
-                self.assertEqual(sin_canales(a),sin_canales(b),name) if name=='SAR EN' else self.assertEqual(a,b,name)
+                self.assertEqual(sin_canales(a),sin_canales(b),name) if name.startswith('SAR ') else self.assertEqual(contenido_fijo(a),contenido_fijo(b),name)
             self.assertEqual(old.read('xl/vbaProject.bin'), new.read('xl/vbaProject.bin'))
             before_styles, after_styles = E.fromstring(old.read('xl/styles.xml')), E.fromstring(new.read('xl/styles.xml'))
             for group in before_styles:

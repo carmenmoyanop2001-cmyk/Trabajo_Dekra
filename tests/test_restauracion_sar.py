@@ -14,7 +14,7 @@ from generador_excel import generar
 from herramientas.validar_paquete import validar, _dibujos
 from tecnologias_originales import PlanOriginal, reubicar_dibujo, verificar_apoyo
 from test_tecnologias_visibles import workbook
-from comparacion_sar import sin_canales
+from comparacion_sar import sin_canales, contenido_fijo
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'tests/fixtures/sar_main11_aprobado.zip'
@@ -81,7 +81,7 @@ class SarAdjuntoTests(unittest.TestCase):
         with ZipFile(FIXTURE) as approved,ZipFile(self.path) as generated:
             for name in ('SAR EN','SAR FCC-ISED'):
                 a,b=generated.read(names[name][0]),approved.read(name+'.xml')
-                self.assertEqual(sin_canales(a),sin_canales(b),name) if name=='SAR EN' else self.assertEqual(a,b,name)
+                self.assertEqual(sin_canales(a),sin_canales(b),name) if name.startswith('SAR ') else self.assertEqual(contenido_fijo(a),contenido_fijo(b),name)
 
     def test_tecnologias_completas_y_dibujos_validos(self):
         names=workbook(self.path)

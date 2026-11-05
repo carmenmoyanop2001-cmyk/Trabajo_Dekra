@@ -66,8 +66,6 @@ Ran 1 test in 200.061s
 OK
 
 
-prueba_streamlit_nombre_final.txt
-test_base_cargada_y_json_portable (test_streamlit_app.StreamlitTests.test_base_cargada_y_json_portable) ... ok
 
 ----------------------------------------------------------------------
 Ran 1 test in 12.962s

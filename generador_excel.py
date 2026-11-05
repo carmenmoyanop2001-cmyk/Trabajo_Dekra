@@ -62,7 +62,7 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
                    _generar(datos, str(candidate), dir_plantilla, log))
         # El contexto de fórmulas contiene cierres circulares que retienen las
         # hojas SAR. Liberarlos antes de cargar las vistas completas evita
-        # acumular ambas matrices en memoria, especialmente en Streamlit.
+        # acumular ambas matrices en memoria.
         gc.collect()
         from corregir_2g3g import corregir_en_sitio
         corregir_en_sitio(candidate)
@@ -74,6 +74,8 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
         if catalogo is not None:
             from sar_en_canales import aplicar as adaptar_canales_en
             resumen['formulas_cc_cd_en'] = adaptar_canales_en(candidate, dir_plantilla or DIR_PLANTILLA)
+            resumen['formulas_cc_cd_fcc'] = adaptar_canales_en(candidate, dir_plantilla or DIR_PLANTILLA,
+                                                             destino='SAR FCC-ISED')
             gc.collect()
             from presentacion_tecnologias import aplicar
             # Solo la presentación de tecnologías necesita el mapa de Overview.
@@ -83,6 +85,10 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
             overview = lambda row: row + extras if row >= FILA_CORTE else row
             aplicar(candidate, datos, catalogo, resumen, overview=overview)
             gc.collect()
+        from columnas_originales import aplicar as ocultar_columnas_originales
+        resumen['columnas_originales'] = ocultar_columnas_originales(candidate)
+        resumen['pestanas_protegidas_identicas'] = [name for name in resumen.get('pestanas_protegidas_identicas', [])
+                                                   if name not in resumen['columnas_originales']['modificadas']]
         errors = validar(str(candidate), verbose=False)
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))

@@ -394,6 +394,14 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
                         '[Content_Types].xml': E.tostring(ct, encoding='UTF-8', xml_declaration=True, standalone=True),
                         'docProps/app.xml': E.tostring(props, encoding='UTF-8', xml_declaration=True, standalone=True),
                         'xl/styles.xml': styles.xml()})
+        from sar_en_canales import restaurar_normales, contenido_sin_canales
+        normales = {}
+        for sheet in old_order:
+            name = sheet.get('name')
+            if name in ('SAR EN', 'SAR FCC-ISED'):
+                part = targets[sheet.get('{' + R + '}id')]
+                changed[part], normales[name] = restaurar_normales(source.read(part), name,
+                    plan_by_name, dir_originales.parent)
         with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as out:
             for info in source.infolist():
                 value = changed.get(info.filename)
@@ -410,14 +418,18 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
             for sheet in old_order:
                 if sheet.get('name') in PROTEGIDAS:
                     part = targets[sheet.get('{' + R + '}id')]
-                    assert source.read(part) == result.read(part), sheet.get('name')
+                    if sheet.get('name') not in ('SAR EN', 'SAR FCC-ISED'):
+                        assert source.read(part) == result.read(part), sheet.get('name')
+                    elif contenido_sin_canales(source.read(part)) != contenido_sin_canales(result.read(part)):
+                        raise ValueError(sheet.get('name') + ': se ha modificado contenido fuera de CC/CD.')
     os.replace(destination, path)
     resumen['hojas'] = [public_names.get(name, name) for name in resumen['hojas']] + extra_visibles
     counts = {p.nombre: p.count - 2 for p in plans}
     resumen['filas'] = {public_names.get(name, name): counts.get(public_names.get(name, name), count)
                         for name, count in resumen['filas'].items()}
     resumen['soporte_interno'] = support
-    resumen['pestanas_protegidas_identicas'] = sorted(PROTEGIDAS & set(resumen['hojas']))
+    resumen['pestanas_protegidas_identicas'] = sorted((PROTEGIDAS - {'SAR EN', 'SAR FCC-ISED'}) & set(resumen['hojas']))
+    resumen['enlaces_cc_cd_originales'] = normales
     resumen['presentacion_original'] = {p.nombre: dict(cabecera=p.offset+2, inicio=p.offset+3, ultima=p.offset+p.count,
                                                      registros_base=len(p.covered), filas_originales=p.count-2)
                                        for p in plans}

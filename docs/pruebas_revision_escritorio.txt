@@ -1,0 +1,103 @@
+PRIMERA PASADA (expectativas anteriores)
+test_baterias_sar_en_buscan_dentro_de_su_bloque (test_correcciones_noviembre.CuatroCambiosTests.test_baterias_sar_en_buscan_dentro_de_su_bloque) ... ok
+test_catm1_no_cambia_otras_columnas (test_correcciones_noviembre.CuatroCambiosTests.test_catm1_no_cambia_otras_columnas) ... ok
+test_catm1_solo_etiqueta_lte (test_correcciones_noviembre.CuatroCambiosTests.test_catm1_solo_etiqueta_lte) ... ok
+test_nbiot_conserva_el_orden_del_procedimiento_original (test_correcciones_noviembre.CuatroCambiosTests.test_nbiot_conserva_el_orden_del_procedimiento_original) ... ok
+test_solo_cambian_las_hojas_autorizadas (test_correcciones_noviembre.CuatroCambiosTests.test_solo_cambian_las_hojas_autorizadas) ... FAIL
+test_wifi_se_desplaza_sin_paneles_inmovilizados (test_correcciones_noviembre.CuatroCambiosTests.test_wifi_se_desplaza_sin_paneles_inmovilizados) ... ok
+test_exposicion_no_seleccionada_no_toma_otro_bloque (test_correcciones_noviembre.FormulasYDuplicadosTests.test_exposicion_no_seleccionada_no_toma_otro_bloque) ... ok
+test_misma_busqueda_fcc_con_columnas_en_no_contiguas (test_correcciones_noviembre.FormulasYDuplicadosTests.test_misma_busqueda_fcc_con_columnas_en_no_contiguas) ... ok
+test_resumen_no_duplica_el_detalle_de_la_misma_fila (test_correcciones_noviembre.FormulasYDuplicadosTests.test_resumen_no_duplica_el_detalle_de_la_misma_fila) ... ok
+test_banda_eliminada_registro_invalido_y_no_sobrescritura (test_base_datos.BaseDatosTests.test_banda_eliminada_registro_invalido_y_no_sobrescritura) ... ok
+test_base_recibida_detalles_lte_alias_y_narrowband_scs (test_base_datos.BaseDatosTests.test_base_recibida_detalles_lte_alias_y_narrowband_scs) ... ok
+test_catalogo_3g_comun_editable_y_tablas_especificas (test_base_datos.BaseDatosTests.test_catalogo_3g_comun_editable_y_tablas_especificas) ... ok
+test_cli_base_nueva_y_respuestas_portables (test_base_datos.BaseDatosTests.test_cli_base_nueva_y_respuestas_portables) ... ok
+test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta (test_base_datos.BaseDatosTests.test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta) ... ERROR
+test_formato_completo_sin_inventar_rf_para_banda_nueva (test_base_datos.BaseDatosTests.test_formato_completo_sin_inventar_rf_para_banda_nueva) ... ok
+test_funciona_sin_plantillas_de_datos_heredados_ni_excel_original (test_base_datos.BaseDatosTests.test_funciona_sin_plantillas_de_datos_heredados_ni_excel_original) ... ok
+test_las_regiones_respetan_la_seleccion_con_la_fuente_nueva (test_base_datos.BaseDatosTests.test_las_regiones_respetan_la_seleccion_con_la_fuente_nueva) ... ok
+test_panel_2g_acumula_slots_y_conserva_bandas_y_carga (test_base_datos.BaseDatosTests.test_panel_2g_acumula_slots_y_conserva_bandas_y_carga) ... ok
+test_seleccion_vacia_no_expande_todas_las_bandas (test_base_datos.BaseDatosTests.test_seleccion_vacia_no_expande_todas_las_bandas) ... ok
+test_todas_las_familias_se_llenan_desde_la_base_recibida (test_base_datos.BaseDatosTests.test_todas_las_familias_se_llenan_desde_la_base_recibida) ... ERROR
+test_bandas_por_modo_se_reflejan_en_el_excel (test_interfaz_bandas.BandasTextoTests.test_bandas_por_modo_se_reflejan_en_el_excel) ... ok
+test_numeros_prefijos_romanos_y_bandas_nuevas (test_interfaz_bandas.BandasTextoTests.test_numeros_prefijos_romanos_y_bandas_nuevas) ... ok
+test_opciones_visibles_se_pueden_escribir_sin_ambiguedad (test_interfaz_bandas.BandasTextoTests.test_opciones_visibles_se_pueden_escribir_sin_ambiguedad) ... ok
+test_rechaza_vacio_desconocido_y_numero_ambiguo (test_interfaz_bandas.BandasTextoTests.test_rechaza_vacio_desconocido_y_numero_ambiguo) ... ok
+test_app_wlan_opciones_anteriores_y_otros_colapsados (test_interfaz_bandas.InterfazRealTests.test_app_wlan_opciones_anteriores_y_otros_colapsados) ... skipped 'Requiere una pantalla X11 para los widgets reales.'
+test_bandas_lte_variantes_5g_y_opciones_3g (test_interfaz_bandas.InterfazRealTests.test_bandas_lte_variantes_5g_y_opciones_3g) ... skipped 'Requiere una pantalla X11 para los widgets reales.'
+test_cambio_catalogo_y_respuestas_con_bandas_eliminadas (test_interfaz_bandas.InterfazRealTests.test_cambio_catalogo_y_respuestas_con_bandas_eliminadas) ... skipped 'Requiere una pantalla X11 para los widgets reales.'
+test_catm1_numeros_y_tecnologias_con_banda_fija (test_interfaz_bandas.InterfazRealTests.test_catm1_numeros_y_tecnologias_con_banda_fija) ... skipped 'Requiere una pantalla X11 para los widgets reales.'
+test_subpaneles_2g_colocacion_y_carga_antigua (test_interfaz_bandas.InterfazRealTests.test_subpaneles_2g_colocacion_y_carga_antigua) ... skipped 'Requiere una pantalla X11 para los widgets reales.'
+test_cero_negativos_y_referencias_son_entradas_validas (test_frame_2g3g.FechasNativasTests.test_cero_negativos_y_referencias_son_entradas_validas) ... ok
+test_compartidas_conservan_rangos_y_se_desplazan (test_frame_2g3g.FechasNativasTests.test_compartidas_conservan_rangos_y_se_desplazan) ... ok
+test_instalador_preserva_otros_metodos_y_es_idempotente (test_frame_2g3g.FechasNativasTests.test_instalador_preserva_otros_metodos_y_es_idempotente) ... ok
+test_version_desconocida_no_modifica_archivos (test_frame_2g3g.FechasNativasTests.test_version_desconocida_no_modifica_archivos) ... ok
+test_fechas_nativas_2g3g_y_sar_intacto (test_frame_2g3g.Generacion2G3GTests.test_fechas_nativas_2g3g_y_sar_intacto) ... ok
+test_dibujo_no_invierte_extremos_al_descartar_filas (test_restauracion_sar.FuentesAprobadasTests.test_dibujo_no_invierte_extremos_al_descartar_filas) ... ok
+test_motor_y_plantillas_del_adjunto (test_restauracion_sar.FuentesAprobadasTests.test_motor_y_plantillas_del_adjunto) ... ok
+test_no_permite_reescribir_apoyo_sar (test_restauracion_sar.FuentesAprobadasTests.test_no_permite_reescribir_apoyo_sar) ... ok
+
+======================================================================
+ERROR: test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta (test_base_datos.BaseDatosTests.test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Trabajo_Dekra/tests/test_base_datos.py", line 96, in test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta
+    self.assertEqual(row['SCS (kHz)'], 12.5)
+                     ~~~^^^^^^^^^^^^^
+KeyError: 'SCS (kHz)'
+
+======================================================================
+ERROR: test_todas_las_familias_se_llenan_desde_la_base_recibida (test_base_datos.BaseDatosTests.test_todas_las_familias_se_llenan_desde_la_base_recibida)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Trabajo_Dekra/tests/test_base_datos.py", line 250, in test_todas_las_familias_se_llenan_desde_la_base_recibida
+    'Conducted LTE NB-IoT', 'Conducted 5G', 'Conducted WiFi', 'Conducted BT-Custom'})
+                       ^^^^^^^^^^
+KeyError: 'Banda'
+
+======================================================================
+FAIL: test_solo_cambian_las_hojas_autorizadas (test_correcciones_noviembre.CuatroCambiosTests.test_solo_cambian_las_hojas_autorizadas)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Trabajo_Dekra/tests/test_correcciones_noviembre.py", line 68, in test_solo_cambian_las_hojas_autorizadas
+    self.assertEqual(contenido_fijo(self.xml(a,name,False)),contenido_fijo(self.xml(b,name)),name)
+AssertionError: b'<wo[18890 chars]"><f>MyTimestamp(AI3)</f><v></v></c><c r="BF3"[1848391 chars]eet>' != b'<wo[18890 chars]"><f>IF(AI3&lt;&gt;"",TEXT(NOW(),"[$-409]yyyy-[1866886 chars]eet>' : Conducted 2G-3G
+
+----------------------------------------------------------------------
+Ran 37 tests in 505.688s
+
+FAILED (failures=1, errors=2, skipped=5)
+
+
+REPETICIÓN TRAS ACTUALIZAR LAS EXPECTATIVAS
+test_solo_cambian_las_hojas_autorizadas (test_correcciones_noviembre.CuatroCambiosTests.test_solo_cambian_las_hojas_autorizadas) ... ok
+test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta (test_base_datos.BaseDatosTests.test_editar_base_cambia_tecnologias_y_sar_con_tuneup_intacta) ... ok
+test_todas_las_familias_se_llenan_desde_la_base_recibida (test_base_datos.BaseDatosTests.test_todas_las_familias_se_llenan_desde_la_base_recibida) ... ok
+test_fcc_conserva_su_tabla_y_sus_condiciones (test_revision_escritorio.ConversionTests.test_fcc_conserva_su_tabla_y_sus_condiciones) ... ok
+test_no_sustituye_referencia_ausente_por_posicion_vecina (test_revision_escritorio.ConversionTests.test_no_sustituye_referencia_ausente_por_posicion_vecina) ... ok
+test_visibilidad_no_toca_medidas_ni_ancho_de_columna (test_revision_escritorio.ConversionTests.test_visibilidad_no_toca_medidas_ni_ancho_de_columna) ... ok
+test_bateria_y_variability_recuperan_busqueda_fcc (test_revision_escritorio.GeneracionEscritorioTests.test_bateria_y_variability_recuperan_busqueda_fcc) ... ok
+test_canales_normales_usan_auxiliares_originales (test_revision_escritorio.GeneracionEscritorioTests.test_canales_normales_usan_auxiliares_originales) ... ok
+test_sar_solo_modifica_cc_cd_y_visibilidad (test_revision_escritorio.GeneracionEscritorioTests.test_sar_solo_modifica_cc_cd_y_visibilidad) ... ok
+test_todas_las_columnas_originales_mantienen_visibilidad (test_revision_escritorio.GeneracionEscritorioTests.test_todas_las_columnas_originales_mantienen_visibilidad) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 395.078s
+
+OK
+
+
+REVISIÓN FINAL
+test_base_parcial_no_pierde_canal_por_auxiliares_incompletos (test_revision_escritorio.ConversionTests.test_base_parcial_no_pierde_canal_por_auxiliares_incompletos) ... ok
+test_fcc_conserva_su_tabla_y_sus_condiciones (test_revision_escritorio.ConversionTests.test_fcc_conserva_su_tabla_y_sus_condiciones) ... ok
+test_no_sustituye_referencia_ausente_por_posicion_vecina (test_revision_escritorio.ConversionTests.test_no_sustituye_referencia_ausente_por_posicion_vecina) ... ok
+test_visibilidad_no_toca_medidas_ni_ancho_de_columna (test_revision_escritorio.ConversionTests.test_visibilidad_no_toca_medidas_ni_ancho_de_columna) ... ok
+test_bateria_y_variability_recuperan_busqueda_fcc (test_revision_escritorio.GeneracionEscritorioTests.test_bateria_y_variability_recuperan_busqueda_fcc) ... ok
+test_canales_normales_usan_auxiliares_originales (test_revision_escritorio.GeneracionEscritorioTests.test_canales_normales_usan_auxiliares_originales) ... ok
+test_sar_solo_modifica_cc_cd_y_visibilidad (test_revision_escritorio.GeneracionEscritorioTests.test_sar_solo_modifica_cc_cd_y_visibilidad) ... ok
+test_todas_las_columnas_originales_mantienen_visibilidad (test_revision_escritorio.GeneracionEscritorioTests.test_todas_las_columnas_originales_mantienen_visibilidad) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 33.178s
+
+OK

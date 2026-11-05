@@ -1,0 +1,24 @@
+PROGRAMA DE TOMA DE DATOS SAR — ESCRITORIO
+
+1. Extrae toda esta carpeta. No ejecutes el programa desde dentro del ZIP.
+2. Abre INICIAR_CUESTIONARIO.bat con doble clic.
+   También puedes ejecutar: python cuestionario_ensayo.py
+3. Elige tu base de datos XLSX y completa el formulario como antes.
+
+Necesita Python 3.11 o posterior con tkinter. Si faltan dependencias, abre
+una terminal dentro de esta carpeta y ejecuta:
+
+    python -m pip install -r requirements.txt
+
+Conserva la carpeta plantilla completa: contiene la información del Excel
+original y las columnas ocultas. No necesitas buscar ni subir el datasheet.
+La base de datos incluida es la última corregida; puedes elegir otra en el
+formulario sin sustituir las plantillas.
+
+La revisión corrige CC/CD de SAR y conserva la visibilidad de las columnas
+originales. El detalle de las comprobaciones y sus límites está en:
+
+    docs/revision_escritorio.md
+
+Esta entrega utiliza el cuestionario de escritorio. Incluye todo lo necesario
+para generar; excluye entornos Python, cachés y ejemplos Excel antiguos.

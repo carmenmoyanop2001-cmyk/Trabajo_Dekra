@@ -2,59 +2,13 @@
 
 El formulario genera un `.xlsm`, un resumen `.txt` y las respuestas `.json` para repetir el ensayo. **La base XLSX determina qué registros existen y sus valores tienen prioridad; el cuestionario selecciona cuáles se incluyen.** Las tecnologías recuperan sus pestañas completas del original: columnas, datos de las filas coincidentes, fórmulas, colores, combinaciones, desplegables, comentarios e imágenes. No hace falta aportar el Excel original al generar otro ensayo.
 
-`plantilla/originales/` conserva las 16 pestañas recibidas, junto con todas las partes de los archivos originales. El inventario identifica el origen y el SHA-256 de cada parte. Incluye también la copia íntegra de 5G con sus 220.322 filas y 25 bandas/variantes, que complementa el adjunto dividido que solo contenía n1. Su índice permite leer únicamente las bandas elegidas. SAR FCC-ISED y las otras cinco hojas protegidas conservan su contenido. En SAR EN solo se adaptan las fórmulas y resultados de CC/CD de las filas adicionales, según la petición del 4 de noviembre; se comprueba que el resto permanece idéntico.
+`plantilla/originales/` conserva las 16 pestañas recibidas, sus formatos, fórmulas y partes auxiliares. Incluye la copia íntegra de 5G y un índice para leer solo las bandas seleccionadas. No necesitas aportar el datasheet original para generar otro ensayo.
 
-La generación de SAR EN y SAR FCC-ISED y sus celdas de apoyo se han restaurado de **Trabajo_Dekra-main11.zip**, proporcionado como versión aprobada. Las tecnologías conservan la presentación completa de esta versión. [Comprobación contra el proyecto aprobado](docs/restauracion_sar_main11.md). La revisión posterior se limita a CATM1, NB-IoT, WiFi y CC/CD de SAR EN: [detalle de las cuatro correcciones](docs/correcciones_04_11.md).
-
-## Corrección aislada de AI en 2G-3G
-
-[Parche pequeño y Excel de prueba](entregas/Correccion_2G_3G.zip): conserva las cinco hojas del archivo recibido y adapta solo las fechas de 2G-3G para que no llamen a VBA al escribir potencias. [Alcance y comprobaciones](docs/frame_average_output_power_2g3g.md). La confirmación del bloqueo requiere probar la entrada en Excel de Windows. El parche incluye además la corrección del permiso denegado al ordenar temporales en carpetas de red; conserva exactamente el contenido de las tablas.
-
-## App Streamlit: todo desde el navegador
-
-### Publicar con una URL directa al formulario
-
-Para usarlo sin instalar Python en cada ordenador, publica el repositorio en **Streamlit Community Cloud**:
-
-1. Abre [Streamlit Community Cloud](https://share.streamlit.io/) e inicia sesión con GitHub.
-2. Pulsa **Create app** / **New app** y elige **Deploy a public app from GitHub**.
-3. Indica repositorio `carmenmoyanop2001-cmyk/Trabajo_Dekra`, rama `main` y archivo principal **`web/app.py`**.
-4. En **Advanced settings**, elige **Python 3.12**, la versión con la que se ha probado la app.
-5. Pulsa **Deploy**. Cuando termine, la dirección que muestra Streamlit abre directamente el formulario. Puedes guardarla como favorito y compartirla.
-
-El punto de entrada `web/app.py` usa la misma interfaz y el mismo generador. Su `requirements.txt` carga las dependencias de la app, sin exigir tkinter, Excel instalado ni el datasheet original. Las plantillas y la base inicial ya están en el repositorio. Los archivos que se carguen o generen desde la app no se escriben en GitHub. Guarda las descargas que quieras conservar: el alojamiento puede reiniciar las sesiones.
-
-### Ejecutar en tu ordenador
-
-Requiere **Python 3.11 o posterior**. Extrae la carpeta completa del proyecto y abre una terminal en esa carpeta. La primera vez instala las dependencias de la app:
-
-```sh
-python -m pip install -r requirements_streamlit.txt
-```
-
-Para abrirla:
-
-```sh
-python -m streamlit run app_streamlit.py
-```
-
-En Windows también puedes hacer doble clic en **INICIAR_STREAMLIT.bat** después de instalar las dependencias. Se abrirá el navegador en `http://localhost:8501`. Mantén la terminal abierta mientras uses la app; `Ctrl+C` la detiene.
-
-1. Carga la base XLSX desde la barra lateral, o utiliza la base incluida.
-2. Completa proyecto, regiones, exposure conditions, baterías, accesorios y tecnologías. Las bandas se escriben por números; debajo aparecen las etiquetas completas. En 2G solo se eligen las tecnologías y los slots acumulativos.
-3. Pulsa **Generar Excel** y después **Descargar Excel** o **Descargar todo en ZIP**.
-
-El ZIP del ensayo incluye `.xlsm`, `.json`, `.txt` y la base utilizada. Para repetirlo, carga esa base y el JSON en la barra lateral y pulsa **Cargar respuestas**. La app siempre utiliza la base que esté activa en pantalla, sin seguir rutas de archivos guardadas en un JSON de otro ordenador. Si cambias las opciones después de generar, las descargas anteriores se ocultan hasta regenerar el Excel.
-
-Las selecciones amplias, especialmente de 5G, pueden tardar varios minutos al conservar la matriz completa de ensayos del original.
-
-Esta versión funciona en tu ordenador y reutiliza el generador del cuestionario. Conserva SAR EN, SAR FCC-ISED, Overview, Tune-Up, Validations, Test Campaign y Pretesting-Others. El cuestionario de escritorio sigue disponible. Para compartir la app mediante una dirección web permanente se necesita alojarla como se explica arriba; ejecutar este comando no publica el proyecto en Internet.
-
-[Vista del cuestionario web](docs/streamlit_cuestionario.png) · [Vista de las descargas](docs/streamlit_descargas.png)
+La revisión actual conserva el cuestionario de escritorio y elimina la aplicación web. En SAR EN y SAR FCC-ISED solo se corrigen CC/CD: se restauran los enlaces de canal/frecuencia con los auxiliares originales cuando corresponden a la misma tecnología y banda, y las búsquedas originales para las filas adicionales. El resto de sus celdas, posiciones y combinaciones se conserva. La visibilidad de las columnas de las 16 hojas originales queda guardada en `plantilla/columnas_originales.json` y se aplica al generar. [Detalle y límites de la revisión](docs/revision_escritorio.md).
 
 ## Uso en Windows
 
-Requiere Python 3.10 o posterior, con tkinter.
+Requiere Python 3.11 o posterior, con tkinter.
 
 1. Extrae toda la carpeta del ZIP.
 2. Si es la primera instalación, ejecuta `python -m pip install -r requirements.txt`.
@@ -112,7 +66,7 @@ El segundo comando permite reutilizar respuestas con otra versión de la base. L
 
 ## Ejemplo y comprobaciones
 
-El ejemplo actual está en `ejemplos/Proyecto_correcciones_04_11.xlsm`, con las mismas respuestas de `ejemplo_sar_restaurado.json`: incorpora las cuatro correcciones del 4 de noviembre. La comparación confirma que solo cambian las hojas solicitadas y que SAR EN conserva todo salvo CC/CD. Los demás Excel e informes documentan versiones históricas, incluida la primera integración del original completo.
+Los ejemplos e informes con fecha anterior documentan versiones históricas. La revisión actual se comprueba en `tests/test_revision_escritorio.py` y se describe en `docs/revision_escritorio.md`.
 
 [Revisión de la presentación completa](docs/original_completo.md) · [Vista de las primeras filas](docs/vista_original_completo.png) · [Conservación de las hojas protegidas](docs/verificacion_correcciones_04_11.json)
 
@@ -120,8 +74,7 @@ El ejemplo actual está en `ejemplos/Proyecto_correcciones_04_11.xlsm`, con las 
 python -m unittest discover -s tests -v
 ```
 
-Las pruebas de producción están en `tests/test_restauracion_sar.py`, `tests/test_originales_completos.py`, `tests/test_base_datos.py`, `tests/test_tecnologias_visibles.py`, `tests/test_comentarios.py` y `tests/test_interfaz_bandas.py`: archivos originales íntegros, edición de datos, prioridad de la base, conservación íntegra de las celdas de apoyo y de las siete hojas protegidas, nombres 2G/3G, regiones, CLI y widgets. Las auditorías históricas usan `generar_heredado`, que no se utiliza desde el formulario ni la CLI.
+Las pruebas de producción están en `tests/test_restauracion_sar.py`, `tests/test_originales_completos.py`, `tests/test_base_datos.py`, `tests/test_tecnologias_visibles.py`, `tests/test_comentarios.py` y `tests/test_interfaz_bandas.py`: archivos originales íntegros, edición de datos, prioridad de la base, conservación de las celdas de apoyo, las hojas fijas y el contenido SAR fuera de CC/CD, nombres 2G/3G, regiones, CLI y widgets. Las auditorías históricas usan `generar_heredado`, que no se utiliza desde el formulario ni la CLI.
 
-Con las dependencias de Streamlit instaladas, `python -m unittest discover -s tests -p test_streamlit_app.py -v` comprueba el formulario web, los slots, la importación de respuestas, las descargas, la lectura de una base editada y la igualdad de las siete hojas protegidas frente al generador de escritorio.
 
 El paquete conserva VBA y la macro MyTimestamp. La validación Open XML comprueba estructura, sin ejecutar Microsoft Excel, cálculos ni macros. La interfaz se importa y se comprueban sus métodos de selección; la revisión visual y la apertura en Excel deben hacerse en un ordenador con pantalla. El proyecto VBA original puede mostrar su antiguo formulario de hojas: ciérralo para conservar las hojas ya generadas por el cuestionario.

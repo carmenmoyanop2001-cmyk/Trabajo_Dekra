@@ -85,7 +85,7 @@ class BaseDatosTests(unittest.TestCase):
                 result = generar(dict(DATA, base_datos=str(db)), output, log=lambda *_: None)
                 self.assertEqual(result['filas']['Conducted LTE'], 3)
                 self.assertEqual(result['base_datos']['archivo'], 'datos.xlsx')
-                _, data = visible_table(output, 4)
+                _, data = visible_table(output, 4, incluir_ocultas=True)
                 self.assertEqual({r['Canal'] for r in data}, {123456, 123457, 123458})
                 self.assertEqual({r['Frecuencia (MHz)'] for r in data}, {9001.25 + offset, 9010.5 + offset, 9020.75 + offset})
                 for row in data:
@@ -104,7 +104,14 @@ class BaseDatosTests(unittest.TestCase):
                     for row in sar.findall('s:sheetData/s:row', NS)[2:]:
                         c = cells(row)
                         self.assertEqual(value(c['BU']), 'FDD101')
-                        self.assertIn(float(value(c['CD'])), {r[3] for r in records})
+                        if value(c['CD']) == 'N/A':
+                            # Las filas adicionales esperan medidas SAR; ya
+                            # no heredan el canal genérico de las filas normales.
+                            self.assertIsNotNone(c['CD'].find('s:f', NS))
+                            self.assertTrue(any(marker in value(c['CA']) for marker in
+                                ('Battery check', 'Accesorio', 'Front Face', 'Front of Face', 'Variability')))
+                        else:
+                            self.assertIn(float(value(c['CD'])), {r[3] for r in records})
                         self.assertEqual(float(value(c['BZ'])), bw)
                     if number == 11:
                         mode = sar.find('s:sheetData/s:row/s:c[@r="BY3"]/s:f', NS)
@@ -123,7 +130,8 @@ class BaseDatosTests(unittest.TestCase):
                 with zipfile.ZipFile(output) as z, zipfile.ZipFile(Path(DIR_PLANTILLA) / 'plantilla_base.zip') as stored:
                     for number in (2, 10, 13, 14):
                         part = f'xl/worksheets/sheet{number}.xml'
-                        self.assertEqual(z.read(part), stored.read(part))
+                        from comparacion_sar import contenido_fijo
+                        self.assertEqual(contenido_fijo(z.read(part)), contenido_fijo(stored.read(part)))
                 outputs.append(result['base_datos']['sha256'])
             self.assertNotEqual(outputs[0], outputs[1])
 
@@ -245,7 +253,7 @@ class BaseDatosTests(unittest.TestCase):
                        'Conducted LTE NB-IoT': 6, 'Conducted 5G': 7, 'Conducted WiFi': 8, 'Conducted BT-Custom': 9}
             for name, number in numbers.items():
                 expected = [r for r in selected if hoja_tecnologia(r.tech) == name]
-                rows = visible_table(output, number)[1]
+                rows = visible_table(output, number, incluir_ocultas=True)[1]
                 self.assertGreaterEqual(len(rows), len(expected))
                 self.assertEqual({(r['Banda'], r['Canal'], r['Frecuencia (MHz)']) for r in rows},
                                  {(r.band, r.channel, r.frequency) for r in expected})
@@ -270,7 +278,9 @@ class BaseDatosTests(unittest.TestCase):
                                       tecnologias={'2G': {'GSM': True, 'bandas': ['900']}}), output, log=lambda *_: None)
                 self.assertEqual({s for s in result['hojas'] if s.startswith('SAR ')}, expected)
                 with zipfile.ZipFile(output) as z, zipfile.ZipFile(Path(DIR_PLANTILLA) / 'plantilla_base.zip') as source:
-                    self.assertEqual(z.read('xl/worksheets/sheet2.xml'), source.read('xl/worksheets/sheet2.xml'))
+                    from comparacion_sar import contenido_fijo
+                    self.assertEqual(contenido_fijo(z.read('xl/worksheets/sheet2.xml')),
+                                     contenido_fijo(source.read('xl/worksheets/sheet2.xml')))
 
     def test_seleccion_vacia_no_expande_todas_las_bandas(self):
         cat = Catalogo()

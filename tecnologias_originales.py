@@ -914,7 +914,8 @@ def escribir(plan, output, planes, overview=None):
                         after = deepcopy(col);after.set('min',str(index+1));cols.insert(at,after)
             attributes=attributes or dict(width='25',customWidth='1')
             attributes.update(min=str(index),max=str(index))
-            attributes.pop('hidden',None)
+            # Las columnas originales mantienen su visibilidad. Solo las
+            # columnas nuevas, añadidas por la base, carecen de ese atributo.
             if extra in plan.extras.values():attributes.update(width='25',customWidth='1')
             E.SubElement(cols,_q('col'),**attributes)
         cols[:] = sorted(cols,key=lambda c:int(c.get('min')))

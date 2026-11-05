@@ -21,7 +21,7 @@ def cell_value(cell):
     return int(value) if value.is_integer() else value
 
 
-def table(path, number):
+def table(path, number, incluir_ocultas=False):
     with zipfile.ZipFile(path) as z:
         root = E.fromstring(z.read(f'xl/worksheets/sheet{number}.xml'))
     ref = root.find('s:autoFilter', NS).get('ref')
@@ -38,12 +38,14 @@ def table(path, number):
     header = next(r for r in rows if int(r.get('r')) == header_row)
     for cell in header:
         col = col2n(re.sub(r'\d', '', cell.get('r')))
-        if col <= last_col and col not in hidden:
+        if col <= last_col and (incluir_ocultas or col not in hidden):
             label = cell_value(cell)
             if isinstance(label,str):label=re.sub(r'\s+',' ',label).strip()
             aliases = {2:'Región',10:'Tecnología',11:'Banda',20:'Canal',21:'Frecuencia (MHz)'}
             if header_row > 1 and col in aliases:
                 label = aliases[col]
+            if incluir_ocultas and header_row > 1 and col == 12:
+                label = 'SCS (kHz)'
             if label:
                 label = {'Frequency':'Frecuencia (MHz)','Notes':'Notas'}.get(label,label)
                 if header_row>1 and col==col2n('M'):label='Bandwidth (MHz)'

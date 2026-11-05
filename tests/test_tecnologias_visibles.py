@@ -1,4 +1,4 @@
-from comparacion_sar import sin_canales
+from comparacion_sar import sin_canales, contenido_fijo
 """Presentación de tecnologías sin modificar las siete pestañas protegidas."""
 from pathlib import Path
 import re
@@ -73,7 +73,7 @@ class TecnologiasVisiblesTests(unittest.TestCase):
         with zipfile.ZipFile(before) as old, zipfile.ZipFile(after) as new:
             for name in PROTEGIDAS:
                 a,b=old.read(old_names[name][0]),new.read(new_names[name][0])
-                self.assertEqual(sin_canales(a),sin_canales(b),name) if name=='SAR EN' else self.assertEqual(a,b,name)
+                self.assertEqual(sin_canales(a),sin_canales(b),name) if name.startswith('SAR ') else self.assertEqual(contenido_fijo(a),contenido_fijo(b),name)
             for part in old.namelist():
                 if part.startswith('xl/media/') or part in ('xl/vbaProject.bin', 'xl/drawings/drawing2.xml'):
                     self.assertEqual(old.read(part), new.read(part), part)
@@ -106,7 +106,7 @@ class TecnologiasVisiblesTests(unittest.TestCase):
                                  visible.find('s:sheetPr', NS).get('codeName'))
                 if display != name:
                     self.assertIsNone(current.find('s:sheetPr', NS).get('codeName'))
-        self.assertEqual(set(final['pestanas_protegidas_identicas']), PROTEGIDAS)
+        self.assertEqual(set(final['pestanas_protegidas_identicas']), PROTEGIDAS - {'SAR EN','SAR FCC-ISED'} - set(final['columnas_originales']['modificadas']))
         return final
 
     def test_nombres_2g_3g_y_proteccion_con_y_sin_conducidos(self):

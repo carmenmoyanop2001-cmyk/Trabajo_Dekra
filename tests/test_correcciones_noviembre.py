@@ -10,7 +10,8 @@ from base_datos import Registro,Catalogo
 from generador_excel import generar
 from tecnologias_originales import coincidencias_especificas,_col,_value
 from sar_en_canales import adaptar_formula
-from comparacion_sar import sin_canales
+from comparacion_sar import sin_canales, contenido_fijo
+from corregir_2g3g import normalizar_fechas
 from test_tecnologias_visibles import workbook
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -61,13 +62,19 @@ class CuatroCambiosTests(unittest.TestCase):
                 while row.getprevious() is not None:del row.getparent()[0]
 
     def test_solo_cambian_las_hojas_autorizadas(self):
-        allowed={'Conducted LTE CATM1','Conducted LTE NB-IoT','Conducted WiFi','SAR EN'}
+        allowed={'Conducted LTE CATM1','Conducted LTE NB-IoT','Conducted WiFi','SAR EN','SAR FCC-ISED'}
         with ZipFile(self.before) as a,ZipFile(self.after) as b:
             for name in self.names_before:
                 if name not in allowed:
-                    self.assertEqual(self.xml(a,name,False),self.xml(b,name),name)
+                    previous = self.xml(a,name,False)
+                    if name == 'Conducted 2G-3G':
+                        root = E.fromstring(previous)
+                        normalizar_fechas(root)
+                        previous = E.tostring(root)
+                    self.assertEqual(contenido_fijo(previous),contenido_fijo(self.xml(b,name)),name)
             self.assertEqual(a.read('xl/styles.xml'),b.read('xl/styles.xml'))
-            self.assertEqual(sin_canales(self.xml(a,'SAR EN',False)),sin_canales(self.xml(b,'SAR EN')))
+            for name in ('SAR EN','SAR FCC-ISED'):
+                self.assertEqual(sin_canales(self.xml(a,name,False)),sin_canales(self.xml(b,name)))
 
     def test_catm1_solo_etiqueta_lte(self):
         with ZipFile(self.after) as z:

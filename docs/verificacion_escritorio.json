@@ -1,0 +1,57 @@
+{
+  "fecha": "2026-11-05",
+  "base_codigo": "6f1ca2ba79e315d2fabfb025076e34fbfd22aa16",
+  "base_confirmada_por_usuario": "La última entrega guardada coincide con el ZIP main12 adjuntado.",
+  "python": "3.12.14",
+  "proyecto_recibido": {
+    "archivo": "Proyecto.xlsm",
+    "bytes": 17376710,
+    "sha256": "ae30d9d0570cad159b2aa5f39a985322464d98dd59eed2dd8fd441554a26b444",
+    "openxml_errores": 0,
+    "paquete_errores": 0,
+    "wifi_formulas_distintas_analizadas": 4165,
+    "wifi_errores_sintaxis": 0
+  },
+  "regresion": {
+    "pruebas_distintas_superadas": 40,
+    "widgets_omitidos_sin_pantalla": 5,
+    "primera_pasada": {
+      "total": 37,
+      "superadas": 29,
+      "omitidas": 5,
+      "fallos_expectativas_antiguas": 3
+    },
+    "repeticion_expectativas_corregidas_y_revision": {
+      "total": 10,
+      "superadas": 10
+    },
+    "revision_final": {
+      "total": 8,
+      "superadas": 8
+    },
+    "cambios_expectativas": [
+      "Permitir la corrección de fechas 2G que ya tenía la última versión.",
+      "Verificar también los campos RF que vuelven a estar ocultos como en el original.",
+      "Las filas adicionales SAR sin medidas muestran N/A mediante la fórmula original."
+    ]
+  },
+  "base_datos_sha256": "e3eadb68532af6a80d6eb6eb868b61c36d058cb2e642473a0937f15871233588",
+  "entrega": {
+    "entrada": "INICIAR_CUESTIONARIO.bat",
+    "cuestionario": "cuestionario_ensayo.py",
+    "columnas_originales_guardadas": 16,
+    "archivo": "Trabajo_Dekra_escritorio.zip",
+    "validacion_crc": "sin errores",
+    "importacion_desde_carpeta_extraida": "correcta",
+    "generacion_desde_carpeta_extraida": "correcta",
+    "ensayo_openxml_errores": 0,
+    "formulas_cc_cd": 1600,
+    "formulas_cc_cd_distintas": 694,
+    "errores_sintaxis_cc_cd": 0
+  },
+  "excel_windows": {
+    "ejecutado": false,
+    "causa_cierres_confirmada": false,
+    "pendiente": "Abrir y editar el Excel generado con Microsoft Excel de Windows."
+  }
+}

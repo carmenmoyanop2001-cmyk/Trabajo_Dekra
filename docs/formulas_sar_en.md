@@ -1,3 +1,5 @@
+> Documento de una versión anterior. La adaptación vigente de CC/CD se describe en [revision_escritorio.md](revision_escritorio.md).
+
 # Filas añadidas a SAR EN
 
 Se conservan las filas originales seleccionadas, con sus valores, fórmulas y estilos. Tras los TBD de cada bloque de tecnología, banda, exposure condition y ancho de banda se añaden `TBD - Battery check 1` hasta `TBD - Battery check N`. En Body se añade también `Front Face` y las filas `Accesorio n: nombre`. No se añaden filas Variability. El siguiente bloque se desplaza; las reglas de formato condicional y validación también se amplían.

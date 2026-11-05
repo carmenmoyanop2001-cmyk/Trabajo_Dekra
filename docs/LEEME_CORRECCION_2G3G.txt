@@ -5,11 +5,11 @@ CORRECCIÓN DE LA ENTRADA DE POTENCIA EN 2G-3G
    El libro conserva sus mismas cinco pestañas y sus datos originales.
 
 2. Para aplicar la corrección a tu programa actual:
-   Cierra primero el cuestionario o Streamlit.
+   Cierra primero el cuestionario.
    Haz doble clic en APLICAR_CORRECCION_2G_3G.bat.
    Selecciona la carpeta de tu programa actual, donde está cuestionario_ensayo.py.
    Espera al mensaje de instalación completada.
-   Después inicia cuestionario_ensayo.py o INICIAR_STREAMLIT.bat como antes.
+   Después inicia cuestionario_ensayo.py como antes.
 
 El parche adapta solamente las fechas de 2G-3G. Guarda copias .antes_2g3g
 antes de actualizar el código. Si no reconoce la versión, se detiene sin instalar.
