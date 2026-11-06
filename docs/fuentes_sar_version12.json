@@ -1,0 +1,10 @@
+{
+  "base_actual": "823dca2e4d4565f64ac279cdd2cbe8e70a6ba3b9",
+  "base_sar_version12": "6f1ca2ba79e315d2fabfb025076e34fbfd22aa16",
+  "identificacion": "La revisión anterior registra la confirmación del usuario de que main12 coincide con 6f1ca2b. No se ha podido descargar el ZIP adjunto; se usa esa copia del historial.",
+  "referencia": "docs/verificacion_escritorio.json:base_confirmada_por_usuario",
+  "fuentes": {
+    "sar_version12_motor.py:_sar": "30f6e649d730c5b9c62c80bb3f51f36153812163bda99591d74c88acc95b45fe",
+    "sar_version12_canales.py": "96e2cf7695e2b1f119ea2b9245165b06c57de98fc409e2609698aefe6506a399"
+  }
+}

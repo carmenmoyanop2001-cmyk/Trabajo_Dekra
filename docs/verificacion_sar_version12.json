@@ -1,0 +1,40 @@
+{
+  "partes_modificadas": [
+    "xl/styles.xml",
+    "xl/worksheets/sheet11.xml",
+    "xl/worksheets/sheet12.xml",
+    "xl/workbook.xml"
+  ],
+  "hojas_identicas": {
+    "Overview": true,
+    "Tune-Up": true,
+    "Conducted 2G-3G": true,
+    "Conducted LTE": true,
+    "Conducted LTE CATM1": true,
+    "Conducted LTE NB-IoT": true,
+    "Conducted 5G": true,
+    "Conducted WiFi": true,
+    "Conducted BT-Custom": true,
+    "Validations": true,
+    "Test Campaign": true,
+    "Pretesting-Others": true,
+    "Liquids-DRAFT": true,
+    "Pendiente": true
+  },
+  "sar": {
+    "base": "6f1ca2ba79e315d2fabfb025076e34fbfd22aa16",
+    "pestanas": [
+      "SAR EN",
+      "SAR FCC-ISED"
+    ],
+    "resto_del_paquete_identico": true
+  },
+  "base_actual": "823dca2e4d4565f64ac279cdd2cbe8e70a6ba3b9",
+  "base_sar_version12": "6f1ca2ba79e315d2fabfb025076e34fbfd22aa16",
+  "sar_coinciden_con_referencia": true,
+  "validacion_paquete_errores": [],
+  "validacion_openxml_errores": 0,
+  "excel_windows_ejecutado": false,
+  "pruebas_superadas": 21,
+  "archivo_prueba_sha256": "caa7426f6d6b01bf17ecc1c21da4c08ec33bd070b27256063fe4d3c6745825bb"
+}

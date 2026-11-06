@@ -89,6 +89,9 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
         resumen['columnas_originales'] = ocultar_columnas_originales(candidate)
         resumen['pestanas_protegidas_identicas'] = [name for name in resumen.get('pestanas_protegidas_identicas', [])
                                                    if name not in resumen['columnas_originales']['modificadas']]
+        if catalogo is not None:
+            from restaurar_sar_version12 import aplicar as restaurar_sar
+            restaurar_sar(candidate, datos, catalogo, dir_plantilla or DIR_PLANTILLA, resumen)
         errors = validar(str(candidate), verbose=False)
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))
