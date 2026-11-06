@@ -1,5 +1,7 @@
 # Cierre de Excel al editar AI — archivo recibido el 6 de noviembre
 
+Actualización posterior: el usuario pide incorporar el ajuste al programa. El generador lo incluye ahora en cada libro nuevo y verifica la configuración antes de publicar. La prueba descrita más abajo se conserva como antecedente. Sigue pendiente la confirmación del cierre en Windows; no se considera una causa demostrada ni una resolución confirmada.
+
 El registro de Windows identifica Excel `16.0.5530.1000`, módulo `EXCEL.EXE`, excepción `c0000005` y desplazamiento `00300ee3`. Es una infracción de acceso dentro de Excel. El evento no identifica una celda, fórmula o causa concreta. La clave `Bitness=x86` pertenece a Outlook; no demuestra por sí sola la arquitectura del ejecutable de Excel.
 
 Se ha podido descargar y analizar el `Proyecto.xlsm` que falla (24.704.314 bytes). Conserva el VBA de la entrega anterior y las correcciones de fechas de 2G-3G. La configuración real sigue en cálculo automático, con recálculo al abrir y `forceFullCalc=0`.

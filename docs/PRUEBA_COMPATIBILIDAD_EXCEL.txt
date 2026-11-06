@@ -1,5 +1,9 @@
 PRUEBA DEL CIERRE DE EXCEL AL EDITAR AI
 
+NOTA: la nueva entrega del generador aplica automaticamente este ajuste
+a cada archivo nuevo. Estas instrucciones describen el ZIP de prueba
+anterior; no son un paso necesario despues de generar el Excel.
+
 1. Extrae los archivos del ZIP en una carpeta.
 2. Haz doble clic en APLICAR_COMPATIBILIDAD_EXCEL.bat.
 3. Selecciona el Proyecto.xlsm que se cierra al escribir en AI.

@@ -39,8 +39,8 @@
   },
   "funciones_adaptadas": {
     "_generar": {
-      "sha256_actual": "d9644ebceae73bca8a2cb9c2bef2d2a8aa1e119b87c9a65205f2e2277a0ab490",
-      "motivo": "Mantener cálculo automático por dependencias y quitar el recálculo completo forzado en cada edición; investigación del cierre al editar AI."
+      "sha256_actual": "b264c73cfc824a20ef9152ff8df5a17a899e15408cd0972713516abcff6a5e62",
+      "motivo": "Mantener cálculo automático por dependencias, forceFullCalc=0 y aplicar concurrentCalc=0 en cada generación, por petición del usuario de 6 de noviembre. El efecto sobre el cierre sigue pendiente de confirmar en Windows."
     }
   }
 }

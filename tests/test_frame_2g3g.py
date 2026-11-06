@@ -86,6 +86,7 @@ class Generacion2G3GTests(unittest.TestCase):
                 self.assertEqual(calc.get('calcMode'),'auto')
                 self.assertEqual(calc.get('fullCalcOnLoad'),'1')
                 self.assertEqual(calc.get('forceFullCalc'),'0')
+                self.assertEqual(calc.get('concurrentCalc'),'0')
                 root=E.fromstring(z.read('xl/worksheets/sheet3.xml'))
                 formulas=[f.text or '' for f in root.findall('.//s:f',NS)]
                 self.assertFalse(any('MyTimestamp(' in f for f in formulas))

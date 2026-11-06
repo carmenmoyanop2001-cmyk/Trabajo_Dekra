@@ -1,0 +1,24 @@
+{
+  "base": "9713a8d7c1242b4c5ed31eb68040be6fc8f5a882",
+  "partes_modificadas": [
+    "xl/workbook.xml"
+  ],
+  "configuracion_calculo": {
+    "calcId": "0",
+    "calcMode": "auto",
+    "fullCalcOnLoad": "1",
+    "forceFullCalc": "0",
+    "calcOnSave": "1",
+    "concurrentCalc": "0"
+  },
+  "hojas_formulas_sar_estilos_macros_e_imagenes_identicos": true,
+  "equivalente_a_ajuste_probado": true,
+  "archivo_sha256": "ae283ecac343ca4083d9c6a99e35bbc9afaa84be1001bc4d43c247b948c9fd4f",
+  "excel_windows_ejecutado": false,
+  "cierre_en_windows_resuelto_confirmado": false,
+  "pruebas_superadas": 32,
+  "generaciones_nuevas_verificadas": 3,
+  "sdk_openxml_errores": 0,
+  "ajuste_aplicado_por_generador": true,
+  "herramienta_de_copias_necesaria": false
+}

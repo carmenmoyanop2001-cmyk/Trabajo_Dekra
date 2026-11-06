@@ -5,6 +5,11 @@ PROGRAMA DE TOMA DE DATOS SAR — ESCRITORIO
    También puedes ejecutar: python cuestionario_ensayo.py
 3. Elige tu base de datos XLSX y completa el formulario como antes.
 
+El ajuste de compatibilidad de calculo se aplica automaticamente a cada
+Excel nuevo. No tienes que ejecutar la herramienta de copias ni reparar
+el archivo despues de generarlo. Se conservan los SAR de main12.
+Sigue pendiente comprobar en tu Excel si este ajuste evita el cierre en AI.
+
 Necesita Python 3.11 o posterior con tkinter. Si faltan dependencias, abre
 una terminal dentro de esta carpeta y ejecuta:
 

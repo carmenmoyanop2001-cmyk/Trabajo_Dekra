@@ -96,6 +96,7 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))
         _validar_hojas_sar(candidate, datos['region'])
+        resumen['configuracion_calculo'] = _validar_calculo(candidate)
         os.replace(candidate, target)
     log(f'Excel validado: {target}')
     return resumen
@@ -105,6 +106,20 @@ def _hojas_sar(regiones):
     regions = seleccion_multiple(regiones)
     return (['SAR EN'] if 'EN' in regions else []) + (
         ['SAR FCC-ISED'] if any(r in regions for r in ('FCC', 'ISED')) else [])
+
+
+def _validar_calculo(path):
+    """Verificar la configuración final, también después de reconstruir los SAR."""
+    import xml.etree.ElementTree as ET
+    with zipfile.ZipFile(path) as z:
+        root = ET.fromstring(z.read('xl/workbook.xml'))
+    calc = root.find('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}calcPr')
+    if (calc is None or calc.get('calcMode') != 'auto'
+            or calc.get('forceFullCalc') not in ('0', 'false')
+            or calc.get('concurrentCalc') not in ('0', 'false')):
+        raise ValueError('El libro no conserva la configuración de cálculo del generador. '
+                         'No se ha publicado el Excel. Revisa que uses la carpeta completa de esta entrega.')
+    return dict(calc.attrib)
 
 
 def _validar_hojas_sar(path, regiones):
@@ -281,7 +296,9 @@ def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None):
         # Recalcular las cachés al abrir, manteniendo después el cálculo
         # automático de dependencias. forceFullCalc=1 repetía todo el libro
         # en cada entrada, incluidas decenas de miles de llamadas VBA ajenas.
-        calc = '<calcPr calcId="0" calcMode="auto" fullCalcOnLoad="1" forceFullCalc="0" calcOnSave="1"/>'
+        # El ajuste de compatibilidad se incorpora en cada libro nuevo.
+        # Su efecto sobre el cierre de Excel sigue pendiente de confirmar en Windows.
+        calc = '<calcPr calcId="0" calcMode="auto" fullCalcOnLoad="1" forceFullCalc="0" calcOnSave="1" concurrentCalc="0"/>'
         if re.search(r'<calcPr\b', wb):
             wb = re.sub(r'<calcPr\b[^>]*/>', calc, wb)
         else:
