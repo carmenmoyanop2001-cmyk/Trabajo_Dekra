@@ -1,0 +1,55 @@
+{
+  "partes_modificadas": [
+    "xl/workbook.xml"
+  ],
+  "hojas_identicas": [
+    "Overview",
+    "Tune-Up",
+    "Conducted 2G-3G",
+    "Conducted LTE",
+    "Conducted LTE CATM1",
+    "Conducted LTE NB-IoT",
+    "Conducted 5G",
+    "Conducted WiFi",
+    "Validations",
+    "SAR EN",
+    "SAR FCC-ISED",
+    "Test Campaign",
+    "Pretesting-Others",
+    "Liquids-DRAFT",
+    "Pendiente"
+  ],
+  "calculo_original": {
+    "calcId": "0",
+    "calcMode": "auto",
+    "fullCalcOnLoad": "1",
+    "forceFullCalc": "0",
+    "calcOnSave": "1"
+  },
+  "calculo_copia": {
+    "calcId": "0",
+    "calcMode": "auto",
+    "fullCalcOnLoad": "1",
+    "forceFullCalc": "0",
+    "calcOnSave": "1",
+    "concurrentCalc": "0"
+  },
+  "vba_identico": true,
+  "copia_sha256": "0c8a0569eaa2f0abcab570a52c7371445178b7ffee02796c3c7f8a0e6977c5ed",
+  "excel_windows_ejecutado": false,
+  "cierre_resuelto_confirmado": false,
+  "validacion_paquete": [],
+  "fuente_sha256": "206f39dd8156e483d81797004b0ac8bd45e9350cbefa53fb0b335275573fbce6",
+  "formulas_fuente": 858712,
+  "registro_windows": {
+    "excel": "16.0.5530.1000",
+    "modulo": "EXCEL.EXE",
+    "excepcion": "c0000005",
+    "offset": "00300ee3",
+    "fecha": "2026-11-06 11:15:31",
+    "arquitectura_excel": "sin confirmar; x86 solo procede de la clave de Outlook"
+  },
+  "pruebas_automatizadas_superadas": 6,
+  "sdk_openxml_errores": 0,
+  "generador_predeterminado_modificado": false
+}

@@ -1,0 +1,21 @@
+PRUEBA DEL CIERRE DE EXCEL AL EDITAR AI
+
+1. Extrae los archivos del ZIP en una carpeta.
+2. Haz doble clic en APLICAR_COMPATIBILIDAD_EXCEL.bat.
+3. Selecciona el Proyecto.xlsm que se cierra al escribir en AI.
+4. Se creara Proyecto_compatibilidad.xlsm junto al original.
+5. Cierra Excel, abre esa copia y escribe un numero en la columna AI.
+
+La copia cambia solo la opcion de calculo paralelo del libro. El calculo
+automatico se conserva. No se cambian hojas, datos, formulas, colores,
+posiciones, formatos ni macros. No se sobrescribe el archivo original.
+
+Es una prueba de compatibilidad: falta confirmar en Excel de Windows si
+evita el cierre. No identifica por si sola la causa del fallo.
+
+Si la copia sigue cerrandose, indica que ha ocurrido con la copia
+Proyecto_compatibilidad.xlsm. Si funciona, se podra aplicar ese mismo
+ajuste al generador sin modificar ninguna de las pestanas.
+
+La herramienta utiliza solo Python y su biblioteca estandar; no instala
+dependencias ni cambia la configuracion de Windows o del programa.
