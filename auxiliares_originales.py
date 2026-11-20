@@ -70,8 +70,14 @@ def referencia_sar(text,planes,banda,antena=None):
         family=_sheetname(m[1]);plan=planes.get(family)
         if plan is None:
             return m[0]
-        first=(fila_auxiliar_5g(plan,int(m[5]),m[3],banda,antena) if plan.familia=='Conducted 5G' and col2n(m[3])>=col2n('BT') else fila_original(plan,int(m[5]),banda))
-        last=fila_original(plan,int(m[9]),banda) if m[7] else first
+        if plan.familia=='Conducted LTE' and col2n(m[3])>=col2n('BT'):
+            first=fila_auxiliar_lte(plan,int(m[5]),m[3],banda,antena)
+        else:
+            first=(fila_auxiliar_5g(plan,int(m[5]),m[3],banda,antena) if plan.familia=='Conducted 5G' and col2n(m[3])>=col2n('BT') else fila_original(plan,int(m[5]),banda))
+        if m[7] and plan.familia=='Conducted LTE' and col2n(m[7])>=col2n('BT'):
+            last=fila_auxiliar_lte(plan,int(m[9]),m[7],banda,antena)
+        else:
+            last=fila_original(plan,int(m[9]),banda) if m[7] else first
         if col2n(m[3])<col2n('BT'):
             # Una referencia directa a una entrada se reubica en la tabla visible.
             mapped=plan.mapped(first)
@@ -218,3 +224,58 @@ def fila_auxiliar_5g(plan,old,column,banda,antena):
         same_scs=[c for c in choices if _norm(c[2])==_norm(origin[1])]
         choices=exact or same_scs or choices
     return choices[min(origin[3],len(choices)-1) if origin else 0][0]
+
+
+def fila_auxiliar_lte(plan,old,column,banda,antena):
+    """Localizar los auxiliares LTE por banda y puerto, no por desplazamiento.
+
+    El número de filas RF por puerto depende de los anchos de banda admitidos
+    en cada banda. Un desplazamiento tomado de FDD1 no sirve para FDD28.
+    """
+    from tecnologias_originales import _fuente,_celda,_value,_col,_norm
+    if not hasattr(plan,'catalogo_auxiliares_lte'):
+        targets=defaultdict(list);source={};ranks={}
+        columns={'CH','CI','CJ','CK','CQ','CR','CS','CT','CZ','DA','DB','DC'}
+        with ZipFile(plan.archivo) as z:
+            overview=E.fromstring(z.read('xl/worksheets/sheet1.xml'))
+            ports={cell.get('r'):_norm(_value(cell,plan.strings)) for cell in overview.findall('s:sheetData/s:row/s:c',NS)}
+            plan.puertos_auxiliares_lte=ports
+            for row in _fuente(z,[plan.parte]):
+                number=int(row.get('r'))
+                if number>2:
+                    band=_norm(_value(_celda(row,'K'),plan.strings))
+                    g=_celda(row,'G')
+                    text=g.findtext('s:f',namespaces=NS) if g is not None else ''
+                    match=re.search(r"'?Overview'?!(\$?E\$?\d+)",text or '')
+                    port=ports.get(match[1].replace('$','')) if match else _norm(_value(g,plan.strings))
+                    scs=_norm(_value(_celda(row,'L'),plan.strings))
+                    bw=_norm(_value(_celda(row,'M'),plan.strings))
+                    for cell in row:
+                        col=_col(cell)
+                        if col not in columns or (cell.find('s:f',NS)is None and cell.findtext('s:v',namespaces=NS)in(None,'')):
+                            continue
+                        group=(band,col,port,scs,bw)
+                        previous=ranks.get(group)
+                        rank=previous[1]+1 if previous and previous[0]==number-1 else 0
+                        ranks[group]=(number,rank)
+                        item=(number,port,scs,bw,rank)
+                        targets[band,col].append(item);source[number,col]=item
+                row.clear()
+                while row.getprevious() is not None:del row.getparent()[0]
+        plan.catalogo_auxiliares_lte=(targets,source)
+    targets,source=plan.catalogo_auxiliares_lte
+    choices=targets.get((_norm(banda),column),[])
+    if not choices:raise ValueError('No existe el auxiliar original LTE '+str(banda)+' '+column)
+    origin=source.get((old,column))
+    match=re.search(r"'?Overview'?!(\$?[HE]\$?\d+)",str(antena))
+    wanted=plan.puertos_auxiliares_lte.get(match[1].replace('$','').replace('H','E')) if match else (origin[1]if origin else None)
+    if wanted is not None:
+        ports=[item for item in choices if item[1]==wanted]
+        if not ports:raise ValueError('No existe el puerto LTE solicitado: '+str(antena))
+        choices=ports
+    if origin:
+        exact=[item for item in choices if item[2:4]==origin[2:4]]
+        same_scs=[item for item in choices if item[2]==origin[2]]
+        choices=exact or same_scs or choices
+    rank=origin[4]if origin else 0
+    return next((item[0]for item in choices if item[4]==rank),choices[0][0])
