@@ -1,0 +1,38 @@
+ACTUALIZACIÓN DEKRA — 5G, POSICIÓN DE TABLAS Y ENLACES SAR
+
+Para iniciar esta versión completa, consulta README.md en la carpeta principal.
+
+Qué cambia
+- n77/n78: las variantes se eligen al marcar las regiones, también al generar
+  desde JSON. CE/EN utiliza n77 o n78; FCC añade part O y part Q;
+  ISED utiliza n77 RSS-192 para ambas, tal como se indicó en la petición.
+  Las selecciones combinadas se unen sin duplicados y cada variante queda
+  asignada a su región para no mezclar los procedimientos SAR.
+- El formulario de selección de hojas no se abre automáticamente al abrir
+  el Excel generado. Se conservan las demás macros de la plantilla revisada.
+- Las tablas de tecnología empiezan en la fila 1: cabeceras 1 y 2 y datos
+  desde la fila 3. No quedan filas del apoyo RF delante de la tabla visible.
+- Los cálculos de apoyo se conservan en pestañas internas veryHidden.
+  Las referencias SAR originales se reubican para leer la tabla visible.
+  Por ejemplo, un auxiliar BX111 puede conservarse en __OriginalRF_1:
+  no se reemplaza por un algoritmo nuevo de COUNT/INDEX sobre AH.
+- Se recuperan los enlaces RF originales de SAR EN y SAR FCC-ISED, adaptados
+  a la banda y al puerto seleccionados. Los datos que estaban vacíos en el
+  procedimiento original se conservan vacíos.
+- En 5G se evita cargar el mismo segmento dos veces y elegir una fila
+  auxiliar aislada como modelo de un procedimiento completo de posiciones.
+- Se mantienen los datos y estilos de WiFi y el formato Número (0.00) de
+  la columna AI en 2G-3G.
+
+La modificación de VBA está comprobada para la plantilla conocida. Si
+aparece que el proyecto VBA no coincide con el revisado, la generación se
+interrumpe sin sustituir el Excel de salida; hay que revisar esa plantilla.
+
+Comprobaciones
+Se han comprobado variantes por región, conservación de datos/estilos de
+WiFi y 2G-3G, inicio de tablas, enlaces y geometría de fórmulas, formato AI,
+estructura de los paquetes XLSM y la modificación limitada de VBA.
+Las pruebas usan el módulo referencias_geometricas.py recibido y los
+procedimientos originales contrastados con los Excel separados enviados.
+No se ha ejecutado Microsoft Excel en Windows: el recálculo y las macros
+requieren una prueba final en tu equipo.

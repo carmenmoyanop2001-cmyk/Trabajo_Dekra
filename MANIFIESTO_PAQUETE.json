@@ -1,0 +1,290 @@
+{
+  "validacion_datos.py": {
+    "bytes": 5566,
+    "sha256": "627fbdfbdb4f61d32076eda10dc741efc3b2182e7adf479bd76747a99a9bc3b0"
+  },
+  "INSTALAR_DEPENDENCIAS.bat": {
+    "bytes": 367,
+    "sha256": "6ce3d974b8557333028fec5f3f21d16f83a2d36ab469b57dfa0c29277e810445"
+  },
+  "entradas_bandas.py": {
+    "bytes": 2115,
+    "sha256": "294be2e51944fb2aa3e19e94f9d5d9f64ac3d47b726bb13abed7d3c904c2d800"
+  },
+  "nucleo.py": {
+    "bytes": 15850,
+    "sha256": "01db251598bac8e41e0b618c8a5da804a89d900bd6d4fdfceca1a0c31116cafc"
+  },
+  "sar_en_canales.py": {
+    "bytes": 15650,
+    "sha256": "23530a35f161d51dff73f6f694cab7620631be4d9fc13a5c19d8627c37e706b6"
+  },
+  "opciones_ensayo.py": {
+    "bytes": 449,
+    "sha256": "5d15c1ffbec605e9ac9b73eaafcf31adb5e9ea5f675da4f4f37b67944a042224"
+  },
+  "INICIAR_CUESTIONARIO.bat": {
+    "bytes": 238,
+    "sha256": "4a89917dacfe7dba57fb963aaa64443c83aabdbdbdf13566204e483cd332a02e"
+  },
+  "tablas_tecnologias.py": {
+    "bytes": 13484,
+    "sha256": "68942f1e843263f8b818dd5bc69b196ca595a3e5563b8dee15319c11a5d286e6"
+  },
+  "presentacion_sar_en.py": {
+    "bytes": 5109,
+    "sha256": "0903b88020fa46926640ff02a35889899e84dc9e4ff245afa5fb43728dc6e0ee"
+  },
+  "sar_version12_canales.py": {
+    "bytes": 8965,
+    "sha256": "96e2cf7695e2b1f119ea2b9245165b06c57de98fc409e2609698aefe6506a399"
+  },
+  "nombres_hojas.py": {
+    "bytes": 3126,
+    "sha256": "0018996c661aac784370014d3ca4f588e61e385505cf4ab1305776fb0d09dd8a"
+  },
+  "selector_hojas.py": {
+    "bytes": 1216,
+    "sha256": "2dcf074cbe306860cb948d9ecdee96b1f2f483cf24931ca0a90cb6158c3d2228"
+  },
+  "base_datos.py": {
+    "bytes": 14573,
+    "sha256": "cb8a425ed2e45fe577433b6f567355f382716477a0adf436410329e7505132c8"
+  },
+  "configuracion.py": {
+    "bytes": 3449,
+    "sha256": "d85960db1e5d86a568f1a744b64e2101dd1d6f2964ce0b9243ad63a08002827d"
+  },
+  "referencias_geometricas.py": {
+    "bytes": 3686,
+    "sha256": "fb02054394dc85afa1c781853903cf6bfb159f5d02d6ce76b38458bb245706a7"
+  },
+  "corregir_2g3g.py": {
+    "bytes": 3465,
+    "sha256": "cf2c1f4a872e2c0125c88f3a920dc40b9dc3dd896855a02e071989712050e374"
+  },
+  "auxiliares_originales.py": {
+    "bytes": 11117,
+    "sha256": "bb1c654ae3f52cc362a90ac6d0d2f8829b2d606cd735f1bb2b6b2cd61ff45733"
+  },
+  "sarlib.py": {
+    "bytes": 5848,
+    "sha256": "9a101e8dca1e4c4794f8bf11379f887144f8b226f5d0a09e57e47eac33ebbace"
+  },
+  "presentacion_tecnologias.py": {
+    "bytes": 27470,
+    "sha256": "663dc422e2e1d71e39d038fef89f616e047cc7bfce63ca08c911552e8677613e"
+  },
+  "formulario_bd.py": {
+    "bytes": 15441,
+    "sha256": "8def2647a0e4026f0154a7cb846cb0281ad7c7bfe1f70d1a122bd3da9510a01f"
+  },
+  "overview.py": {
+    "bytes": 7944,
+    "sha256": "3eb972a6ffc21ddef610df38cfee51a2a64ce71ac64679504191dbc73be6b079"
+  },
+  "sar_en_formulas.py": {
+    "bytes": 6647,
+    "sha256": "fc37b0b0569b4c6665554f72224b8a954331571eeacde59a6f4c615c72f81748"
+  },
+  "restaurar_sar_version12.py": {
+    "bytes": 10637,
+    "sha256": "107433aab5d458deb969c8d55df1a6f4f4b6708705bb490dd039c5d3f1aacf9d"
+  },
+  "seleccion.py": {
+    "bytes": 10568,
+    "sha256": "e1a80a9ba697e37f7e16e400c32f01bd9ec8d902b7d4f80b4841493d2a933908"
+  },
+  "cuestionario_ensayo.py": {
+    "bytes": 46750,
+    "sha256": "397f2c73c39fe8499c2b19badcdc1b1e6b8bc2f7a2d25f757d6b5fba6c49cdd9"
+  },
+  "hojas_base_datos.py": {
+    "bytes": 22151,
+    "sha256": "617447abb3f91c6b656c4f81c1f2dc1dfed7dee05ceaf0354cca702754d439ae"
+  },
+  "variantes_5g.py": {
+    "bytes": 1390,
+    "sha256": "302e76ca151a45be3fbc0b4bc90cf8b481dcdd5e141424f151bd473afd563af2"
+  },
+  "generar_desde_json.py": {
+    "bytes": 2056,
+    "sha256": "5c5255a273418a0091369ed5e5532f45fb8c4e1300ee8897fca3de07d4761deb"
+  },
+  "README.md": {
+    "bytes": 1618,
+    "sha256": "477e026e8434445e348bc3695aa7c8df139692ff1834ad293df48c601f236581"
+  },
+  "sar_version12_motor.py": {
+    "bytes": 8482,
+    "sha256": "0f3e782a209f9301288f077d163e8f20a385c8f99331b9bad1f0c8db05b6fdf6"
+  },
+  "apoyo_tecnologias.py": {
+    "bytes": 3094,
+    "sha256": "187f328151089543ec3ccdfa83e6ff87757438859180a344eea910dbb24faf2a"
+  },
+  "columnas_originales.py": {
+    "bytes": 3631,
+    "sha256": "1850630506b379ed10d452030bd601a13bf1e493d1826c0d458bfe29969c44a4"
+  },
+  "tecnologias_originales.py": {
+    "bytes": 63612,
+    "sha256": "2a7266409a14b651e943ad1a60a4958b5ae22b3f15ae5f322900dc0b132c6c32"
+  },
+  "generador_excel.py": {
+    "bytes": 21768,
+    "sha256": "94018f5a65d01556f028000159f16c3fd6df84884938d52c4d87e8b49fe8ac23"
+  },
+  "requirements.txt": {
+    "bytes": 12,
+    "sha256": "e9ad6b8ad343a83ea8da444b4ec8d089d3ed4c5afcebf87c3f14c4ae5ea5668e"
+  },
+  "CAMBIOS_Y_VALIDACION/manifest_archivos.json": {
+    "bytes": 2149,
+    "sha256": "dcac0ed7b27b76b4e13521fe633e5a1a4c3ace57faf9b097aeb5b97af9398e0a"
+  },
+  "CAMBIOS_Y_VALIDACION/DETALLE_CORRECCIONES.txt": {
+    "bytes": 2270,
+    "sha256": "4f79ed694ee679fb4f1cd8e0dc4321fdaa4df78b91e8138cf5c47c5c959eafb3"
+  },
+  "CAMBIOS_Y_VALIDACION/VALIDACION.txt": {
+    "bytes": 1226,
+    "sha256": "349831f1b7e360acbdbd00ff49be0cd428c9e71467881ba29313d59ac0f5cfca"
+  },
+  "datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx": {
+    "bytes": 837018,
+    "sha256": "e3eadb68532af6a80d6eb6eb868b61c36d058cb2e642473a0937f15871233588"
+  },
+  "herramientas/validar_paquete.py": {
+    "bytes": 7973,
+    "sha256": "983f7633187b0a7798e73a973e21156eaa4f68ab1de8e010d396f0bd32a4f6f6"
+  },
+  "plantilla/sar_en.xz": {
+    "bytes": 220672,
+    "sha256": "2c767f5548b133ef30008fa1e306aa00888ac856104d138ac7a44e38ccda5d1e"
+  },
+  "plantilla/columnas_originales.json": {
+    "bytes": 101811,
+    "sha256": "4f4f4d518ed068e26ad353f7caa070dc4ceb0f7a76731d4f73da9d53ab1da01b"
+  },
+  "plantilla/cond_catm1.xz": {
+    "bytes": 506256,
+    "sha256": "8095d6908a369a30fb9a21662abef765a18098dc2290ee30ae3c55794e970193"
+  },
+  "plantilla/cond_nbiot.xz": {
+    "bytes": 45704,
+    "sha256": "f67b7ca297eadbf8c89e27873a1af09303c35680345fd88336a3d6666e23c92f"
+  },
+  "plantilla/plantilla_base.zip": {
+    "bytes": 721194,
+    "sha256": "54b1e27cee3038003c49cc4298198c5843788d484873bae2710d85448234085a"
+  },
+  "plantilla/cond_wifi.xz": {
+    "bytes": 152876,
+    "sha256": "8139b41015a8d24f41426f3c65a09640386a759a085cd8093d4d8f66afbc7fcd"
+  },
+  "plantilla/cond_bt.xz": {
+    "bytes": 8104,
+    "sha256": "f3421aed26df1fd7d4e7b82c43b1e293bbdcb731c8e1ff69a56fe41ce6653531"
+  },
+  "plantilla/cond_lte.xz": {
+    "bytes": 160560,
+    "sha256": "177884a24d2fd9c63f069266936b5da26d8a32bcebc244f195ca166fea5fdb72"
+  },
+  "plantilla/cond_2g3g.xz": {
+    "bytes": 24596,
+    "sha256": "05a0540eff0666bed641c24b9b0da9ca29425484e68db6cfc367d5d820f0caaf"
+  },
+  "plantilla/sar_fcc.xz": {
+    "bytes": 587252,
+    "sha256": "11b1947bc1005c27ae14a72513db18b786f89d834ab5269adde7a5b1afa7ec8c"
+  },
+  "plantilla/cond_5g.xz": {
+    "bytes": 1409088,
+    "sha256": "8f42618f73510d0406b420cf7d79c3940013a213b3a8e9413f6bbbd332ab7012"
+  },
+  "plantilla/originales/5g_completo.zip": {
+    "bytes": 32405724,
+    "sha256": "5f66c89dc29856748d9d2364ef756416f3f1df262b797ffe6e120268f40efc5b"
+  },
+  "plantilla/originales/resto.zip": {
+    "bytes": 177693,
+    "sha256": "a3d9eab971a3b98a470ebccfaa3e1adf20ec62f8e8edc661dafba51c32be5335"
+  },
+  "plantilla/originales/wifi.zip": {
+    "bytes": 1000325,
+    "sha256": "5ff166a32cbf6edb3494ce862fa6c6224f78ad7458cb2fb194f85cd35a871513"
+  },
+  "plantilla/originales/catm1.zip": {
+    "bytes": 6546694,
+    "sha256": "ef98fcf605984d33b40579c8892fbebe33742af0ce65544fb07fae914172f92e"
+  },
+  "plantilla/originales/5g.zip": {
+    "bytes": 1050096,
+    "sha256": "dfb670729e49055538af43c1dd8785809a6cab338f58a63d67495be30daab22c"
+  },
+  "plantilla/originales/lte.zip": {
+    "bytes": 3012480,
+    "sha256": "20d251e37af79eb6b2d714fb43d37fcb94df518bf04514dfd2528a6626ffc58f"
+  },
+  "plantilla/originales/nbiot.zip": {
+    "bytes": 923646,
+    "sha256": "d34543fea913fcdfb85c5f43d944ff1e6f3601607f3dca1cdf17875a6dd4178b"
+  },
+  "plantilla/originales/bt.zip": {
+    "bytes": 200154,
+    "sha256": "755483ca6a57cac4571586944be0c39e547cd1c4dc49abc485f908565f8bfd13"
+  },
+  "plantilla/originales/sar_fcc.zip": {
+    "bytes": 7741422,
+    "sha256": "81ffda803bfe086e8b969ca0ea29016fa1e31068799c762c6ab205f38fdd5a4b"
+  },
+  "plantilla/originales/2g3g.zip": {
+    "bytes": 602689,
+    "sha256": "182f8acbaeb6d49a16e2288c3e8a128f4daed28211c8a5cfe364489bb8cd5152"
+  },
+  "plantilla/originales/sar_en.zip": {
+    "bytes": 2003308,
+    "sha256": "62177c63c2f55a1401c3616a99d3ab7ba6688de3a95561407951e9de1924d6b0"
+  },
+  "plantilla/originales/inventario.json": {
+    "bytes": 67739,
+    "sha256": "d83fe3cb1981fac27cffc8ddb01a5664fd5d3427ff05e8a0291f9c6d1e7f8eb1"
+  },
+  "plantilla/formatos/sar_en.xz": {
+    "bytes": 220772,
+    "sha256": "5638234f73edb682f8dfa4b613f205684686ea545d1a638a16647dc7d13b1a4a"
+  },
+  "plantilla/formatos/cond_catm1.xz": {
+    "bytes": 44132,
+    "sha256": "6f062a5cde2658d12fd5109b7313d6beea9c3778dccd398388b24a328fa2aaa7"
+  },
+  "plantilla/formatos/cond_nbiot.xz": {
+    "bytes": 7092,
+    "sha256": "9dc056c582369e5edcad3bb24061757f79d08fd8db1588de6af09b12212fd537"
+  },
+  "plantilla/formatos/cond_wifi.xz": {
+    "bytes": 9240,
+    "sha256": "0aa7172337ff2b781d12617fde2b18a97e1b132dc39163ef43263244a977fc64"
+  },
+  "plantilla/formatos/cond_bt.xz": {
+    "bytes": 6304,
+    "sha256": "f3c33ecbdd6abb05c9912b095824794f2b2982b78936ac058edb6e1b32778d70"
+  },
+  "plantilla/formatos/cond_lte.xz": {
+    "bytes": 15364,
+    "sha256": "7e48f3cd4732a7501a217a4726790f8594afdbed64da42498166b6caa36a6c84"
+  },
+  "plantilla/formatos/cond_2g3g.xz": {
+    "bytes": 7852,
+    "sha256": "a8fd3fe0603d7ba6f75a318ce57d4c6e20e82d8645cee9c0ce7c26d43446f6c3"
+  },
+  "plantilla/formatos/sar_fcc.xz": {
+    "bytes": 485812,
+    "sha256": "c0dfda08bbc4665fba44a42f3403281a382a405ec4ec4e7b2e3d4154a95a1e7c"
+  },
+  "plantilla/formatos/cond_5g.xz": {
+    "bytes": 21096,
+    "sha256": "c9f97df990789002a476eb73d961d7d5e0fca9058dc0b0d00936f2a6aa1a17d5"
+  }
+}

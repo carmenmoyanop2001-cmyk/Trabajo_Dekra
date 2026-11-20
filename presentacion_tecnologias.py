@@ -1,4 +1,4 @@
-"""Reorganiza solo las tecnologías y conserva las partes protegidas idénticas.
+"""Reorganiza las tecnologías y reubica los enlaces de apoyo de SAR.
 
 Las coordenadas que usan las fórmulas SAR se mantienen ocultas. Si la hoja
 2G-3G cambia de nombre, una copia de apoyo conserva el nombre anterior.
@@ -276,13 +276,14 @@ def aplicar_minima(path, datos, catalogo, resumen):
 
 
 def aplicar(path, datos, catalogo, resumen, overview=None):
-    """Mostrar el original completo filtrado, sin alterar las siete hojas protegidas."""
+    """Mostrar el original filtrado y adaptar únicamente los enlaces RF de apoyo."""
+    from apoyo_tecnologias import construir_apoyo, actualizar_xml, renombrar_referencias
     from tecnologias_originales import (EstilosOriginales, registros_vista, preparar,
         completar_cache, escribir, copiar_relacionados, copiar_estatica, verificar_apoyo, FAMILIAS)
     dir_originales = Path(__file__).parent / 'plantilla/originales'
     registros = registros_vista(catalogo, datos)
     destination = Path(path).with_name('original_filtrado.xlsm')
-    with tempfile.TemporaryDirectory(dir=Path(path).parent) as tmp, zipfile.ZipFile(path) as source:
+    with tempfile.TemporaryDirectory(prefix='sar_tecnologias_') as tmp, zipfile.ZipFile(path) as source:
         folder = Path(tmp)
         workbook = E.fromstring(source.read('xl/workbook.xml'))
         rels = E.fromstring(source.read('xl/_rels/workbook.xml.rels'))
@@ -301,6 +302,7 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
         last_rid = max(int(r.get('Id')[3:]) for r in rels if re.fullmatch(r'rId\d+', r.get('Id', '')))
         changed, added, public_names, support, plans = {}, {}, {}, {}, []
         extra_visibles=[]
+        nombres_apoyo = {}
         parts_by_name = {}
         avisos = resumen.setdefault('avisos', [])
         for sheet in old_order:
@@ -312,18 +314,17 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
             name = nombre_visible(original, datos)
             public_names[current] = name
             backend = source.read(part)
-            if name != current:
-                last_part += 1
-                last_sheet += 1
-                last_rid += 1
-                aux_part = f'xl/worksheets/sheet{last_part}.xml'
-                aux_rid = f'rId{last_rid}'
-                added[aux_part] = E.tostring(_auxiliar(E.fromstring(backend)), encoding='UTF-8', xml_declaration=True, standalone=True)
-                E.SubElement(sheets, '{' + M + '}sheet', name=current, sheetId=str(last_sheet), state='veryHidden', **{'{' + R + '}id': aux_rid})
-                E.SubElement(rels, '{' + P + '}Relationship', Id=aux_rid, Type=R + '/worksheet', Target='worksheets/' + Path(aux_part).name)
-                E.SubElement(ct, '{' + C + '}Override', PartName='/' + aux_part, ContentType='application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml')
-                support[current] = aux_part
-                sheet.set('name', name)
+            last_part += 1
+            last_sheet += 1
+            last_rid += 1
+            aux_part = f'xl/worksheets/sheet{last_part}.xml'
+            aux_rid = f'rId{last_rid}'
+            added[aux_part] = E.tostring(_auxiliar(E.fromstring(backend)), encoding='UTF-8', xml_declaration=True, standalone=True)
+            E.SubElement(sheets, '{' + M + '}sheet', name=current, sheetId=str(last_sheet), state='veryHidden', **{'{' + R + '}id': aux_rid})
+            E.SubElement(rels, '{' + P + '}Relationship', Id=aux_rid, Type=R + '/worksheet', Target='worksheets/' + Path(aux_part).name)
+            E.SubElement(ct, '{' + C + '}Override', PartName='/' + aux_part, ContentType='application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml')
+            support[current] = aux_part
+            sheet.set('name', name)
             plan = preparar(original, name, backend, registros[original], datos, folder, dir_originales, styles, avisos)
             plans.append(plan)
             parts_by_name[name] = part
@@ -338,7 +339,7 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
             part = parts_by_name[plan.nombre]
             current=next(old for old,new in public_names.items() if new==plan.nombre)
             if current in support:
-                added[support[current]]=E.tostring(_auxiliar(E.fromstring(plan.backend)),encoding='UTF-8',xml_declaration=True,standalone=True)
+                added[support[current]]=E.tostring(_auxiliar(E.fromstring(construir_apoyo(plan))),encoding='UTF-8',xml_declaration=True,standalone=True)
             rendered = folder / Path(part).name
             root = escribir(plan, rendered, plan_by_name, overview)
             verificar_apoyo(plan, rendered)
@@ -394,6 +395,56 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
                         '[Content_Types].xml': E.tostring(ct, encoding='UTF-8', xml_declaration=True, standalone=True),
                         'docProps/app.xml': E.tostring(props, encoding='UTF-8', xml_declaration=True, standalone=True),
                         'xl/styles.xml': styles.xml()})
+        for part in targets.values():
+            if part not in changed and part in source.namelist():
+                updated = actualizar_xml(source.read(part), nombres_apoyo)
+                if updated != source.read(part):
+                    changed[part] = updated
+        for node in workbook.findall('s:definedNames/s:definedName', NS):
+            if node.get('name') not in ('_xlnm._FilterDatabase','_xlnm.Print_Area','_xlnm.Print_Titles') and node.text:
+                node.text = renombrar_referencias(node.text, nombres_apoyo)
+        changed['xl/workbook.xml'] = E.tostring(workbook, encoding='UTF-8', xml_declaration=True, standalone=True)
+        from sar_en_canales import restaurar_normales, contenido_sin_canales
+        from auxiliares_originales import asignar, construir as construir_auxiliares
+        asignar(plan_by_name)
+        normales = {}
+        for sheet in old_order:
+            name = sheet.get('name')
+            if name in ('SAR EN', 'SAR FCC-ISED'):
+                part = targets[sheet.get('{' + R + '}id')]
+                changed[part], normales[name] = restaurar_normales(changed.get(part, source.read(part)), name,
+                    plan_by_name, dir_originales.parent)
+        for plan in plans:
+            contenido = construir_auxiliares(plan, plan_by_name)
+            if contenido is None:
+                continue
+            last_part += 1
+            last_sheet += 1
+            last_rid += 1
+            aux_part = f'xl/worksheets/sheet{last_part}.xml'
+            aux_rid = f'rId{last_rid}'
+            added[aux_part] = contenido
+            E.SubElement(sheets, '{' + M + '}sheet', name=plan.nombre_auxiliar_original,
+                sheetId=str(last_sheet), state='veryHidden', **{'{' + R + '}id': aux_rid})
+            E.SubElement(rels, '{' + P + '}Relationship', Id=aux_rid,
+                Type=R + '/worksheet', Target='worksheets/' + Path(aux_part).name)
+            E.SubElement(ct, '{' + C + '}Override', PartName='/' + aux_part,
+                ContentType='application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml')
+        changed['xl/workbook.xml'] = E.tostring(workbook, encoding='UTF-8', xml_declaration=True, standalone=True)
+        changed['xl/_rels/workbook.xml.rels'] = E.tostring(rels, encoding='UTF-8', xml_declaration=True, standalone=True)
+        changed['[Content_Types].xml'] = E.tostring(ct, encoding='UTF-8', xml_declaration=True, standalone=True)
+        for element in props.iter():
+            if E.QName(element).localname == 'TitlesOfParts':
+                vector = element[0]
+                for child in list(vector):
+                    vector.remove(child)
+                for sheet in sheets:
+                    E.SubElement(vector, '{' + vt + '}lpstr').text = sheet.get('name')
+                vector.set('size', str(len(sheets)))
+            elif E.QName(element).localname == 'HeadingPairs':
+                for number in element.findall('.//{' + vt + '}i4'):
+                    number.text = str(len(sheets))
+        changed['docProps/app.xml'] = E.tostring(props, encoding='UTF-8', xml_declaration=True, standalone=True)
         with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as out:
             for info in source.infolist():
                 value = changed.get(info.filename)
@@ -403,6 +454,7 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
                     out.writestr(deepcopy(info), value if value is not None else source.read(info.filename))
             for part, value in added.items():
                 out.writestr(part, value)
+        protected_unchanged=[]
         with zipfile.ZipFile(destination) as result:
             for name in source.namelist():
                 if name not in changed:
@@ -410,14 +462,19 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
             for sheet in old_order:
                 if sheet.get('name') in PROTEGIDAS:
                     part = targets[sheet.get('{' + R + '}id')]
-                    assert source.read(part) == result.read(part), sheet.get('name')
+                    if sheet.get('name') not in ('SAR EN', 'SAR FCC-ISED'):
+                        assert actualizar_xml(source.read(part), nombres_apoyo) == result.read(part), sheet.get('name')
+                        if source.read(part)==result.read(part):protected_unchanged.append(sheet.get('name'))
+                    elif contenido_sin_canales(actualizar_xml(source.read(part), nombres_apoyo)) != contenido_sin_canales(result.read(part)):
+                        raise ValueError(sheet.get('name') + ': se ha modificado contenido fuera de los enlaces RF.')
     os.replace(destination, path)
     resumen['hojas'] = [public_names.get(name, name) for name in resumen['hojas']] + extra_visibles
     counts = {p.nombre: p.count - 2 for p in plans}
     resumen['filas'] = {public_names.get(name, name): counts.get(public_names.get(name, name), count)
                         for name, count in resumen['filas'].items()}
     resumen['soporte_interno'] = support
-    resumen['pestanas_protegidas_identicas'] = sorted(PROTEGIDAS & set(resumen['hojas']))
+    resumen['pestanas_protegidas_identicas'] = sorted(protected_unchanged)
+    resumen['enlaces_cc_cd_originales'] = normales
     resumen['presentacion_original'] = {p.nombre: dict(cabecera=p.offset+2, inicio=p.offset+3, ultima=p.offset+p.count,
                                                      registros_base=len(p.covered), filas_originales=p.count-2)
                                        for p in plans}

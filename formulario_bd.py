@@ -134,24 +134,62 @@ class Panel5GCatalogo(PanelCatalogo):
         self.marco_variantes = ttk.Frame(self)
         self.marco_variantes.pack(fill='x')
         self.entrada.al_cambiar = self._pintar_variantes
+        self._trazas_region = []
+        for variable in getattr(self.winfo_toplevel(), 'var_region', {}).values():
+            identificador = variable.trace_add('write', lambda *_: self._pintar_variantes())
+            self._trazas_region.append((variable, identificador))
+
+    def destroy(self):
+        for variable, identificador in getattr(self, '_trazas_region', []):
+            variable.trace_remove('write', identificador)
+        self._trazas_region = []
+        super().destroy()
+
+    def _regiones(self):
+        return [r for r, v in getattr(self.winfo_toplevel(), 'var_region', {}).items() if v.get()]
+
+    def _automaticas(self):
+        from variantes_5g import variantes_por_region
+        bandas = [b for b in self.entrada.seleccion() if b in ('n77', 'n78')]
+        if not bandas or not self._regiones():
+            return []
+        return variantes_por_region(bandas, self._regiones(), self.variables)
 
     def _pintar_variantes(self):
+        try:
+            automaticas = self._automaticas()
+            error = ''
+        except ValueError as exc:
+            automaticas, error = [], str(exc)
+        for option, variable in self.variables.items():
+            if banda_base_5g(option) in ('n77', 'n78'):
+                variable.set(option in automaticas)
         for child in self.marco_variantes.winfo_children():
             child.destroy()
         for band in self.entrada.seleccion():
-            options = self.variantes[band]
+            options = list(self.variantes[band])
+            if band == 'n78' and 'n77 RSS-192' in automaticas and 'n77 RSS-192' not in options:
+                options.append('n77 RSS-192')
             if len(options) > 1 or options != [band]:
                 frame = ttk.LabelFrame(self.marco_variantes, text=f'Variantes de {band}', padding=6)
                 frame.pack(fill='x', pady=4)
                 for option in options:
-                    ttk.Checkbutton(frame, text=option, variable=self.variables[option]).pack(anchor='w')
+                    ttk.Checkbutton(frame, text=option, variable=self.variables[option],
+                        state='disabled' if band in ('n77', 'n78') else 'normal').pack(anchor='w')
+        if any(b in ('n77', 'n78') for b in self.entrada.seleccion()):
+            ttk.Label(self.marco_variantes, text=error or ('Variantes automaticas por region: ' + ', '.join(automaticas)),
+                foreground='#B00020' if error else '#1F5FA8', wraplength=570).pack(anchor='w')
 
     def _bandas_seleccionadas(self):
         result = []
+        automaticas = self._automaticas()
         for band in self.entrada.seleccion():
             options = self.variantes[band]
-            result.extend([b for b in options if self.variables[b].get()] if options != [band] else [band])
-        return result
+            if band in ('n77', 'n78'):
+                result.extend(automaticas)
+            else:
+                result.extend([b for b in options if self.variables[b].get()] if options != [band] else [band])
+        return list(dict.fromkeys(result))
 
     def seleccion(self):
         bands = self._bandas_seleccionadas()
@@ -161,6 +199,13 @@ class Panel5GCatalogo(PanelCatalogo):
         errors = self.entrada.validar()
         for band in self.entrada.seleccion():
             options = self.variantes.get(band, [])
+            if band in ('n77', 'n78'):
+                try:
+                    if not self._automaticas():
+                        errors.append('5G: selecciona una region para las variantes automaticas.')
+                except ValueError as exc:
+                    errors.append(str(exc))
+                continue
             if options != [band] and not any(self.variables[b].get() for b in options):
                 errors.append(f'5G: selecciona al menos una variante de {band}.')
         return errors

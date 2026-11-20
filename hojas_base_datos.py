@@ -246,7 +246,25 @@ def _sar(source, records, datos, ranges, warnings, tune, fcc=None):
                     if f'Battery check {number}"' in pattern:
                         battery_candidates[(fcc.kv(k).get('BX', '').lower(), number)].append(k)
     by_band = defaultdict(list)
+    eligible_regions = {'EN'} if source.name == 'SAR EN' else {'FCC', 'ISED'}
+    regional_bands = {(source.kv(i).get('BT'), source.kv(i).get('BU'))
+                      for i in range(2, len(source.rows))}
+    # La selección global puede contener EN y FCC a la vez. Cada pestaña SAR
+    # recibe solo los registros cuya certificación corresponde a su región.
     for record in records:
+        certification = str(record.params.get('cert') or '').upper()
+        regions = set(re.findall(r'(?<![A-Z])(?:EN|EU|FCC|ISED)(?![A-Z])', certification))
+        if 'EU' in regions:
+            regions.add('EN')
+        if regions and not regions & eligible_regions:
+            continue
+        if certification and not regions:
+            # '?' no equivale a EN/FCC/ISED. Solo se utiliza un procedimiento
+            # regional que exista explícitamente para esa tecnología/banda.
+            family = sar_tech(record.tech)
+            supported = (family, record.band) in regional_bands
+            if not supported:
+                continue
         by_band[(record.tech, record.band)].append(record)
     for (tech, band), rows in by_band.items():
         # La plantilla guarda el procedimiento, no define el catálogo RF.
@@ -261,7 +279,18 @@ def _sar(source, records, datos, ranges, warnings, tune, fcc=None):
         if not candidates:
             warnings.append(f'{source.name}: no hay procedimiento de posiciones guardado para {tech}; se conserva su hoja de tecnología.')
             continue
-        template_band = next((source.kv(i)['BU'] for i in candidates if source.kv(i).get('BU') == band), source.kv(candidates[0])['BU'])
+        # No tomar como procedimiento una fila aislada de batería/FoF cuyo
+        # rótulo de banda coincide: hacen falta las posiciones normales.
+        if family == '5G':
+            positions=defaultdict(set)
+            for i in candidates:
+                position=source.kv(i).get('CA')
+                if position not in (None,'','TBD','Front of Face'):
+                    positions[source.kv(i).get('BU')].add(position)
+            compatible=[b for b,p in positions.items() if len(p)>1]
+            template_band = band if band in compatible else (compatible[0] if compatible else source.kv(candidates[0])['BU'])
+        else:
+            template_band = next((source.kv(i)['BU'] for i in candidates if source.kv(i).get('BU') == band), source.kv(candidates[0])['BU'])
         selected = [i for i in candidates if source.kv(i).get('BU') == template_band and
                     source.kv(i).get('BX', '').lower() in {e.lower() for e in seleccion_multiple(datos['exposure'])}]
         # Los grupos se separan por exposición y antena/Tx. No por valores RF.
@@ -351,7 +380,7 @@ def _sar(source, records, datos, ranges, warnings, tune, fcc=None):
                         builder.append(template, extra, mapping, preserve=('F',))
     h, plan = builder.terminar()
     if not plan:
-        raise ValueError(f'{source.name}: la selección no tiene un procedimiento SAR guardado. Las filas RF se leen de la base, pero no se inventan posiciones de ensayo.')
+        raise ValueError(f'{source.name}: no hay un procedimiento SAR compatible con las bandas y regiones seleccionadas. Revisa la certificación de la base y la selección del formulario.')
     return h, plan
 
 

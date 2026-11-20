@@ -1,0 +1,45 @@
+{
+  "sar_en_canales.py": {
+    "sha256_actualizado": "23530a35f161d51dff73f6f694cab7620631be4d9fc13a5c19d8627c37e706b6",
+    "sha256_recibido": "a33f95a7d43020753be4177feb0b1721b42f3e930bcc6d40bfff9004d85b167c"
+  },
+  "selector_hojas.py": {
+    "sha256_actualizado": "2dcf074cbe306860cb948d9ecdee96b1f2f483cf24931ca0a90cb6158c3d2228"
+  },
+  "base_datos.py": {
+    "sha256_actualizado": "cb8a425ed2e45fe577433b6f567355f382716477a0adf436410329e7505132c8",
+    "sha256_recibido": "9addf89f98540cd10d5ae3c8a95470267fc026a40c279ebf84794811f7371e05"
+  },
+  "referencias_geometricas.py": {
+    "sha256_actualizado": "fb02054394dc85afa1c781853903cf6bfb159f5d02d6ce76b38458bb245706a7"
+  },
+  "auxiliares_originales.py": {
+    "sha256_actualizado": "bb1c654ae3f52cc362a90ac6d0d2f8829b2d606cd735f1bb2b6b2cd61ff45733"
+  },
+  "presentacion_tecnologias.py": {
+    "sha256_actualizado": "663dc422e2e1d71e39d038fef89f616e047cc7bfce63ca08c911552e8677613e",
+    "sha256_recibido": "17fdcfa3e405c16294351f11571a91fbc9441b2bdd5c90ac29fa9dc07cb376a0"
+  },
+  "formulario_bd.py": {
+    "sha256_actualizado": "8def2647a0e4026f0154a7cb846cb0281ad7c7bfe1f70d1a122bd3da9510a01f",
+    "sha256_recibido": "5bb8c3288a8395112d08f400c12d7c026b8d74e1d665349b502faea180776a4b"
+  },
+  "hojas_base_datos.py": {
+    "sha256_actualizado": "617447abb3f91c6b656c4f81c1f2dc1dfed7dee05ceaf0354cca702754d439ae",
+    "sha256_recibido": "2cbe4f97ed628c9ce87362eeddf78197efcc398ec1e229a1f4e02bdb937ba1dd"
+  },
+  "variantes_5g.py": {
+    "sha256_actualizado": "302e76ca151a45be3fbc0b4bc90cf8b481dcdd5e141424f151bd473afd563af2"
+  },
+  "apoyo_tecnologias.py": {
+    "sha256_actualizado": "187f328151089543ec3ccdfa83e6ff87757438859180a344eea910dbb24faf2a"
+  },
+  "tecnologias_originales.py": {
+    "sha256_actualizado": "2a7266409a14b651e943ad1a60a4958b5ae22b3f15ae5f322900dc0b132c6c32",
+    "sha256_recibido": "255d49ea7150b3908bc0b207f2f0df2bb42c381c86656ee2ee81de99d0efb2e9"
+  },
+  "generador_excel.py": {
+    "sha256_actualizado": "94018f5a65d01556f028000159f16c3fd6df84884938d52c4d87e8b49fe8ac23",
+    "sha256_recibido": "f1e415e3f2846d5a2fcb5e550403db0831587f6e4b41ca1dcb2424a0b532c977"
+  }
+}

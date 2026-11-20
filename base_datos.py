@@ -239,11 +239,23 @@ class Catalogo:
                 raise ValueError(f'{tech}: hay bandas duplicadas en la selección.')
             if modes is not None and (not isinstance(modes, list) or any(not isinstance(m, str) or not m.strip() for m in modes)):
                 raise ValueError(f'{tech}: selección de modos no válida.')
+            if tech == '5G':
+                from variantes_5g import variantes_por_region
+                bands = variantes_por_region(bands, datos['region'], available)
             missing = set(bands) - set(available)
             if missing:
                 raise ValueError(f'{tech}: bandas no disponibles en la base: {", ".join(sorted(missing))}.')
             rows = [r for r in records if r.band in bands and
                     (not modes or not r.params.get('mode') or r.params['mode'] in modes)]
+            if tech == '5G':
+                scoped = []
+                for record in rows:
+                    if re.match(r'^n(?:77|78)(?:\b|$)', record.band, re.I):
+                        scope = ('FCC' if re.search(r'part\s*[OQ]$', record.band, re.I) else
+                                 'ISED' if 'RSS-192' in record.band.upper() else 'EN')
+                        record = replace(record, params=dict(record.params, cert=scope))
+                    scoped.append(record)
+                rows = scoped
             if not rows:
                 raise ValueError(f'La base no contiene combinaciones para la selección de {tech}.')
             # Un modo elegido por el usuario es un dato del formulario, no una

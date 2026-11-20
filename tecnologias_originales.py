@@ -21,6 +21,7 @@ from base_datos import normalizar
 from hojas_base_datos import hoja_tecnologia, PARAM_COL
 from seleccion import token_modo
 from corregir_2g3g import normalizar_fechas
+from referencias_geometricas import proteger_columnas
 from sarlib import _REF, _STR, _sheetname, col2n, n2col, shift_formula
 
 M = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
@@ -113,6 +114,21 @@ class EstilosOriginales:
                     target.append(copied)
             target.set('count', str(len(target)))
         return offsets
+
+    def numero_ai_2g3g(self, style_id):
+        """Clonar el estilo de AI cambiando solo a Numero (0.00)."""
+        style_id = int(style_id)
+        cache = getattr(self, '_numeros_ai_2g3g', {})
+        if style_id not in cache:
+            xfs = self.root.find('s:cellXfs', NS)
+            estilo = deepcopy(xfs[style_id])
+            estilo.set('numFmtId', '2')  # Formato integrado de Excel: 0.00.
+            estilo.set('applyNumberFormat', '1')
+            cache[style_id] = len(xfs)
+            xfs.append(estilo)
+            xfs.set('count', str(len(xfs)))
+            self._numeros_ai_2g3g = cache
+        return cache[style_id]
 
     def xml(self):
         # El prefijo original de cada colección debe continuar idéntico.
@@ -380,10 +396,13 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
         part = original_guardado['parte']
         root = _estructura(z, part)
         backend_root = E.fromstring(backend)
-        offset = max(int(r.get('r')) for r in backend_root.findall('s:sheetData/s:row', NS)) + 4
+        offset = 0  # El apoyo se conserva en una pestana veryHidden separada.
         plan = PlanOriginal(familia, nombre, archivo, part, backend, offset, root,
                             folder / (FAMILIAS[familia] + '.filas'), estilos.incorporar(z.read('xl/styles.xml')), _strings(z))
+        if familia == 'Conducted 2G-3G':
+            plan.estilos_ai_2g3g = estilos
         plan.segmentos = original_guardado.get('segmentos',{})
+        plan.copia_original_sar = original_guardado.get('copia_del_adjunto')
         plan.registros = registros
         for view in registros:
             r=view.record
@@ -408,6 +427,7 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
             core[(record.tech, _norm(record.band), _norm(record.channel), _norm(record.frequency))].append(i)
             chosen_techs.add(record.tech)
         shared, prototypes, headers = {}, {}, {}
+        wifi_prototypes = {}
         requested = set(datos['region'] if isinstance(datos['region'], list) else [datos['region']])
         header_columns = {}
         all_labels = {k: label for view in registros for k, label in view.labels.items()}
@@ -461,13 +481,21 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                     values['CA'] = record.params['modulation']
             if fallback:
                 for c in row:
-                    if col2n('AC') <= col2n(_col(c)) <= col2n('BH') and c.find('s:f', NS) is None:
+                    if (col2n('AC') <= col2n(_col(c)) <= col2n('BH')
+                            and c.find('s:f', NS) is None
+                            and not (familia == 'Conducted WiFi' and _col(c) in ('BF', 'BH'))):
                         _poner(row, _col(c), None)
                 # Un registro que no existe en el original usa su formato;
                 # no hereda parámetros RF de otra combinación o banda.
                 for key,col in PARAM_COL.items():
                     current = _celda(row,col)
                     if col not in values and current is not None and current.find('s:f',NS) is None:
+                        if familia == 'Conducted 5G' and key != 'cert':
+                            # Conservar parametros de ensayo del modelo si la base no los define.
+                            continue
+                        if familia == 'Conducted WiFi' and key == 'data_rate':
+                            # El modelo compatible aporta la tasa del mismo modo/BW.
+                            continue
                         if key != 'cert' or _norm(native_band) != _norm(record.band):
                             values[col] = None
             changed_columns = set()
@@ -487,7 +515,9 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                 more = set()
                 for cell in row:
                     f = cell.find('s:f', NS)
-                    if f is not None and any(m[3] in affected or m[7] in affected
+                    if f is not None and any(
+                        (familia != 'Conducted WiFi' or _sheetname(m[1]) in ('', familia, nombre))
+                        and (m[3] in affected or m[7] in affected)
                         for piece in _STR.split(f.text or '')[::2] for m in _REF.finditer(piece)):
                         more.add(_col(cell))
                 if not more - affected:
@@ -507,8 +537,20 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
             if any(not any(_norm(band)==b for band in plan.segmentos) for b in bandas):
                 extra = next(iter(plan.segmentos.values()))['parte']
                 if extra not in partes:partes.append(extra)
+        def filas_para_presentacion():
+            if familia == 'Conducted 5G' and plan.segmentos:
+                # Solo las dos cabeceras de la parte principal; datos de segmentos una vez.
+                with z.open(part) as source:
+                    for _, header in E.iterparse(source, tag=_q('row')):
+                        if int(header.get('r')) > 2:
+                            break
+                        yield header
+                yield from _fuente(z, list(dict.fromkeys(partes[1:])))
+            else:
+                yield from _fuente(z, partes)
+
         with plan.spool.open('wb') as out:
-            for row in _fuente(z,partes):
+            for row in filas_para_presentacion():
                 old = int(row.get('r'))
                 cells = {_col(c): c for c in row}
                 # CAT M1 conserva casi un millón de filas de formato vacías.
@@ -554,6 +596,13 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                 if old <= 2:
                     copied = deepcopy(row)
                     _inline(copied, plan.strings, shared)
+                    if familia == 'Conducted 5G' and old == 1:
+                        for cell in copied:
+                            for child in list(cell):
+                                cell.remove(child)
+                            cell.attrib.pop('t', None)
+                    if familia == 'Conducted 5G' and old == 2:
+                        _poner(copied, 'B', 'Cert.\n[EN/FCC/ISED]')
                     headers[old] = copied
                     for col, val in values.items():
                         if isinstance(val, str):
@@ -578,6 +627,13 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                             copied = deepcopy(row)
                             _inline(copied, plan.strings, shared)
                             prototypes[pkey] = (old, copied)
+                        if familia == 'Conducted WiFi':
+                            wifi_mode = token_modo(str(values.get('S') or ''), values.get('M'))
+                            wifi_key = (tech, band, _norm(wifi_mode), _norm(values.get('M')))
+                            if wifi_key not in wifi_prototypes:
+                                copied = deepcopy(row)
+                                _inline(copied, plan.strings, shared)
+                                wifi_prototypes[wifi_key] = (old, copied)
                         key = (tech, band, _norm(values.get('T')), _norm(values.get('U')))
                         coincidencias = []
                         for i in core.get(key, []):
@@ -592,6 +648,9 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                                     actual = values.get(PARAM_COL[param])
                                     if param == 'mode' and familia == 'Conducted WiFi':
                                         actual = token_modo(str(actual), values.get('M')) if actual is not None else None
+                                        selected_mode = re.fullmatch(r'(ac|ax|n|a|b|g)(\d+)?', str(val))
+                                        if selected_mode:
+                                            val = token_modo('802.11' + selected_mode[1], selected_mode[2] or record.params.get('bw'))
                                     if actual not in (None, '', 'TBD', 'N/A') and _norm(actual) != _norm(val):
                                         ok = False
                                         break
@@ -621,9 +680,30 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                 record = view.record
                 if _regiones(record.params.get('cert')) and not _regiones(record.params['cert']) & requested:
                     continue
-                proto = prototypes.get((record.tech, _norm(record.band)))
-                if proto is None:
-                    proto = next((p for (t, _), p in prototypes.items() if t == record.tech), None)
+                if familia == 'Conducted WiFi':
+                    # Un canal nuevo conserva el formato/procedimiento del mismo modo y BW.
+                    requested_mode = record.params.get('mode')
+                    requested_bw = record.params.get('bw')
+                    mode_match = re.fullmatch(r'(ac|ax|n|a|b|g)(\d+)?', str(requested_mode or ''))
+                    if requested_bw is None and mode_match and mode_match[2]:
+                        requested_bw = int(mode_match[2])
+                    if mode_match:
+                        requested_mode = token_modo('802.11' + mode_match[1], requested_bw)
+                    def compatible(key):
+                        return (key[0] == record.tech
+                                and (not requested_mode or key[2] == _norm(requested_mode))
+                                and (requested_bw is None or key[3] == _norm(requested_bw)))
+                    proto = next((value for key, value in wifi_prototypes.items()
+                                  if key[1] == _norm(record.band) and compatible(key)), None)
+                    if proto is None:
+                        proto = next((value for key, value in wifi_prototypes.items() if compatible(key)), None)
+                    if proto is None:
+                        raise ValueError(f'El original WiFi no contiene un formato compatible con '
+                                         f'{record.band}, modo {requested_mode}, BW {requested_bw}.')
+                else:
+                    proto = prototypes.get((record.tech, _norm(record.band)))
+                    if proto is None:
+                        proto = next((p for (t, _), p in prototypes.items() if t == record.tech), None)
                 if proto is None:
                     raise ValueError(f'El original no contiene un formato para {record.tech}.')
                 old, copied = proto[0], deepcopy(proto[1])
@@ -636,6 +716,12 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
         if plan.fallback_rows:
             avisos.append(f'{nombre}: {len(plan.fallback_rows)} registros nuevos o sin coincidencia exacta usan el formato de su tecnología, con los valores de la base.')
         _preparar_merges(plan, native_merges)
+        if familia == 'Conducted WiFi' and any(len(str(v.record.params.get('cert', ''))) > 9 for v in registros):
+            # Las regiones multiples de la base deben caber sin quedar cortadas.
+            for columna in plan.root.findall('s:cols/s:col', NS):
+                if columna.get('min') == columna.get('max') == '2':
+                    columna.set('width', str(max(16.0, float(columna.get('width', '0')))))
+                    columna.set('customWidth', '1')
         return plan
 
 
@@ -671,7 +757,9 @@ def _ordenar_filas(plan):
             changed[previous]=new
             rows.setdefault(old,[]).append(new)
             pickle.dump((old,new,raw),dst,protocol=4)
-    candidate.replace(plan.spool)
+    # En Windows/SMB el archivo anterior puede estar bloqueado para renombrar.
+    # Los consumidores leen plan.spool: basta con apuntar al ordenado.
+    plan.spool=candidate
     plan.rows=rows
     plan.grupos={changed[r]:g for r,g in plan.grupos.items()}
     plan.fallback_rows={changed[r] for r in plan.fallback_rows}
@@ -727,9 +815,19 @@ def completar_cache(planes):
         needed_rows = {r for _, r in needed}
         partes=[plan.parte]
         if plan.segmentos:
-            partes += [s['parte'] for s in plan.segmentos.values() if any(s['primera']<=r<=s['ultima'] for r in needed_rows)]
+            segmentos=[s for s in plan.segmentos.values() if any(s['primera']<=r<=s['ultima'] for r in needed_rows)]
+            partes=list(dict.fromkeys(s['parte'] for s in segmentos))
+            if any(r>2 and not any(s['primera']<=r<=s['ultima'] for s in segmentos) for r in needed_rows):
+                partes.insert(0,plan.parte)
         with zipfile.ZipFile(plan.archivo) as z:
-            for row in _fuente(z,partes):
+            def filas_cache():
+                if plan.segmentos and any(r<=2 for r in needed_rows) and plan.parte not in partes:
+                    with z.open(plan.parte) as stream:
+                        for _,row in E.iterparse(stream,tag=_q('row')):
+                            if int(row.get('r'))>2:break
+                            yield row
+                yield from _fuente(z,partes)
+            for row in filas_cache():
                 number = int(row.get('r'))
                 if number in needed_rows:
                     for cell in row:
@@ -771,7 +869,7 @@ def formula(text, plan, old, new, planes, overview=None):
         if match[7]:
             a, b = target.range_rows(row,int(match[9]),new if target is plan else None)
             if a is None or b is None or a > b:
-                return f'{_fmt_sheet(target.nombre)}{match[2]}{col}{match[4]}{target.offset - 1}'
+                return f'{_fmt_sheet(target.nombre)}{match[2]}{col}{match[4]}{max(1,target.offset - 1)}'
             return f'{_fmt_sheet(target.nombre) if sh or target is not plan else ""}{match[2]}{col}{match[4]}{a}:{match[6]}{match[7]}{match[8]}{b}'
         alias = target.alias.get((col, row))
         if target is plan and new in plan.nuevos_grupos and row>2:
@@ -793,13 +891,17 @@ def formula(text, plan, old, new, planes, overview=None):
                 return '""'
             return _literal(cached)
         return f'{_fmt_sheet(target.nombre) if sh or target is not plan else ""}{match[2]}{col}{match[4]}{dest}'
+    text, geometricas = proteger_columnas(text, lambda ref: _REF.fullmatch(one(ref)) is not None)
     parts = _STR.split(text)
     for i in range(0, len(parts), 2):
         parts[i] = _REF.sub(one, parts[i])
         if '#REF!' in parts[i]:
             plan.referencias_rotas+=1
             parts[i]=parts[i].replace('#REF!',f'{_fmt_sheet(plan.nombre)}$A${max(1,plan.offset-1)}')
-    return ''.join(parts)
+    result = ''.join(parts)
+    for token, reference in geometricas.items():
+        result = result.replace(token, reference)
+    return result
 
 
 def _range(ref, plan):
@@ -811,6 +913,19 @@ def _range(ref, plan):
     if first is None or last is None or first > last:
         return None
     return f'{a}{first}:{b or a}{last}' if b or first != last else f'{a}{first}'
+
+
+def vista_desplazable(root, header):
+    """No inmovilizar las filas ocultas que preceden a la tabla visible."""
+    views = root.find('s:sheetViews', NS)
+    if views is None:
+        views = E.Element(_q('sheetViews'))
+        root.insert(next((i for i,n in enumerate(root) if E.QName(n).localname in
+                         ('sheetFormatPr','cols','sheetData')),len(root)),views)
+    views.clear()
+    view = E.SubElement(views, _q('sheetView'), workbookViewId='0', view='normal',
+                        topLeftCell='A'+str(max(1, header-1)), zoomScale='100')
+    E.SubElement(view, _q('selection'), activeCell='B'+str(header+1), sqref='B'+str(header+1))
 
 
 def escribir(plan, output, planes, overview=None):
@@ -828,17 +943,10 @@ def escribir(plan, output, planes, overview=None):
         if plan.extras:
             last_col = max([last_col] + list(plan.extras.values()), key=col2n)
         dimension.set('ref', f'A1:{last_col}{last}')
-    if plan.familia == 'Conducted WiFi':
+    if plan.familia in ('Conducted WiFi', 'Conducted 2G-3G', 'Conducted LTE', 'Conducted 5G'):
         # Reconstruir la vista: ningún panel hereda las filas ocultas de apoyo
         # como parte inmovilizada de la tabla visible.
-        views = root.find('s:sheetViews', NS)
-        if views is None:
-            views = E.Element(_q('sheetViews'))
-            root.insert(next((i for i,n in enumerate(root) if E.QName(n).localname in ('sheetFormatPr','cols','sheetData')),len(root)),views)
-        views.clear()
-        view = E.SubElement(views, _q('sheetView'), workbookViewId='0', view='normal',
-                            topLeftCell='A'+str(plan.offset+1), zoomScale='100')
-        E.SubElement(view, _q('selection'), activeCell='B'+str(plan.offset+3), sqref='B'+str(plan.offset+3))
+        vista_desplazable(root, plan.offset+2)
     else:
         for view in root.findall('s:sheetViews/s:sheetView', NS):
             view.set('topLeftCell', 'A' + str(plan.offset + 1))
@@ -912,11 +1020,43 @@ def escribir(plan, output, planes, overview=None):
                         after = deepcopy(col);after.set('min',str(index+1));cols.insert(at,after)
             attributes=attributes or dict(width='25',customWidth='1')
             attributes.update(min=str(index),max=str(index))
-            attributes.pop('hidden',None)
+            # Las columnas originales mantienen su visibilidad. Solo las
+            # columnas nuevas, añadidas por la base, carecen de ese atributo.
             if extra in plan.extras.values():attributes.update(width='25',customWidth='1')
             E.SubElement(cols,_q('col'),**attributes)
         cols[:] = sorted(cols,key=lambda c:int(c.get('min')))
-    backend = E.fromstring(plan.backend).find('s:sheetData', NS)
+    if plan.familia == 'Conducted 2G-3G':
+        # Formato de columna AI, sin cambiar ancho, visibilidad ni otras columnas.
+        if cols is None:
+            cols = E.Element(_q('cols'))
+            root.insert(list(root).index(data), cols)
+        ai_style = 0
+        for columna in list(cols):
+            inicio, fin = int(columna.get('min')), int(columna.get('max'))
+            if inicio <= 35 <= fin:
+                ai_style = int(columna.get('style', '0'))
+                at = list(cols).index(columna)
+                cols.remove(columna)
+                if inicio < 35:
+                    antes = deepcopy(columna)
+                    antes.set('max', '34')
+                    cols.insert(at, antes)
+                    at += 1
+                ai = deepcopy(columna)
+                ai.set('min', '35')
+                ai.set('max', '35')
+                ai.set('style', str(plan.estilos_ai_2g3g.numero_ai_2g3g(ai_style)))
+                cols.insert(at, ai)
+                if fin > 35:
+                    despues = deepcopy(columna)
+                    despues.set('min', '36')
+                    cols.insert(at + 1, despues)
+                break
+        else:
+            E.SubElement(cols, _q('col'), min='35', max='35',
+                         style=str(plan.estilos_ai_2g3g.numero_ai_2g3g(0)))
+        cols[:] = sorted(cols, key=lambda c: int(c.get('min')))
+    backend = (E.fromstring(plan.backend).find('s:sheetData', NS) if plan.offset else [])
     merge_starts = defaultdict(list)
     for merge in plan.merge_ranges:
         merge_starts[merge[1]].append(merge)
@@ -982,12 +1122,22 @@ def escribir(plan, output, planes, overview=None):
                         row[:] = sorted(row, key=lambda c: col2n(_col(c)))
                         if plan.familia == 'Conducted 2G-3G':
                             normalizar_fechas(row)
+                            # Solo AI de la vista visible: conservar valor/formula y resto del estilo.
+                            ai = _celda(row, 'AI')
+                            if ai is None:
+                                ai = E.SubElement(row, _q('c'), r='AI' + str(new))
+                            estilo = ai.get('s', row.get('s', str(ai_style)))
+                            ai.set('s', str(plan.estilos_ai_2g3g.numero_ai_2g3g(estilo)))
+                            row[:] = sorted(row, key=lambda c: col2n(_col(c)))
                         writer.write(row)
     return root
 
 
 def verificar_apoyo(plan, rendered):
     """Impedir que la vista nueva cambie las entradas del SAR aprobado."""
+    if plan.offset == 0:
+        # El apoyo separado se comprueba al construirlo; no precede a la tabla visible.
+        return
     original = E.fromstring(plan.backend).find('s:sheetData', NS)
     if plan.familia == 'Conducted 2G-3G':
         normalizar_fechas(original)

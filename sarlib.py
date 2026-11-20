@@ -100,6 +100,9 @@ def expand(pat, row, resolve, own_sheet, newrow=None, inline=None, blank=None):
     blank(hoja) -> fila (vacía) a la que apuntar cuando el destino no está en la selección, o None.
     Si newrow se indica (fila clonada), las referencias relativas a la propia hoja con |delta|<=1
     son posicionales (respecto a la fila nueva). Devuelve None si alguna referencia no se puede resolver."""
+    if 'COLUMN' in pat.upper():
+        from referencias_geometricas import columnas_tokenizadas
+        pat = columnas_tokenizadas(pat, row, resolve, own_sheet, newrow)
     state = {'ok': True}
     def one(m):
         sh = m.group(1); sheet = sh or own_sheet

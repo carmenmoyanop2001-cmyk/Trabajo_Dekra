@@ -1,0 +1,21 @@
+COMPROBACIONES REALIZADAS
+
+- 21 combinaciones de bandas n77/n78 y regiones: resultados esperados.
+- Certificación de cada variante: sin mezclar EN, FCC e ISED.
+- Datos y estilos de todas las filas preparadas de WiFi y 2G-3G:
+  idénticos a los archivos recibidos (189 y 26 filas en los casos probados).
+- Clase de estilos que aplica Número 0.00 a AI: conservada.
+- Generación combinada EN+FCC+ISED con n77 y n78: paquete válido,
+  tablas desde fila 1 y enlaces SAR originales reubicados.
+- Caso de registros nuevos sin coincidencia exacta en el original:
+  generación combinada y enlaces válidos.
+- Generaciones de WiFi, GSM y tecnologías WCDMA/LTE/CATM1/NB-IoT/BT:
+  comprobadas estructura, referencias, geometría y metadatos.
+- Regresión de rangos vacíos con desplazamiento 0: no genera filas -1.
+- Regresión de variabilidad con valor cacheado N/A: se identifica el ensayo.
+- VBA: solo cambia la apertura automática del selector de hojas en la
+  plantilla conocida; firma del resultado comprobada.
+
+Los casos de integración reducen el catálogo de prueba a determinados
+registros; no se ha ensayado cada combinación posible del catálogo completo.
+No se han ejecutado Microsoft Excel ni las macros en Windows.
