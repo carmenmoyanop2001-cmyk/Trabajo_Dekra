@@ -13,7 +13,7 @@ from opciones_ensayo import seleccion_multiple
 from seleccion import _celda
 from sarlib import col2n, n2col, tokenize, expand
 
-PARAM_COL = dict(scs='L', bw='M', modulation='N', mpr='O', nb_index='P',
+PARAM_COL = dict(module_port='G', scs='L', bw='M', modulation='N', mpr='O', nb_index='P',
                  rb='Q', rb_start='R', mode='S', data_rate='V', duty='W', cert='B')
 
 
@@ -324,6 +324,9 @@ def _sar(source, records, datos, ranges, warnings, tune, fcc=None):
                 if ant_value is not None:
                     values['BV'] = ant_value
                 for dest, data_col in values_by_column.items():
+                    if source.name=='SAR EN':
+                        values[dest]=None  # Se recupera la fórmula original, no una selección de máximos alternativa.
+                        continue
                     fallback = {'CC': middle.channel, 'CD': middle.frequency,
                                 'BY': middle.params.get('mode'), 'BZ': middle.params.get('bw')}[dest]
                     # Modo/BW no se inventan si no constan en la base.
@@ -342,9 +345,7 @@ def _sar(source, records, datos, ranges, warnings, tune, fcc=None):
                     # Copias ocultas del propio registro, nunca resultados viejos.
                     letter = {'CG': 'BY', 'CH': 'BZ', 'CI': 'CA', 'CU': 'BY', 'CV': 'BZ', 'CW': 'CA'}[col]
                     values[col] = ('f', f'{letter}{new}')
-                if source.name == 'SAR EN':
-                    values['CP'] = ('f', 'IF(COUNTIF(Overview!K12:K14,TRUE)>0,2,IF(COUNTIF(Overview!L12:L14,TRUE)>0,4,0))')
-                else:
+                if source.name != 'SAR EN':
                     values['CZ'] = ('f', 'IF(COUNTIF(Overview!K12:K14,TRUE)>0,1.6,IF(COUNTIF(Overview!L12:L14,TRUE)>0,8,0))')
                 builder.append(i, values, band_mapping, preserve=('F', 'CA', 'CB'))
             if source.name == 'SAR EN':

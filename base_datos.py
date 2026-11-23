@@ -24,11 +24,11 @@ def tecnologia(text):
     key = normalizar(text)
     return {'ltecatm1': 'LTE CAT M1', 'ltenbiot': 'LTE NB-IoT', 'wifi': 'WLAN',
             'wlan': 'WLAN', 'bluetooth': 'BT', 'bt': 'BT', 'gsm': 'GSM', 'lte': 'LTE',
-            '5g': '5G', 'wcdma': 'WCDMA'}.get(key, str(text).strip())
+            '5g': '5G', '5gnr': '5G', 'wcdma': 'WCDMA'}.get(key, str(text).strip())
 
 
 HEADERS = {
-    'tecnologia': 'tech', 'technology': 'tech', 'banda': 'band', 'band': 'band',
+    'moduleport': 'module_port', 'puertomodulo': 'module_port', 'tecnologia': 'tech', 'technology': 'tech', 'banda': 'band', 'band': 'band',
     'canal': 'channel', 'channel': 'channel', 'frecuenciamhz': 'frequency',
     'frecuencia': 'frequency', 'frequencymhz': 'frequency',
     'bandwidthmhz': 'bw', 'bandwidth': 'bw', 'bw': 'bw',
@@ -167,7 +167,7 @@ class Catalogo:
                                 raise ValueError(f'{where}: registro incompleto.')
                             params = {k: v for k, v in data.items() if k not in REQUIRED | {'notes'} and
                                       v is not None and str(v).strip() not in ('', '-', 'N/A')}
-                            for key in ('bw', 'scs', 'rb', 'rb_start', 'nb_index', 'duty', 'data_rate', 'mpr'):
+                            for key in ('module_port', 'bw', 'scs', 'rb', 'rb_start', 'nb_index', 'duty', 'data_rate', 'mpr'):
                                 if key in params:
                                     params[key] = numero(params[key], where + '/' + key)
                             band = str(data['band']).strip()

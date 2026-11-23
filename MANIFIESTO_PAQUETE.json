@@ -8,8 +8,12 @@
     "sha256": "349831f1b7e360acbdbd00ff49be0cd428c9e71467881ba29313d59ac0f5cfca"
   },
   "CAMBIOS_Y_VALIDACION/manifest_archivos.json": {
-    "bytes": 2149,
-    "sha256": "0e0eeec048ce305e59d531ff2125245403d592824d2c2385cb7dfa0760ff1655"
+    "bytes": 2273,
+    "sha256": "def358682603d749e29d2264a6698050bbd34e80a382cc96b3f0bdfa97c230c3"
+  },
+  "CORRECCION_5G_SAR_EN.txt": {
+    "bytes": 1735,
+    "sha256": "2248ccba67a4631485b0481410691ed9879912c6a712925af48a77110f359efa"
   },
   "CORRECCION_LTE.txt": {
     "bytes": 909,
@@ -24,8 +28,8 @@
     "sha256": "6ce3d974b8557333028fec5f3f21d16f83a2d36ab469b57dfa0c29277e810445"
   },
   "README.md": {
-    "bytes": 1618,
-    "sha256": "477e026e8434445e348bc3695aa7c8df139692ff1834ad293df48c601f236581"
+    "bytes": 1764,
+    "sha256": "26fbf223c481d0291cee9014a0397c8569cd8fd5909d30b824dff9ef5d04ee22"
   },
   "apoyo_tecnologias.py": {
     "bytes": 3094,
@@ -36,8 +40,8 @@
     "sha256": "1fa5251a9bb0a57c95fd7d0bf05d4ae43421d8eb41f7526d84d2d0ece347ff29"
   },
   "base_datos.py": {
-    "bytes": 14573,
-    "sha256": "cb8a425ed2e45fe577433b6f567355f382716477a0adf436410329e7505132c8"
+    "bytes": 14662,
+    "sha256": "87afafc036b748cf4d685f87bf0962a128e1d73510e9eda47ff306a07db6a7a6"
   },
   "columnas_originales.py": {
     "bytes": 3631,
@@ -56,8 +60,8 @@
     "sha256": "397f2c73c39fe8499c2b19badcdc1b1e6b8bc2f7a2d25f757d6b5fba6c49cdd9"
   },
   "datos/Base_de_datos_bandas_canales_frecuencias_corregido.xlsx": {
-    "bytes": 837018,
-    "sha256": "e3eadb68532af6a80d6eb6eb868b61c36d058cb2e642473a0937f15871233588"
+    "bytes": 786439,
+    "sha256": "4ff3b760fd00603948590f0f5259fdf9f78e143a489e5821228f04dffedc6f43"
   },
   "entradas_bandas.py": {
     "bytes": 2115,
@@ -68,8 +72,8 @@
     "sha256": "8def2647a0e4026f0154a7cb846cb0281ad7c7bfe1f70d1a122bd3da9510a01f"
   },
   "generador_excel.py": {
-    "bytes": 21768,
-    "sha256": "94018f5a65d01556f028000159f16c3fd6df84884938d52c4d87e8b49fe8ac23"
+    "bytes": 21605,
+    "sha256": "7e345382f6f040b27e13eaefb88f8e58d81f8da3c4ffa52e96ebcb6e59a3a431"
   },
   "generar_desde_json.py": {
     "bytes": 2056,
@@ -80,8 +84,8 @@
     "sha256": "983f7633187b0a7798e73a973e21156eaa4f68ab1de8e010d396f0bd32a4f6f6"
   },
   "hojas_base_datos.py": {
-    "bytes": 22151,
-    "sha256": "617447abb3f91c6b656c4f81c1f2dc1dfed7dee05ceaf0354cca702754d439ae"
+    "bytes": 22223,
+    "sha256": "8fa00cec7eaca2ef4694e5979d3e42b283947e34b1b4f0e2002e26dced1202aa"
   },
   "nombres_hojas.py": {
     "bytes": 3126,
@@ -232,8 +236,8 @@
     "sha256": "0903b88020fa46926640ff02a35889899e84dc9e4ff245afa5fb43728dc6e0ee"
   },
   "presentacion_tecnologias.py": {
-    "bytes": 27470,
-    "sha256": "663dc422e2e1d71e39d038fef89f616e047cc7bfce63ca08c911552e8677613e"
+    "bytes": 28061,
+    "sha256": "5875f38bfef5d9cff0c5b2c18f0395cf616083dd0e2b4061bcb3b771ae425e7b"
   },
   "referencias_geometricas.py": {
     "bytes": 3686,
@@ -254,6 +258,10 @@
   "sar_en_formulas.py": {
     "bytes": 6647,
     "sha256": "fc37b0b0569b4c6665554f72224b8a954331571eeacde59a6f4c615c72f81748"
+  },
+  "sar_en_original.py": {
+    "bytes": 8532,
+    "sha256": "5281f78986eb716f089897296d0d25894bd2b1db04781efa34bb9add3a33e263"
   },
   "sar_version12_canales.py": {
     "bytes": 8965,
@@ -280,8 +288,8 @@
     "sha256": "68942f1e843263f8b818dd5bc69b196ca595a3e5563b8dee15319c11a5d286e6"
   },
   "tecnologias_originales.py": {
-    "bytes": 63612,
-    "sha256": "2a7266409a14b651e943ad1a60a4958b5ae22b3f15ae5f322900dc0b132c6c32"
+    "bytes": 64293,
+    "sha256": "3a59d99ede754acdb3354c124c24ab5e11854b5c39a0b0d1fa5460204aaa1957"
   },
   "validacion_datos.py": {
     "bytes": 5566,

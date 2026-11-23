@@ -412,8 +412,12 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
             name = sheet.get('name')
             if name in ('SAR EN', 'SAR FCC-ISED'):
                 part = targets[sheet.get('{' + R + '}id')]
-                changed[part], normales[name] = restaurar_normales(changed.get(part, source.read(part)), name,
-                    plan_by_name, dir_originales.parent)
+                if name=='SAR EN':
+                    from sar_en_original import restaurar as restaurar_en_original
+                    changed[part],normales[name]=restaurar_en_original(changed.get(part,source.read(part)),plan_by_name,dir_originales.parent,overview)
+                else:
+                    changed[part], normales[name] = restaurar_normales(changed.get(part, source.read(part)), name,
+                        plan_by_name, dir_originales.parent)
         for plan in plans:
             contenido = construir_auxiliares(plan, plan_by_name)
             if contenido is None:
@@ -465,6 +469,10 @@ def aplicar(path, datos, catalogo, resumen, overview=None):
                     if sheet.get('name') not in ('SAR EN', 'SAR FCC-ISED'):
                         assert actualizar_xml(source.read(part), nombres_apoyo) == result.read(part), sheet.get('name')
                         if source.read(part)==result.read(part):protected_unchanged.append(sheet.get('name'))
+                    elif sheet.get('name')=='SAR EN':
+                        from sar_en_original import estructura
+                        if estructura(source.read(part))!=estructura(result.read(part)):
+                            raise ValueError('Se ha cambiado el formato de SAR EN.')
                     elif contenido_sin_canales(actualizar_xml(source.read(part), nombres_apoyo)) != contenido_sin_canales(result.read(part)):
                         raise ValueError(sheet.get('name') + ': se ha modificado contenido fuera de los enlaces RF.')
     os.replace(destination, path)

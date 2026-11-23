@@ -404,6 +404,10 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
         plan.segmentos = original_guardado.get('segmentos',{})
         plan.copia_original_sar = original_guardado.get('copia_del_adjunto')
         plan.registros = registros
+        puertos_5g={}
+        if familia=='Conducted 5G':
+            overview_original=E.fromstring(z.read('xl/worksheets/sheet1.xml'))
+            puertos_5g={c.get('r'):_value(c,plan.strings) for c in overview_original.findall('s:sheetData/s:row/s:c',NS)}
         for view in registros:
             r=view.record
             for group in (None,(r.tech,_norm(r.band))):
@@ -572,6 +576,11 @@ def preparar(familia, nombre, backend, registros, datos, folder, dir_originales,
                     continue
                 columns=set(cells) if old<=2 else filter_columns
                 values = {c: _value(cells.get(c), plan.strings) for c in columns}
+                if familia=='Conducted 5G' and old>2 and values.get('G') in (None,''):
+                    port_cell=cells.get('G')
+                    port_formula=port_cell.findtext('s:f',namespaces=NS) if port_cell is not None else ''
+                    port_ref=re.fullmatch(r"'?Overview'?!(\$?[A-Z]+\$?\d+)",port_formula or '')
+                    if port_ref:values['G']=puertos_5g.get(port_ref[1].replace('$',''))
                 for col, spans_col in spans.items():
                     if old>2 and col not in filter_columns:continue
                     if values.get(col) is not None:

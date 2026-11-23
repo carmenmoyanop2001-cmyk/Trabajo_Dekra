@@ -36,3 +36,6 @@ Tus Excel de proyectos anteriores no se modifican; genera uno nuevo con esta ver
 Las plantillas grandes pueden hacer que la generación tarde varios minutos.
 No se ha ejecutado Microsoft Excel en Windows en las pruebas: el recálculo y
 las macros deben comprobarse en tu equipo.
+
+La corrección vigente de 5G y SAR EN se describe en CORRECCION_5G_SAR_EN.txt.
+La carpeta datos/ incluye la base ampliada con Module Port y SCS.

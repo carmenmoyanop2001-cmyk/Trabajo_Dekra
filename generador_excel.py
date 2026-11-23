@@ -73,13 +73,13 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
                 renombrar_resumen(resumen, names)
         if catalogo is not None:
             from sar_en_canales import aplicar as adaptar_canales_en
-            resumen['formulas_cc_cd_en'] = adaptar_canales_en(candidate, dir_plantilla or DIR_PLANTILLA)
+            resumen['formulas_cc_cd_en'] = 0  # SAR EN se restaura íntegramente desde su original.
             resumen['formulas_cc_cd_fcc'] = adaptar_canales_en(candidate, dir_plantilla or DIR_PLANTILLA,
                                                              destino='SAR FCC-ISED')
             gc.collect()
             from presentacion_tecnologias import aplicar
             # Solo la presentación de tecnologías necesita el mapa de Overview.
-            # El motor SAR se conserva literalmente de Trabajo_Dekra-main11.
+            # SAR EN recupera sus fórmulas del original al adaptar las referencias.
             from overview import BAT_LIBRES, FILA_CORTE
             extras = max(0, len(datos['baterias']) - BAT_LIBRES)
             overview = lambda row: row + extras if row >= FILA_CORTE else row
@@ -208,12 +208,9 @@ def _generar(datos, salida, dir_plantilla=None, log=print, catalogo=None):
     if catalogo is None and 'SAR EN' in hojas and any(item.extra for item in planes['SAR EN']):
         fcc = hojas.get('SAR FCC-ISED') or Hoja(os.path.join(dirp, ARCHIVOS['SAR FCC-ISED']))
         aplicar_formulas_extras(hojas['SAR EN'], planes['SAR EN'], fcc, ctx.rowmap['SAR EN'])
-    if 'SAR EN' in hojas:
+    if 'SAR EN' in hojas and catalogo is None:
         modificadas['xl/styles.xml'] = combinar_mode(hojas['SAR EN'], planes['SAR EN'], ctx,
                                                       base.read('xl/styles.xml'))
-        if catalogo is not None:
-            from hojas_base_datos import restaurar_modos_dinamicos
-            restaurar_modos_dinamicos(hojas['SAR EN'], planes['SAR EN'], ctx, resolve)
     ctx.inline = _hacer_inline(hojas, resolve, ctx.column_aliases, ctx.cell_anchors)
     ctx.blank = lambda sh: (HEADER_ROWS + len(planes[sh]) + 3) if sh in planes else None
     resumen = {'hojas': orden, 'filas': {}, 'sin_resolver': ctx.unresolved}

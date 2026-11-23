@@ -1,0 +1,33 @@
+CORRECCIÓN 5G Y RESTAURACIÓN DE FÓRMULAS ORIGINALES SAR EN — 23/11/2026
+
+5G
+Module Port se reconoce como campo numérico propio y se escribe en G.
+SCS se escribe en L. La correspondencia de las filas incluye estos dos
+campos. Se resuelven los puertos del original que tienen una referencia
+a Overview pero no un resultado guardado.
+Se conserva el formato de la hoja 5G. La base incluida es exactamente la
+base ampliada aprobada anteriormente: no se han modificado sus datos.
+
+SAR EN
+sar_en_original.py copia las fórmulas del procedimiento SAR EN conservado
+en la plantilla; no utiliza el procedimiento FCC para sustituirlas.
+Adapta las referencias a las filas del proyecto y a los auxiliares RF
+originales. Conserva el maestro CP3 del original y sus dependencias.
+Los vínculos de Tune-Up se reubican a la banda correspondiente (por ejemplo,
+n77 a H310). No se aplica la transformación anterior de modo agrupado.
+Las filas adicionales del cuestionario reutilizan las fórmulas TBD de EN,
+conservando sus etiquetas de posición y distancia.
+
+VALIDACIÓN
+Caso comunicado: base nueva, bandas n77+n78, región EN.
+368 combinaciones de la base representadas en 32.424 filas de ensayo.
+G/K/L/T/U comprobados en todas las filas frente a la base de datos.
+6.142 fórmulas de SAR EN restauradas en ese caso, con CP3, CG/BY y Tune-Up
+verificados. Pruebas de Head/Body/Extremity, batería y accesorio: correctas.
+Regresiones de 2G, WiFi y LTE: correctas.
+Paquete XLSM, geometría de referencias, VBA y metadatos: correctos.
+No se ha ejecutado Microsoft Excel de Windows en estas pruebas.
+
+USO
+Extrae el ZIP completo en una carpeta nueva. Abre INICIAR_CUESTIONARIO.bat
+y genera un Excel nuevo. La base ampliada está ya incluida en datos/.
