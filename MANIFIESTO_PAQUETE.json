@@ -72,8 +72,8 @@
     "sha256": "8def2647a0e4026f0154a7cb846cb0281ad7c7bfe1f70d1a122bd3da9510a01f"
   },
   "generador_excel.py": {
-    "bytes": 24502,
-    "sha256": "a77491f1419f6bfd3c77da9836b6b07a488e57dc42d7e05531cb6131b2c6f2e7"
+    "bytes": 30548,
+    "sha256": "41791d06a54f74f9aa903d918083c81a3859de7c24c682a402119d7624906962"
   },
   "generar_desde_json.py": {
     "bytes": 2056,

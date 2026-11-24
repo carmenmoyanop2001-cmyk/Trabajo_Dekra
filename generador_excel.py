@@ -91,6 +91,7 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
                                                    if name not in resumen['columnas_originales']['modificadas']]
         # No volver a sobrescribir los enlaces originales con el motor historico COUNT/INDEX.
         _inicializar_distancias_sar(candidate)
+        _ajustar_bordes_bx_sar_en(candidate)
         errors = validar(str(candidate), verbose=False)
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))
@@ -148,6 +149,120 @@ def _inicializar_distancias_sar(path):
             return
         with tempfile.TemporaryDirectory(dir=Path(path).parent) as tmp:
             updated = Path(tmp) / 'distancias.xlsm'
+            with zipfile.ZipFile(updated, 'w', compression=zipfile.ZIP_DEFLATED) as output:
+                for info in source.infolist():
+                    output.writestr(info, changes.get(info.filename, source.read(info.filename)))
+            source.close()
+            os.replace(updated, path)
+
+
+
+def _ajustar_bordes_bx_sar_en(path):
+    """Conservar en BX solo los bordes exteriores de cada bloque de exposición."""
+    from copy import deepcopy
+    from lxml import etree as E
+    from posixpath import normpath
+    ns = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+    tag = '{' + ns['s'] + '}'
+    with zipfile.ZipFile(path) as source:
+        wb = E.fromstring(source.read('xl/workbook.xml'))
+        sheet = next((s for s in wb.findall('s:sheets/s:sheet', ns)
+                      if s.get('name') == 'SAR EN'), None)
+        if sheet is None:
+            return
+        rels = {r.get('Id'): r.get('Target') for r in
+                E.fromstring(source.read('xl/_rels/workbook.xml.rels'))}
+        target = rels[sheet.get('{' + NS_REL + '}id')]
+        part = target.lstrip('/') if target.startswith('/') else normpath('xl/' + target)
+        root = E.fromstring(source.read(part))
+        styles = E.fromstring(source.read('xl/styles.xml'))
+        xfs, borders = styles.find(tag + 'cellXfs'), styles.find(tag + 'borders')
+        strings = []
+        if 'xl/sharedStrings.xml' in source.namelist():
+            strings = [''.join(si.itertext()) for si in
+                       E.fromstring(source.read('xl/sharedStrings.xml'))]
+        def value(cell):
+            if cell is None:
+                return ''
+            formula = cell.findtext(tag + 'f')
+            if formula is not None:
+                return '=' + formula
+            if cell.get('t') == 'inlineStr':
+                return ''.join(cell.find(tag + 'is').itertext())
+            text = cell.findtext(tag + 'v') or ''
+            return strings[int(text)] if cell.get('t') == 's' and text else text
+        groups, previous, inherited = [], None, {}
+        for row in root.findall('s:sheetData/s:row', ns):
+            if int(row.get('r')) <= 2:
+                continue
+            cells = {re.sub(r'\d+$', '', c.get('r', '')): c for c in row.findall(tag + 'c')}
+            bx = cells.get('BX')
+            if bx is None:
+                previous, inherited = None, {}
+                continue
+            # Las celdas combinadas pueden dejar vacía la etiqueta de continuación.
+            for col in ('BT', 'BU', 'BV', 'BW', 'BX'):
+                text = value(cells.get(col))
+                if text:
+                    inherited[col] = text
+            key = tuple(inherited.get(c, '') for c in ('BT', 'BU', 'BV', 'BW', 'BX'))
+            if not key[0] or not key[-1]:
+                previous = None
+                continue
+            if key != previous:
+                groups.append([])
+            groups[-1].append(bx)
+            previous = key
+        cache, changed = {}, False
+        for group in groups:
+            # Recuperar la línea exterior del propio bloque original; las filas
+            # adicionales pueden haber heredado un borde de cierre intermedio.
+            edge = {}
+            for side, candidates in (('top', group), ('bottom', reversed(group))):
+                for cell in candidates:
+                    border = borders[int(xfs[int(cell.get('s', '0'))].get('borderId', '0'))]
+                    node = border.find(tag + side)
+                    if node is not None and node.get('style'):
+                        edge[side] = deepcopy(node)
+                        break
+            for index, cell in enumerate(group):
+                old = int(cell.get('s', '0'))
+                key = old, index == 0, index == len(group) - 1, tuple(
+                    E.tostring(edge[s]) if s in edge else b'' for s in ('top', 'bottom'))
+                if key not in cache:
+                    xf = deepcopy(xfs[old])
+                    border = deepcopy(borders[int(xf.get('borderId', '0'))])
+                    for side, outer in (('top', index == 0), ('bottom', index == len(group) - 1)):
+                        node = border.find(tag + side)
+                        replacement = deepcopy(edge[side]) if outer and side in edge else E.Element(tag + side)
+                        if node is None:
+                            # Mantener el orden de elementos del esquema OOXML.
+                            before = ('bottom', 'diagonal', 'vertical', 'horizontal') if side == 'top' else ('diagonal', 'vertical', 'horizontal')
+                            pos = next((i for i, child in enumerate(border)
+                                        if E.QName(child).localname in before), len(border))
+                            border.insert(pos, replacement)
+                        else:
+                            border.replace(node, replacement)
+                    original = borders[int(xf.get('borderId', '0'))]
+                    if E.tostring(border, method="c14n", exclusive=True) == E.tostring(original, method="c14n", exclusive=True):
+                        cache[key] = old
+                    else:
+                        xf.set('borderId', str(len(borders)))
+                        xf.set('applyBorder', '1')
+                        borders.append(border)
+                        cache[key] = len(xfs)
+                        xfs.append(xf)
+                if cache[key] != old:
+                    cell.set('s', str(cache[key]))
+                    changed = True
+        if not changed:
+            return
+        borders.set('count', str(len(borders)))
+        xfs.set('count', str(len(xfs)))
+        changes = {part: E.tostring(root, encoding='UTF-8', xml_declaration=True, standalone=True),
+                   'xl/styles.xml': E.tostring(styles, encoding='UTF-8', xml_declaration=True, standalone=True)}
+        with tempfile.TemporaryDirectory(dir=Path(path).parent) as tmp:
+            updated = Path(tmp) / 'bordes_bx.xlsm'
             with zipfile.ZipFile(updated, 'w', compression=zipfile.ZIP_DEFLATED) as output:
                 for info in source.infolist():
                     output.writestr(info, changes.get(info.filename, source.read(info.filename)))
