@@ -90,6 +90,7 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
         resumen['pestanas_protegidas_identicas'] = [name for name in resumen.get('pestanas_protegidas_identicas', [])
                                                    if name not in resumen['columnas_originales']['modificadas']]
         # No volver a sobrescribir los enlaces originales con el motor historico COUNT/INDEX.
+        _inicializar_distancias_sar(candidate)
         errors = validar(str(candidate), verbose=False)
         if errors:
             raise ValueError('El Excel no supera la validación: ' + '; '.join(errors))
@@ -97,6 +98,61 @@ def _publicar(datos, salida, dir_plantilla, log, catalogo=None):
         os.replace(candidate, target)
     log(f'Excel validado: {target}')
     return resumen
+
+
+
+def _inicializar_distancias_sar(path):
+    """Inicializar solo CB de las filas de ensayo SAR a cero numérico."""
+    from lxml import etree
+    from posixpath import normpath
+    ns = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+    tag = '{' + ns['s'] + '}'
+    with zipfile.ZipFile(path) as source:
+        wb = etree.fromstring(source.read('xl/workbook.xml'))
+        rels = {r.get('Id'): r.get('Target') for r in
+                etree.fromstring(source.read('xl/_rels/workbook.xml.rels'))}
+        changes = {}
+        for sheet in wb.findall('s:sheets/s:sheet', ns):
+            if sheet.get('name') not in ('SAR EN', 'SAR FCC-ISED'):
+                continue
+            target = rels[sheet.get('{' + NS_REL + '}id')]
+            part = target.lstrip('/') if target.startswith('/') else normpath('xl/' + target)
+            root = etree.fromstring(source.read(part))
+            changed = False
+            for row in root.findall('s:sheetData/s:row', ns):
+                number = int(row.get('r'))
+                if number <= 2:
+                    continue  # Conservar los encabezados.
+                cells = {re.sub(r'\d+$', '', c.get('r', '')): c for c in row.findall('s:c', ns)}
+                cell = cells.get('CB')
+                if cell is None:
+                    if not any(col in cells and len(cells[col]) for col in ('BT', 'BU', 'CA')):
+                        continue  # No añadir distancias a filas auxiliares vacías.
+                    cell = etree.Element(tag + 'c', r=f'CB{number}')
+                    later = next((i for i, c in enumerate(row)
+                                  if c.tag == tag + 'c' and
+                                  col2n(re.sub(r'\d+$', '', c.get('r', ''))) > col2n('CB')), len(row))
+                    row.insert(later, cell)
+                # Conservar estilo y formato; reemplazar solo el contenido inicial.
+                cell.attrib.pop('t', None)
+                for child in list(cell):
+                    if child.tag in (tag + 'f', tag + 'v', tag + 'is'):
+                        cell.remove(child)
+                value = etree.Element(tag + 'v')
+                value.text = '0'
+                cell.insert(0, value)
+                changed = True
+            if changed:
+                changes[part] = etree.tostring(root, encoding='UTF-8', xml_declaration=True, standalone=True)
+        if not changes:
+            return
+        with tempfile.TemporaryDirectory(dir=Path(path).parent) as tmp:
+            updated = Path(tmp) / 'distancias.xlsm'
+            with zipfile.ZipFile(updated, 'w', compression=zipfile.ZIP_DEFLATED) as output:
+                for info in source.infolist():
+                    output.writestr(info, changes.get(info.filename, source.read(info.filename)))
+            source.close()
+            os.replace(updated, path)
 
 
 def _hojas_sar(regiones):
